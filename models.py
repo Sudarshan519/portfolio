@@ -1,7 +1,10 @@
+from pydantic import BaseModel, Field, EmailStr
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+from api import PyObjectId
 
 Base  = declarative_base()
 
@@ -24,5 +27,73 @@ class Author(Base):
     age = Column(Integer)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+ 
+from bson import ObjectId
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid objectid")
+        return ObjectId(v)
+
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")
+
+        
+class FileModel(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    url:str=Field(...)
+    class Config:
+        __tablename__ = 'files'
+        json_encoders = {ObjectId: str} 
+        schema_extra = {
+            "example": {
+                "url": "https://ewkjfoi.jpg",           
+            }
+        }
+
+# class ContactModel(BaseModel):
+#     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+#     name: str = Field(...)
+#     email: EmailStr = Field(...)
+#     message: str =Field(...)
+#     class Config:
+#         # __tablename__ = 'author'
+#         allow_population_by_field_name = True
+#         arbitrary_types_allowed = True
+#         json_encoders = {ObjectId: str}
+        # schema_extra = {
+        #     "example": {
+        #         "name": "Jane Doe",
+        #         "email": "jdoe@example.com",
+        #         "message": "Experiments, Science, and Fashion in Nanophotonics",
+           
+        #     }
+        # }
 
 
+# class PyObjectId(ObjectId):
+#     @classmethod
+#     def __get_validators__(cls):
+#         yield cls.validate
+
+#     @classmethod
+#     def validate(cls, v):
+#         if not ObjectId.is_valid(v):
+#             raise ValueError("Invalid objectid")
+#         return ObjectId(v)
+
+#     @classmethod
+#     def __modify_schema__(cls, field_schema):
+#         field_schema.update(type="string")
+
+# class Files(BaseModel):
+#     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+#     name: str = Field(...)
+#     class Config:
+#         __tablename__ = 'author'

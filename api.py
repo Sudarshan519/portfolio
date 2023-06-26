@@ -30,7 +30,24 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
 
-
+class ContactModel(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    name: str = Field(...)
+    email: EmailStr = Field(...)
+    message: str =Field(...)
+    class Config:
+        __tablename__ = 'author'
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "name": "Jane Doe",
+                "email": "jdoe@example.com",
+                "message": "Experiments, Science, and Fashion in Nanophotonics",
+           
+            }
+        }
 class StudentModel(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str = Field(...)
@@ -70,7 +87,26 @@ class UpdateStudentModel(BaseModel):
             }
         }
 
+@app.post("/contact",response_description='Add Contact',response_model=ContactModel)
+async def submit_contact(contact : ContactModel= Body(...)):
+    randomcontact=contact
+    contactlist=[]
+    # for i in range(100000):
+    #     randomcontact.id= ObjectId ()
+    #     print(randomcontact)
+    #     contactd = jsonable_encoder(contact)
+    #     contactlist.append(contactd)
+    # new_contact = await db["contact"].insert_many(contactlist)
+    contactd = jsonable_encoder(contact)
+    new_contact = await db["contact"].insert_one(contactd)
+    contactlist.append(contactd)
+    # created_contact = await db["contact"].find_one({"_id": new_contact.inserted_id})
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={})
 
+@app.get("/contacts",response_description='All Contacts',response_model=List[ContactModel])
+async def list_contacts():
+    contacts = await db["contact"].find().to_list(100)
+    return contacts
 @app.post("/", response_description="Add new student", response_model=StudentModel)
 async def create_student(student: StudentModel = Body(...)):
     student = jsonable_encoder(student)
