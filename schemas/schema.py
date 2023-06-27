@@ -9,12 +9,12 @@ class CustomObject(BaseModel):
     contact:str
     class Config:
         orm_mode =True
-
+from fastapi import File, UploadFile
 class Author(BaseModel):
     name:str
     age:int
     contacts:Optional[list[CustomObject]]
-
+    # file:UploadFile=File(...)
     @classmethod
     def __get_validators__(cls) :
         yield cls.validate_to_json
