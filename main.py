@@ -70,7 +70,7 @@ def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
     return user
-load_dotenv('.env')
+# load_dotenv('.env')
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -88,10 +88,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # )
 
 create_tables()
-client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URI"])
+client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)#os.environ["MONGODB_URI"])
 db_mongo = client.college
 # to avoid csrftokenError
-app.add_middleware(DBSessionMiddleware, db_url=os.environ['POSTGRES_URL'])
+app.add_middleware(DBSessionMiddleware, db_url=settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
 @app.get('/forms/')
 async def post(username:list[Annotated[str, Form()]]):
     pass
@@ -101,25 +101,37 @@ async def post(username:list[Annotated[str, Form()]]):
 
 @app.get('/contacts')
 async def get_contacts():
-    contacts = await db_mongo["contact"].find().to_list(100)
-    return contacts
+    try:
+        contacts = await db_mongo["contact"].find().to_list(100)
+        return contacts
+    except:
+        return {"message":"Failed to load data."}
 
 @app.get('/files',response_model=list[FileModel])
 async def get_files():
-    contacts = await db_mongo["files"].find().to_list(100)
-    return contacts
+    try:
+        contacts = await db_mongo["files"].find().to_list(100)
+        return contacts
+    except Exception as e:
+        return f"{e}"
 
 @app.post('/book/', response_model=SchemaBook)
 async def book(book: SchemaBook):
-    db_book = ModelBook(title=book.title, rating=book.rating, author_id = book.author_id)
-    db.session.add(db_book)
-    db.session.commit()
-    return db_book
+    try:
+        db_book = ModelBook(title=book.title, rating=book.rating, author_id = book.author_id)
+        db.session.add(db_book)
+        db.session.commit()
+        return db_book
+    except Exception as e:
+        return {"error":f"{e}"}
 
 @app.get('/book/',response_model=list[Book])
 async def book():
-    book = db.session.query(ModelBook).all()
-    return book
+    try:
+        book = db.session.query(ModelBook).all()
+        return book
+    except Exception as e:
+        return {"error":f"{e}"}
 
 
   
