@@ -1,0 +1,386 @@
+@media only screen and (max-width : 320px) {
+    /* Styles */
+
+    nav ul {
+        width: 120px;
+        height: 80px;
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    position: sticky;
+    width: 100%;
+
+    background-color: #000000;
+    /* #333; */
+    color: #fff;
+    padding: 30px;
+}
+
+
+
+nav ul {
+
+    /* display: flex; */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    padding: 8px;
+    /* margin-top: 4%; */
+
+}
+
+nav ul li :hover {
+    padding: 12px;
+    background-color: #45a049;
+    border-radius: 4px;
+    /* background: red; */
+
+}
+
+nav ul li img {
+    border: 2px solid wheat;
+}
+
+nav ul li a {
+
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+
+    font-weight: 700;
+    margin-bottom: 8%;
+    margin: 10px;
+}
+
+li img {
+    border-radius: 30px;
+    position: absolute;
+    margin-top: -10px;
+    right: 10px;
+}
+
+section {
+    padding: 30px;
+}
+
+#home {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f2f2f2;
+    text-align: center;
+    object-fit: cover;
+}
+
+#portfolio .project {
+    margin-bottom: 30px;
+}
+
+#portfolio img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    background-size: cover;
+    background-position: center;
+    object-fit: cover;
+    width: 100%;
+    max-height: 500px;
+}
+
+.info img {
+    border-color: #04AA6D;
+    border: 4px solid gray;
+
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.card {
+    padding: 10px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 12px;
+    justify-content: flex-start;
+    min-width: 380px;
+    max-width: 380px;
+    min-height: 800px;
+    border-radius: 2px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 2px rgb(63, 63, 63);
+}
+
+.showcaseimg {
+    min-height: 520px;
+    height: auto;
+    background-size: fill;
+    background-position: center;
+    object-fit: cover;
+    width: 100%;
+    max-height: 500px;
+    /* background-size: cover; */
+}
+
+
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 160px;
+    /* max-height: 460px; */
+    justify-content: flex-start;
+    /* max-width: 496px; */
+    margin: 0 auto;
+    padding: 9px;
+    /* background-color: rgb(95, 95, 255); */
+}
+
+.card-container :hover {
+    /* background-color: red; */
+    /* color: rgb(236, 196, 196); */
+    font-weight: 800;
+    text-decoration-color: #256f83;
+    font-size: 24;
+
+    border-radius: 6px;
+    /* background-color: rgb(128, 83, 83); */
+    /* box-shadow: 0 0 12px rgb(46, 42, 42); */
+}
+
+.card:hover {
+    /* background-color: rgb(45, 134, 75); */
+    /* color: rgb(236, 196, 196); */
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+    color: #f2f2f2;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
+}
+
+
+* {
+    box-sizing: border-box
+}
+
+.mySlides1,
+.mySlides2 {
+    display: none
+}
+
+img {
+    vertical-align: middle;
+}
+
+/* Slideshow container */
+.slideshow-container {
+    width: 100%;
+    position: relative;
+    margin: auto;
+}
+
+/* Next & previous buttons */
+.prev,
+.next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: grey;
+}
+
+.prev {
+    left: 0;
+}
+
+/* Position the "next button" to the right */
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a grey background color */
+.prev:hover,
+.next:hover {
+    background-color: #f1f1f1;
+    color: black;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.dot.active {
+    background-color: #717171;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+.line {
+
+
+    border-bottom: 1px solid orange;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+/* Style inputs with type="text", select elements and textareas */
+input[type=text],
+select,
+textarea {
+    width: 100%;
+    /* Full width */
+    padding: 12px;
+    /* Some padding */
+    border: 1px solid #ccc;
+    /* Gray border */
+    border-radius: 4px;
+    /* Rounded borders */
+    box-sizing: border-box;
+    /* Make sure that padding and width stays in place */
+    margin-top: 6px;
+    /* Add a top margin */
+    margin-bottom: 16px;
+    /* Bottom margin */
+    resize: vertical
+        /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+/* Style the submit button with a specific background color etc */
+button,
+input[type=submit] {
+    background-color: #04AA6D;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* When moving the mouse over the submit button, add a darker green color */
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+.card-form {
+    padding: 14px 14px;
+    border-radius: 6px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0;
+}
+
+.facebook {
+    background-image: url("https://media.geeksforgeeks.org/wp-content/cdn-uploads/social_sprites_icons.svg")
+}
+
+li {
+    list-style-type: none;
+}
+
+.line-gray {
+
+
+    border-bottom: .5px solid #bbb;
+    margin-bottom: 0px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* The Modal (background) */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

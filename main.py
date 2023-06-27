@@ -62,6 +62,7 @@ from schemas.users import UserCreate
 from core.config import settings
 from upload_file import firebase_upload
 from webapps.base import webapp_router
+from apps.attendance_system.route_attendance import attendance_router
 from fastapi import FastAPI, Form
 import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
@@ -73,8 +74,9 @@ load_dotenv('.env')
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.include_router(webapp_router)  #new
-app.include_router(mongorouter.app)
+app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
+app.include_router(mongorouter.app,tags=['mongo contact'])
+app.include_router(attendance_router,tags=['attendance app'])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
@@ -93,9 +95,9 @@ app.add_middleware(DBSessionMiddleware, db_url=os.environ['POSTGRES_URL'])
 @app.get('/forms/')
 async def post(username:list[Annotated[str, Form()]]):
     pass
-@app.get("/")
-async def root():
-    return {"message": "hello world"}
+# @app.get("/")
+# async def root():
+#     return {"message": "hello world"}
 
 @app.get('/contacts')
 async def get_contacts():

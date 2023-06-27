@@ -4,7 +4,7 @@
 <head>
     <title>Sudarshan Shrestha</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='style.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
@@ -48,7 +48,7 @@
         <div class="mySlides fade">
             <!-- <div class="numbertext">1 / 3</div> -->
             <img src="https://nirmanschedule.com/storage/upload/23/02/1677420302home%20banner%20---%20.png"
-                style="background-size: cover;background-position: center;object-fit:cover; width: 100%;max-height:500px;">
+                style="background-size: cover;background-position: center;object-fit:contain; width: 100%;max-height:500px;">
             <!-- <div class="text">Caption Text</div> -->
         </div>
 
@@ -57,28 +57,28 @@
         <div class="mySlides fade">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://storage.googleapis.com/download.tensorflow.org/tflite/examples/obj_detection_cat.gif"
-                style="background-size: cover;background-position: center;object-fit:cover;width:100%;max-height:500px;">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;scale:1;z-index:-1">
             <!-- <div class="text">Caption Three</div> -->
         </div>
         <div class="mySlides fade">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
-                style="background-size: cover;background-position: center;object-fit:cover;width:100%;max-height:500px;">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;">
             <!-- <div class="text">Caption Three</div> -->
         </div>
 
         <div class="mySlides">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://kipuwex.com/wp-content/uploads/2021/02/Kipuwex-hero-image-768x555.png"
-                style="background-size: cover;background-position: center;object-fit:cover;width:100%;max-height:500px;">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;">
             <!-- <div class="text">Caption Three</div> -->
             <!-- https://kipuwex.com/wp-content/uploads/2021/02/Kipuwex-hero-image-768x555.png -->
         </div>
 
         <div class="mySlides">
             <div class="numbertext">3 / 3</div>
-            <img src="{{   url_for('static',path='baseapp/1687550508268.jpg') }}"
-                style="background-size: cover;background-position: center;object-fit:cover;width:100%;max-height:500px;">
+            <img src="{{   url_for('static',path='1687550508268.jpg') }}"
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;">
 
             <!-- <h3>Project 1</h3> -->
             <!-- <p>Description of Project 1</p> -->
@@ -86,7 +86,7 @@
         <div class="mySlides fade">
             <!-- <div class="numbertext">2 / 3</div> -->
             <img src="https://egpnepal.com/storage/upload/22/03/1647596475ezgif.com-gif-maker.gif"
-                style="background-size: cover;background-position: center;object-fit:cover;max-height:500px;width: 100%;">
+                style="background-size: cover;background-position: center;object-fit:contain;max-height:500px;width: 100%;">
             <!-- <div class="text">Caption Two</div> -->
         </div>
         <!-- " https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
@@ -193,7 +193,7 @@
             </div>
             <div class="card">
                 <img src="https://play-lh.googleusercontent.com/jYasQhHVUfPYmBCNsZ_fNaWN9y7_odB-3xNBB9dAZ4dxRNg-ejEhvz9bqYRvag5AdaY=w526-h296-rw"
-                    alt="Project 2" height="100px" width="100px">
+                    style="object-fit: contain;" alt="Project 2" height="100px" width="100px">
                 <div class="line"></div>
                 <h3>Nepal Valuers</h3>
 
@@ -207,7 +207,8 @@
 
 
             <div class="card">
-                <img src="https://bnpj.jp/en/wp-content/uploads/2022/12/hand-768x1017.png" alt="" srcset="">
+                <img src="https://bnpj.jp/en/wp-content/uploads/2022/12/hand-768x1017.png" class="showcaseimg" alt=""
+                    srcset="">
                 <div class="line"></div>
                 <h3>BNPJ Credit</h3>
 
@@ -215,14 +216,14 @@
             </div>
             <div class="card"><img
                     src="https://play-lh.googleusercontent.com/NXDP98ebzUbHfR0khUyzX9PiszRCiWryapWqsdxzoNnEowdy5A3AjXtlMAFpon4ZKGNS=w526-h296"
-                    alt="" srcset="">
+                    style="object-fit: contain;" alt="" srcset="">
                 <div class="line"></div>
                 <h3>BNPJ Credit</h3>
                 <p></p>
             </div>
             <div class="card">
-                <img
-                    src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296">
+                <img src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
+                    style="object-fit: contain;">
                 <div class="line"></div>
                 <h3>Nepal Student Union (Android Application,Flutter Application)</h3>
 
@@ -231,26 +232,34 @@
 
 
             <div class="card">
-                <img src="{{   url_for('static',path='baseapp/1687550508268.jpg') }}">
-                <div class="line"></div>
+                <img src="{{   url_for('static',path='1687550508268.jpg') }}" style="object-fit: contain;"
+                    class="showcaseimg" style=" height: 700px;width:380px">
+                <div class=" line">
+                </div>
                 <h3>RPS Remitance (Flutter Application,Android,IOS) </h3>
 
                 <p> Remitance application targeting countries like JAPAN,CHINA,etc help transfer money through
                     application
                     medium.</p>
-            </div><a href="https://nirmanschedule.com">
-                <div class="card">
+            </div>
+
+            <div class="card"><a href="https://nirmanschedule.com">
                     <img src="https://nirmanschedule.com/storage/upload/23/02/1677420302home%20banner%20---%20.png"
-                        alt="" srcset="">
+                        style="object-fit: contain;" class="showcaseimg" alt="" srcset="">
                     <div class="line"></div>
                     <!-- <img src="https://nirmanschedule.com/storage/upload/22/03/16471720421644908648mainlogo.png"> -->
                     <h3>Nirman Schedule(Android,IOS)</h3>
 
-                    <p>Digitialize your construction project.</p>
-                </div>
-            </a>
+                    <p>Digitialize your construction project.
+                        Handles construction projects using mobile application.
+
+                    </p>
+                </a>
+            </div>
+
             <div class="card">
-                <img src="{{ url_for('static',path= 'baseapp/1687550649330.jpg') }}">
+                <img src="{{ url_for('static',path= '1687550649330.jpg') }} " class="showcaseimg"
+                    style="object-fit: contain;">
                 <div class="line"></div>
                 <h3>HelpDesk Application(TV Application,Flutter Application)</h3>
 
@@ -267,7 +276,7 @@
             </div>
             <div class="card">
                 <img src="https://kipuwex.com/wp-content/uploads/2021/02/Kipuwex-hero-image-768x555.png" alt=""
-                    srcset="">
+                    style="object-fit: contain;" class="showcaseimg" srcset="">
                 <div class="line"></div>
                 <h3>Kipuwex Tablet Application(IoT device,Bluetooth Device,NFC,BLE)</h3>
                 <p>Tablet application remote monitoring device for assessment of human well-being and disease
@@ -284,7 +293,8 @@
                 </p>
             </div>
             <div class="card">
-                <img src="https://egpnepal.com/storage/upload/22/03/1647596475ezgif.com-gif-maker.gif">
+                <img src="https://egpnepal.com/storage/upload/22/03/1647596475ezgif.com-gif-maker.gif"
+                    class="showcaseimg">
                 <div class="line"></div>
                 <h3>EGP Nepal(Flutter Application)</h3>
                 <p> Application to monitor tender and bids online.
@@ -347,15 +357,18 @@
             <div>
                 <h2>Leave a message:</h2>
             </div>
-            <form action="/contact/" method="post">
+            <form action="">
 
                 <br>
+                <div>Name:</div>
+                <input type="text" class="form-control" id="nameId" name="name" aria-describedby="nameHelp"
+                    placeholder="Enter name" required>
                 <div>Email:</div>
-                <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                <input type="text" class="form-control" id="emailId" name="email" aria-describedby="emailHelp"
                     placeholder="Enter email" required>
                 <!-- <input type="text" id="email" name="work" required><br><br> -->
                 <div>Enter your message:</div>
-                <input type="text" class="form-control" id="message" name="message" aria-describedby=""
+                <input type="text" class="form-control" id="messageId" name="message" aria-describedby=""
                     placeholder="Enter email">
                 <!-- <textarea rows="5" cols="40" name="progress" required id="message"></textarea> -->
                 <br><br>
@@ -363,7 +376,7 @@
                 <!-- <input type="file" name="files[]" id="files"> -->
                 <!-- <input type="hidden" name="url" id="url"> -->
                 <!-- <button type="button" onclick="uploadimage()">Upload</button><br><br> -->
-                <input class="button" type="submit" value="Submit"><br><br>
+                <input class="button" type="submit" value="Submit" id="myAnchor"><br><br>
             </form>
         </div>
     </section>
@@ -373,20 +386,42 @@
     </footer>
 
     <!-- The Modal -->
+    <div id="myModal1" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" id="closeId">&times;</span>
+            <p id="messageTag">Come back later...Updating..</p>
+        </div>
+
+    </div>
+
+    <!-- The Modal -->
     <div id="myModal" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            <span class="close" id="closeId">&times;</span>
+            <p id="messageTag">Your info have been saved successfully..</p>
         </div>
 
     </div>
     <script>
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
 
         let slideIndex = 1;
         let running = false;
         showSlides(slideIndex);
+        document.getElementById("myAnchor").addEventListener("click", function (event) {
+
+            console.log('clicked');
+
+            submitContact();//
+            event.preventDefault()
+        });
+
 
         // Next/previous controls
         function plusSlides(n) {
@@ -424,12 +459,40 @@
 
         // Get the modal
         var modal = document.getElementById("myModal");
+        async function submitContact() {
+            var emailInput = document.getElementById("emailId")
+            var nameInput = document.getElementById("nameId")
+            var messageInput = document.getElementById("messageId")
+            var posturl = window.location.host;
 
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
+            console.log(nameInput.value)
+            console.log(messageInput.value)
+            fetch("/contactsubmit",
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ "name": nameInput.value, "email": emailInput.value, "message": messageInput.value })
+                })
+                .then(function (res) {
+                    console.log(res)
+                    emailInput.value = ''
+                    nameInput.value = ''
+                    messageInput.value = ''
+                    //   ptage = document.getElementById("messageTag")
+                    // ptage.text = "Sucessfully uploaded.We will get back to you soon."
+                    modal.style.display = "block";
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+
+                    // modal = "Sucessfully uploaded.We will get back to you soon."
+                })
+                .catch(function (res) {
+                    console.log(res)
+
+                })
+        }
 
         // When the user clicks on the button, open the modal
         btn.onclick = function () {
@@ -437,6 +500,9 @@
             modal.style.display = "block";
         }
 
+        // Get the <span> element that closes the modal
+        //        <!-- var span = document.getElementsByClassName("close")[0]; -->
+        span = document.getElementById("closeId")
         // When the user clicks on <span> (x), close the modal
         span.onclick = function () {
             modal.style.display = "none";
