@@ -158,7 +158,7 @@ from fastapi import File, UploadFile
 from typing import List
 from fastapi.encoders import jsonable_encoder
 @app.post("/upload",)
-async def upload(author:Author,files:Optional[ List[UploadFile]] = File(None)):
+async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
     print(author)
     urls=[]
     for file in files:
