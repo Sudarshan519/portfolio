@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, Body, HTTPException, status
+from fastapi import APIRouter, FastAPI, Body, HTTPException, status
 from fastapi.responses import Response, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, EmailStr
@@ -10,7 +10,8 @@ from dotenv import load_dotenv
  
 BASE_DIR= os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv()
-app = FastAPI()
+# app = FastAPI()
+app =APIRouter(include_in_schema=True)
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ['MONGODB_URI'])
 db = client.college
 
@@ -87,7 +88,7 @@ class UpdateStudentModel(BaseModel):
             }
         }
 
-@app.post("/contact",response_description='Add Contact',response_model=ContactModel)
+@app.post("/contactsubmit",response_description='Add Contact',response_model=ContactModel)
 async def submit_contact(contact : ContactModel= Body(...)):
     randomcontact=contact
     contactlist=[]
@@ -103,11 +104,11 @@ async def submit_contact(contact : ContactModel= Body(...)):
     # created_contact = await db["contact"].find_one({"_id": new_contact.inserted_id})
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={})
 
-@app.get("/contacts",response_description='All Contacts',response_model=List[ContactModel])
+@app.get("/contactslist",response_description='All Contacts',response_model=List[ContactModel])
 async def list_contacts():
     contacts = await db["contact"].find().to_list(100)
     return contacts
-@app.post("/", response_description="Add new student", response_model=StudentModel)
+@app.post("/apiapp", response_description="Add new student", response_model=StudentModel)
 async def create_student(student: StudentModel = Body(...)):
     student = jsonable_encoder(student)
     new_student = await db["students"].insert_one(student)
@@ -116,7 +117,7 @@ async def create_student(student: StudentModel = Body(...)):
 
 
 @app.get(
-    "/", response_description="List all students", response_model=List[StudentModel]
+    "/allstudents", response_description="List all students", response_model=List[StudentModel]
 )
 async def list_students():
     students = await db["students"].find().to_list(1000)
@@ -124,7 +125,7 @@ async def list_students():
 
 
 @app.get(
-    "/{id}", response_description="Get a single student", response_model=StudentModel
+    "/allstudents/{id}", response_description="Get a single student", response_model=StudentModel
 )
 async def show_student(id: str):
     if (student := await db["students"].find_one({"_id": id})) is not None:
@@ -133,7 +134,7 @@ async def show_student(id: str):
     raise HTTPException(status_code=404, detail=f"Student {id} not found")
 
 
-@app.put("/{id}", response_description="Update a student", response_model=StudentModel)
+@app.put("/allstudents/{id}", response_description="Update a student", response_model=StudentModel)
 async def update_student(id: str, student: UpdateStudentModel = Body(...)):
     student = {k: v for k, v in student.dict().items() if v is not None}
 
@@ -152,7 +153,7 @@ async def update_student(id: str, student: UpdateStudentModel = Body(...)):
     raise HTTPException(status_code=404, detail=f"Student {id} not found")
 
 
-@app.delete("/{id}", response_description="Delete a student")
+@app.delete("/allstudents/{id}", response_description="Delete a student")
 async def delete_student(id: str):
     delete_result = await db["students"].delete_one({"_id": id})
 
