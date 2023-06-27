@@ -25,6 +25,7 @@ pymongo==4.4.0
 pyparsing==3.1.0
 python-dotenv==0.21.1
 python-jose==3.3.0
+python-multipart==0.0.6
 PyYAML==6.0
 requests==2.31.0
 rsa==4.9
@@ -38,4 +39,3 @@ uvicorn==0.20.0
 uvloop==0.17.0
 watchfiles==0.18.1
 websockets==10.4
-python-multipart
