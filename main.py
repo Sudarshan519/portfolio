@@ -63,12 +63,19 @@ from core.config import settings
 from upload_file import firebase_upload
 from webapps.base import webapp_router
 from fastapi import FastAPI, Form
+import api  as mongorouter
+from fastapi.staticfiles import StaticFiles
+def get_user(username:str,db: Session)->User:
+    user = db.query(User).filter(User.email == username).first()
+ 
+    return user
 load_dotenv('.env')
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(webapp_router)  #new
-
+app.include_router(mongorouter.app)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(
@@ -174,7 +181,16 @@ async def upload(author:Author,files:Optional[ List[UploadFile]] = File(None)):
         result=await db_mongo['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
         #[file.filename for file in files]
-                                               
+@app.post('/forgot-password')
+async def forgot_password(email:str):
+
+    # TODO : ??SEND EMAIL
+    return {"message":"Reset password link sent to email."}
+@app.post('/reset-password/{str}')
+async def reset_password(link:str,password:str):
+    user = get_user(id=link,db=db) 
+    user.hashed_password=Hasher.get_password_hash(user.password)
+    return {"message":"Password Updated Sucessfully."}                                              
 @app.post('/register',)
 async def create_user(user:UserCreate):
     try:
@@ -183,6 +199,7 @@ async def create_user(user:UserCreate):
             hashed_password=Hasher.get_password_hash(user.password),
             is_active=True,
             is_superuser=False)
+        
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)
@@ -196,10 +213,7 @@ from utils import OAuth2PasswordBearerWithCookie    #new
 from jose import JWTError, jwt
 from datetime import timedelta
 from core.security import create_access_token
-def get_user(username:str,db: Session):
-    user = db.query(User).filter(User.email == username).first()
- 
-    return user
+
 def authenticate_user(username: str, password: str,db: Session):
     user = get_user(username=username,db=db) 
     if not user:

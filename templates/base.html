@@ -77,7 +77,7 @@
 
         <div class="mySlides">
             <div class="numbertext">3 / 3</div>
-            <img src="{% static 'baseapp/1687550508268.jpg' %}"
+            <img src="{{   url_for('static',path='baseapp/1687550508268.jpg') }}"
                 style="background-size: cover;background-position: center;object-fit:cover;width:100%;max-height:500px;">
 
             <!-- <h3>Project 1</h3> -->
@@ -231,7 +231,7 @@
 
 
             <div class="card">
-                <img src="{% static 'baseapp/1687550508268.jpg' %}">
+                <img src="{{   url_for('static',path='baseapp/1687550508268.jpg') }}">
                 <div class="line"></div>
                 <h3>RPS Remitance (Flutter Application,Android,IOS) </h3>
 
@@ -250,7 +250,7 @@
                 </div>
             </a>
             <div class="card">
-                <img src="{% static 'baseapp/1687550649330.jpg' %}">
+                <img src="{{ url_for('static',path= 'baseapp/1687550649330.jpg') }}">
                 <div class="line"></div>
                 <h3>HelpDesk Application(TV Application,Flutter Application)</h3>
 
@@ -348,7 +348,7 @@
                 <h2>Leave a message:</h2>
             </div>
             <form action="/contact/" method="post">
-                {% csrf_token %}
+
                 <br>
                 <div>Email:</div>
                 <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp"
