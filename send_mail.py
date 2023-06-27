@@ -4,8 +4,10 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email import encoders
 import os
-from dotenv import load_dotenv
-load_dotenv()
+from core.config import settings
+# from dotenv import load_dotenv
+
+# load_dotenv()
 
 def sendEmail(smtpHost, smtpPort, mailUname, mailPwd, fromEmail, mailSubject, mailContentHtml, recepientsMailList, attachmentFpaths):
    # create message object
@@ -47,9 +49,9 @@ def sendEmail(smtpHost, smtpPort, mailUname, mailPwd, fromEmail, mailSubject, ma
 # mail server parameters
 smtpHost = "smtp.gmail.com"
 smtpPort = 587
-mailUname = os.environ.get("MAIL_UNAME")
-mailPwd = os.environ.get("MAIL_PASS")
-fromEmail = 'sudarshanshrestha519@gmail.com'
+mailUname =settings.MAIL_UNAME# os.environ.get("MAIL_UNAME")
+mailPwd =settings.MAIL_PASS# os.environ.get("MAIL_PASS")
+fromEmail =settings.MAIL_UNAME# 'sudarshanshrestha519@gmail.com'
 
 
 # mail body, recepients, attachment files

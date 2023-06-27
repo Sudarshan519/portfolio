@@ -6,16 +6,16 @@ from sqlalchemy import pool
 from alembic import context
 # My code
 import os,sys
-from dotenv import load_dotenv
-
+# from dotenv import load_dotenv
+from core.config import settings
 BASE_DIR= os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+# load_dotenv(os.path.join(BASE_DIR, '.env'))
 sys.path.append(BASE_DIR)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option('sqlalchemy.url', os.environ['POSTGRES_URL'])
+config.set_main_option('sqlalchemy.url',settings.POSTGRES_URL)# os.environ['POSTGRES_URL'])
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
