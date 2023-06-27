@@ -36,7 +36,7 @@
 #     return {"message": f"This is /path/{path_id} endpoint, use post request to retrieve result"}
 
 
-from typing import Annotated
+from typing import Annotated, Optional
 from requests import Session
 import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
@@ -68,6 +68,16 @@ def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(webapp_router)  #new
+
+# from starlette_validation_uploadfile import ValidateUploadFileMiddleware
+# #add this after FastAPI app is declared 
+# app.add_middleware(
+#         ValidateUploadFileMiddleware,
+#         app_path="/",
+#         max_size=1048576, #1Mbyte
+#         file_type=["text/plain"]
+# )
+
 create_tables()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URI"])
 db_mongo = client.college
@@ -139,16 +149,21 @@ from fastapi import File, UploadFile
 from typing import List
 from fastapi.encoders import jsonable_encoder
 @app.post("/upload",)
-async def upload(files: List[UploadFile] = File(...)):
+async def upload(author:Author,files:Optional[ List[UploadFile]] = File(None)):
+    print(author)
     urls=[]
     for file in files:
         try:
-            # with open(file.filename, 'wb') as f:
+            #TO CHECK IF FILE IS LARGER THAN * MB
+            if len(await file.read()) >= 8388608:
+                return {"Your file is more than 8MB"}
+           
             ext=file.filename.split(".")[-1]
             #     filename=file.filename
+                # TO WRITE CONTENTS IN SERVER
                 # while contents := file.file.read(1024 * 1024):
                     # f.write(contents)
-            url=firebase_upload(file.file.read(),ext,filename)
+            url=firebase_upload(file.file.read(),ext,file.filename)
             urls.append(url)
         except Exception:
             return {"message": "There was an error uploading the file(s)"}
