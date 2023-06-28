@@ -75,7 +75,7 @@ def get_user(username:str,db: Session)->User:
 # load_dotenv('.env')
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
-app = FastAPI()
+app = FastAPI() 
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 app.include_router(mongorouter.app,tags=['mongo contact'])
 app.include_router(attendance_router,tags=['attendance app'])
@@ -88,10 +88,19 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 #         max_size=1048576, #1Mbyte
 #         file_type=["text/plain"]
 # )
-
+from starlette.middleware.base import BaseHTTPMiddleware
 create_tables()
+class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 
+    async def dispatch(self, request, call_next):
+        try:
+            return await call_next(request)
+        except RuntimeError as exc:
+            if str(exc) == 'No response returned.' and await request.is_disconnected():
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            raise
 # to avoid csrftokenError
+app.add_middleware(SuppressNoResponseReturnedMiddleware)
 app.add_middleware(DBSessionMiddleware, db_url=settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
 @app.get('/forms/')
 async def post(username:list[Annotated[str, Form()]]):
@@ -99,9 +108,10 @@ async def post(username:list[Annotated[str, Form()]]):
 # @app.get("/")
 # async def root():
 #     return {"message": "hello world"}
-
+import asyncio
 @app.get('/contacts')
 async def get_contacts():
+    # await asyncio.sleep(5)
     try:
         contacts = await mongo_db["contact"].find().to_list(100)
         return contacts
