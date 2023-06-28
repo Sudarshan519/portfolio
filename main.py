@@ -66,6 +66,8 @@ from apps.attendance_system.route_attendance import attendance_router
 from fastapi import FastAPI, Form
 import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
+from db.mongo_db import db_mongo as mongo_db
+
 def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
@@ -88,8 +90,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # )
 
 create_tables()
-client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)#os.environ["MONGODB_URI"])
-db_mongo = client.college
+
 # to avoid csrftokenError
 app.add_middleware(DBSessionMiddleware, db_url=settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
 @app.get('/forms/')
@@ -102,10 +103,10 @@ async def post(username:list[Annotated[str, Form()]]):
 @app.get('/contacts')
 async def get_contacts():
     try:
-        contacts = await db_mongo["contact"].find().to_list(100)
+        contacts = await mongo_db["contact"].find().to_list(100)
         return contacts
-    except:
-        return {"message":"Failed to load data."}
+    except Exception as e:
+        return {"message":f"{e}."}
 
 @app.get('/files',response_model=list[FileModel])
 async def get_files():
@@ -202,7 +203,7 @@ async def forgot_password(email:str):
     return {"message":"Reset password link sent to email."}
 @app.post('/reset-password/{str}')
 async def reset_password(link:str,password:str):
-    user = get_user(id=link,db=db) 
+    user = get_user(id=link,db=db.session) 
     user.hashed_password=Hasher.get_password_hash(user.password)
     return {"message":"Password Updated Sucessfully."}                                              
 @app.post('/register',)
