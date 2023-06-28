@@ -66,7 +66,7 @@ from apps.attendance_system.route_attendance import attendance_router
 from fastapi import FastAPI, Form
 import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
-from db.mongo_db import db_mongo as mongo_db
+# from db.mongo_db import db_mongo as mongo_db
 
 def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
@@ -77,7 +77,7 @@ def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI() 
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
-app.include_router(mongorouter.app,tags=['mongo contact'])
+# app.include_router(mongorouter.app,tags=['mongo contact'])
 app.include_router(attendance_router,tags=['attendance app'])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
@@ -108,23 +108,23 @@ async def post(username:list[Annotated[str, Form()]]):
 # @app.get("/")
 # async def root():
 #     return {"message": "hello world"}
-import asyncio
-@app.get('/contacts')
-async def get_contacts():
-    # await asyncio.sleep(5)
-    try:
-        contacts = await mongo_db["contact"].find().to_list(100)
-        return contacts
-    except Exception as e:
-        raise HTTPException(status_code=400,detail={"message":f"{e}."})
+# import asyncio
+# @app.get('/contacts')
+# async def get_contacts():
+#     # await asyncio.sleep(5)
+#     try:
+#         contacts = await mongo_db["contact"].find().to_list(100)
+#         return contacts
+#     except Exception as e:
+#         raise HTTPException(status_code=400,detail={"message":f"{e}."})
 
-@app.get('/files',response_model=list[FileModel])
-async def get_files():
-    try:
-        contacts = await mongo_db["files"].find().to_list(100)
-        return contacts
-    except Exception as e:
-        return f"{e}"
+# @app.get('/files',response_model=list[FileModel])
+# async def get_files():
+#     try:
+#         contacts = await mongo_db["files"].find().to_list(100)
+#         return contacts
+#     except Exception as e:
+#         return f"{e}"
 
 @app.post('/book/', response_model=SchemaBook)
 async def book(book: SchemaBook):
@@ -180,32 +180,32 @@ async def create_file(file: Annotated[bytes, File()]):
 from fastapi import File, UploadFile
 from typing import List
 from fastapi.encoders import jsonable_encoder
-@app.post("/upload",)
-async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
-    print(author)
-    urls=[]
-    for file in files:
-        try:
-            #TO CHECK IF FILE IS LARGER THAN * MB
-            if len(await file.read()) >= 8388608:
-                return {"Your file is more than 8MB"}
+# @app.post("/upload",)
+# async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
+#     print(author)
+#     urls=[]
+#     for file in files:
+#         try:
+#             #TO CHECK IF FILE IS LARGER THAN * MB
+#             if len(await file.read()) >= 8388608:
+#                 return {"Your file is more than 8MB"}
            
-            ext=file.filename.split(".")[-1]
-            #     filename=file.filename
-                # TO WRITE CONTENTS IN SERVER
-                # while contents := file.file.read(1024 * 1024):
-                    # f.write(contents)
-            url=firebase_upload(file.file.read(),ext,file.filename)
-            urls.append(url)
-        except Exception:
-            return {"message": "There was an error uploading the file(s)"}
-        # finally:
-            # file.file.close()
-        print(urls)
-    for url in urls:
-        result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
-    return {"message": f"Successfuly uploaded {[url for url in urls]}"}
-        #[file.filename for file in files]
+#             ext=file.filename.split(".")[-1]
+#             #     filename=file.filename
+#                 # TO WRITE CONTENTS IN SERVER
+#                 # while contents := file.file.read(1024 * 1024):
+#                     # f.write(contents)
+#             url=firebase_upload(file.file.read(),ext,file.filename)
+#             urls.append(url)
+#         except Exception:
+#             return {"message": "There was an error uploading the file(s)"}
+#         # finally:
+#             # file.file.close()
+#         print(urls)
+#     for url in urls:
+#         result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
+#     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
+#         #[file.filename for file in files]
 @app.post('/forgot-password')
 async def forgot_password(email:str):
 
