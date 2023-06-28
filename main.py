@@ -106,12 +106,12 @@ async def get_contacts():
         contacts = await mongo_db["contact"].find().to_list(100)
         return contacts
     except Exception as e:
-        return {"message":f"{e}."}
+        raise HTTPException(status_code=400,detail={"message":f"{e}."})
 
 @app.get('/files',response_model=list[FileModel])
 async def get_files():
     try:
-        contacts = await db_mongo["files"].find().to_list(100)
+        contacts = await mongo_db["files"].find().to_list(100)
         return contacts
     except Exception as e:
         return f"{e}"
@@ -193,7 +193,7 @@ async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_
             # file.file.close()
         print(urls)
     for url in urls:
-        result=await db_mongo['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
+        result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
         #[file.filename for file in files]
 @app.post('/forgot-password')
