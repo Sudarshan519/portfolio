@@ -78,7 +78,7 @@ def create_tables():           #new
 app = FastAPI() 
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
-app.include_router(attendance_router,tags=['attendance app'])
+app.include_router(attendance_router,tags=[ ])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
@@ -206,6 +206,12 @@ from fastapi.encoders import jsonable_encoder
 #         result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
 #     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
 #         #[file.filename for file in files]
+@app.post("/upload",)
+async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
+    print(author)
+    print(front_img.filename)
+    return {"message": f"Successfuly uploaded "}# {[url for url in files]}"}
+
 @app.post('/forgot-password')
 async def forgot_password(email:str):
 

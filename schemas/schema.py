@@ -14,7 +14,7 @@ class Author(BaseModel):
     name:str
     age:int
     contacts:Optional[list[CustomObject]]
-    # file:UploadFile=File(...)
+    file:UploadFile=File(...)
     @classmethod
     def __get_validators__(cls) :
         yield cls.validate_to_json

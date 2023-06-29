@@ -30,7 +30,7 @@ class AttendanceTodayDetailModel(BaseModel):
     breaks:list[BreakModel]
     company_id : int
     employee_id: int
-    per_minute_salary: int
+    per_minute_salary: float
     
 class AttendanceModel(BaseModel): 
     date_posted : Optional[date] = datetime.now().date()
