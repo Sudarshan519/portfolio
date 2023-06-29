@@ -101,7 +101,7 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
             raise
 # to avoid csrftokenError
 app.add_middleware(SuppressNoResponseReturnedMiddleware)
-app.add_middleware(DBSessionMiddleware, db_url=settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
+app.add_middleware(DBSessionMiddleware, db_url=settings.SQLITE_URL)#settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
 @app.get('/forms/')
 async def post(username:list[Annotated[str, Form()]]):
     pass
