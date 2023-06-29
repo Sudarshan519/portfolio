@@ -97,7 +97,7 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         except RuntimeError as exc:
             if str(exc) == 'No response returned.' and await request.is_disconnected():
-                return Response(status_code=HTTP_204_NO_CONTENT)
+                return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
 # to avoid csrftokenError
 app.add_middleware(SuppressNoResponseReturnedMiddleware)

@@ -17,15 +17,22 @@ class Otp(Base):
         return (datetime.now()-self.created_at)>180
     
 
+# class AttendanceUser(Base):
+#     id = Column(Integer,primary_key=True,index=True)
+#     phone=Column(Integer,unique=True)
+#     photoUrl=Column(String,default='')
+#     name=Column(String,default='')
+#     otp = Column(Integer,ForeignKey('otp.id'))
+ 
+    
 class AttendanceUser(Base):
+    otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
     id = Column(Integer,primary_key=True,index=True)
-    phone=Column(Integer,unique=True)
+    phone=Column(Integer,unique=True,nullable=True)
     photoUrl=Column(String,default='')
     name=Column(String,default='')
-    otp=Column(Integer,ForeignKey('otp.id'),nullable=False,default=1)
-    
-    
-    
+    is_verified=Column(Boolean,default=False)
+
 class CompanyModel(Base):
     user_id =  Column(Integer,ForeignKey("attendanceuser.id",),default=1)
     id = Column(Integer,primary_key=True,index=True)
@@ -44,7 +51,7 @@ class EmployeeModel(Base):
     logout_time=Column(Time)
     salary=Column(Double)
     duty_time=Column(Time)
-    company_id =  Column(Integer,ForeignKey("attendanceuser.id",),default=1)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id",),default=1)
     company_id =  Column(Integer,ForeignKey("companymodel.id",),default=1)
     # company = relationship("companymodel",back_populates="companies")
 
