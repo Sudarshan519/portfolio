@@ -1,5 +1,5 @@
 from fastapi import APIRouter
  
-from . import route_index
+from . import route_base
 attendance_router = APIRouter(include_in_schema=True)
-attendance_router.include_router(route_index.router, prefix="/attendance", tags=[ ])
+attendance_router.include_router(route_base.router, prefix="/attendance", tags=[ ])

@@ -72,7 +72,7 @@ def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
     return user
-# load_dotenv('.env')
+
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
 app = FastAPI() 
