@@ -27,27 +27,29 @@ class Otp(Base):
  
     
 class AttendanceUser(Base):
-    otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=True,nullable=True,)
     photoUrl=Column(String,default='')
     name=Column(String,default='')
     is_verified=Column(Boolean,default=False)
     is_employer=Column(Boolean,default=False)
+    is_approver=Column(Boolean,default=False)
+    otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
 
 class CompanyModel(Base):
-    user_id =  Column(Integer,ForeignKey("attendanceuser.id",),default=1)
     id = Column(Integer,primary_key=True,index=True)
-    name=Column(String,nullable=True)
-    start_time=Column(Time)
+    name=Column(String, unique=True)
     address=Column(String)
+    start_time=Column(Time)
     end_time=Column(Time)
-    established_date=Column(Date)
-    desc=Column(String(1000))
+    established_date=Column(Date) 
+    is_active=Column(Boolean,default=False)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id"),nullable=True)
      
 
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
+    phone=Column(BigInteger,unique=True)
     name=Column(String,nullable=False)
     login_time=Column(Time)
     logout_time=Column(Time)

@@ -1,16 +1,16 @@
  
 from datetime import date, datetime, time, timedelta
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile,status
 from psycopg2 import IntegrityError
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from requests import Session
-from apps.attendance_system.route_login import get_current_user_from_token
+from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from core.config import settings
-from db.models.attendance import  AttendanceUser,Otp,CompanyModel
+from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
 from db.session import get_db
 from core.security import create_access_token
 from fastapi import Depends, HTTPException, Request
- 
+from typing import Optional
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
 @router.get('/companies')
@@ -23,16 +23,56 @@ class BaseAttendanceUser(BaseModel):
 
 class Company(BaseModel):
     name:str
-    addresss:str
-    start_time:time
-    stop_time:time
-    established_date:date
-    user_id:int
-    established_tade:date
+    address:Optional[str]
+    start_time:Optional[time]
+    end_time:Optional[time]
+    established_date:Optional[date] 
+    class Config():  #to convert non dict obj to json
+        schema_extra = {
+            "example": { 
+                             "name": "string",
+                    "address": "string",
+                    "start_time": "10:10",
+                    "end_time": "10:30",
+                    "established_date": "2023-06-30"
+            }
+        }
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        # schema_extras={
+        #             "name": "string",
+        #             "address": "string",
+        #             "start_time": "10:10",
+        #             "end_time": "10:30",
+        #             "established_date": "2023-06-30"
+        # }
+        
+class Employee(BaseModel):
+    name:str
+    login_time:time
+    logout_time:time
+    phone:int
+    salary:float
+    duty_time:time
 
+    class Config():  #to convert non dict obj to json
+        schema_extra={
+            "example":{
+  "name": "string",
+  "login_time": "10:10",
+  "logout_time": "10:10",
+  "phone": 9800000000,
+  "salary": 0,
+  "duty_time": "string"
+}
+        }
+        orm_mode = True
 @router.get('/users')#,response_model=list[AttendanceUser])
 async def all_employers(db: Session = Depends(get_db)):
     return db.query(AttendanceUser).all()
+
+
 def create_token(user,db):
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -47,34 +87,71 @@ def create_otp(phone,db):
     db.commit()
     db.refresh(otp)
     return otp
-def create_user(phone,db):
+
+
+def create_user(phone,db,is_employer:bool=False):
     try:
-        user=AttendanceUser(phone=phone)
+        user=AttendanceUser(phone=phone,is_employer=is_employer)
         db.add(user)
         db.commit() 
         db.refresh(user)
         return user
     except Exception as e:
         return HTTPException(status_code=400,detail=f'{e}')
+    
+
 def get_user(phone,db):
     user=db.query(AttendanceUser).filter(AttendanceUser.phone==phone).first()
     if not user:
-        return HTTPException(status_code=404,detail="User does not exist.")
+        # return HTTPException(status_code=404,detail="User does not exist.")
+        return None
     return user
+
+
+def create_company(user:AttendanceUser,db:Session,company:Company):
+    try:
+        # name=company.name,address=company.address,start_time=company.start_time,end_time=company.end_time,established_date=company.established_date
+        new_company=CompanyModel(**company.dict(), user_id=user.id,is_active=True)
+        db.add(new_company)
+        db.commit()
+        db.refresh(new_company)
+ 
+        return new_company
+    except Exception as e:
+        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=e)
+
+def companies_list(user:AttendanceUser,db:Session):
+    print(user.id)
+    try: 
+        companies= db.query(CompanyModel).filter(CompanyModel.user_id==user.id).all()  
+        return companies
+    except Exception as e:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e)
+
+def create_employee(user:AttendanceUser,db:Session,employee:Employee,companyId:int):
+    try:
+         
+        new_employee=EmployeeModel(**employee.dict(), user_id=user.id,company_id=companyId)
+        db.add(new_employee)
+        db.commit()
+        db.refresh(new_employee) 
+        return new_employee
+
+    except Exception as e:
+        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Employee is already registered.")
+
 @router.post("/register",)#response_model = BaseAttendanceUser)
 async def signup(phone:int,db: Session = Depends(get_db)):
     try:
         eixst_user=get_user(phone,db)
-        if not eixst_user:
-            
-            user=create_user(phone,db )
-            # otp=create_otp(phone,db)
+        if eixst_user==None:
+            user=create_user(phone,db,is_employer=True ) 
         else:
             pass
         otp=create_otp(phone,db)
     except Exception as e:
         raise HTTPException(status_code=409, detail=f"This email alredy registered{e}")
-        return {'error':f"{e}"}
+
  
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
@@ -104,17 +181,79 @@ def verify(code:str,phone:int,db: Session = Depends(get_db),):
         return HTTPException(status_code=404,detail=f"Otp not found for user {phone}")
 
  
-@router.post('/add-company')
-def add_company(company:Company,db: Session = Depends(get_db),current_user: AttendanceUser = Depends(get_current_user_from_token)):
-    # print(user)
-    return current_user
-    # company_add=CompanyModel(**company.dict(),user_id=current_user.id)
-from core.jwt_bearer import JWTBearer
+@router.post('/add-company',)#response_model=Company
+def add_company(company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    company=create_company(current_user,db,company)
+    return company
+
+@router.post('/get-companies')
+def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    # print(current_user)
+    company_list=companies_list(user=current_user,db=db)
+    return company_list
 posts=[]
-@router.post("/posts", dependencies=[Depends(JWTBearer())], tags=["posts"])
-def add_post(post):
-    post.id = len(posts) + 1
-    posts.append(post.dict())
-    return {
-        "data": "post added."
-    }
+
+
+@router.post('/add-employee')
+def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=create_employee(current_user,db,employee,companyId)
+    return employee  
+
+def allemployees(id,db):
+    return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
+@router.get('/employee')
+def all_employee(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employeelist=allemployees(companyId,db)
+    return employeelist
+# @router.post("/posts",  tags=["posts"])#dependencies=[Depends(JWTBearer())],
+# def add_post(post,current_user:AttendanceUser=Depends(get_current_user_from_bearer)):
+#     print(current_user)
+#     # post.id = len(posts) + 1
+#     # posts.append(post.dict())
+#     return {
+#         "data": "post added."
+#     }
+
+
+import inspect
+from typing import Type
+
+from fastapi import Form
+from pydantic import BaseModel
+from pydantic.fields import ModelField
+
+def as_form(cls: Type[BaseModel]):
+    new_parameters = []
+
+    for field_name, model_field in cls.__fields__.items():
+        model_field: ModelField  # type: ignore
+
+        new_parameters.append(
+             inspect.Parameter(
+                 model_field.alias,
+                 inspect.Parameter.POSITIONAL_ONLY,
+                 default=Form(...) if model_field.required else Form(model_field.default),
+                 annotation=model_field.outer_type_,
+             )
+         )
+
+    async def as_form_func(**data):
+        return cls(**data)
+
+    sig = inspect.signature(as_form_func)
+    sig = sig.replace(parameters=new_parameters)
+    as_form_func.__signature__ = sig  # type: ignore
+    setattr(cls, 'as_form', as_form_func)
+    return cls
+
+@as_form
+class FileUploadModel(BaseModel):
+    name:list[str]
+    # password:str=Field(None)
+ 
+    # label:str=Field(...)
+    uploadfile:list[UploadFile]
+
+@router.post('/upload-files')
+def upload(uploadfile:list[FileUploadModel]=Depends(FileUploadModel.as_form) ):
+    return {}

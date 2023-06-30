@@ -18,7 +18,24 @@ def get_user(username:str,db: Session):
 
 from core.jwt_bearer import JWTBearer
 def get_current_user_from_bearer( jwtb: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
-    pass
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+    )
+    try:
+        payload = jwt.decode(
+            jwtb, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        ) 
+ 
+        
+        username: str = payload.get("sub")
+        return get_user(username=username, db=db)
+ 
+    except JWTError as e:
+        return credentials_exception
+
+
+
 # Get uesr from token
 def get_current_user_from_token(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
