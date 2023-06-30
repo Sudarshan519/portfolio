@@ -47,8 +47,7 @@ class ContactModel(BaseModel):
             "example": {
                 "name": "Jane Doe",
                 "email": "jdoe@example.com",
-                "message": "Experiments, Science, and Fashion in Nanophotonics",
-           
+                "message": "Experiments, Science, and Fashion in Nanophotonics"
             }
         }
 
