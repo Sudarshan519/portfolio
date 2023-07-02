@@ -4,6 +4,9 @@ import time
 def current_milli_time():
     return round(time.time() * 1000)
 def firebase_upload(bytes,ext,filename):
+    # print(bytes)
+    # print(ext)
+    # print(filename)
 # """
 # Executes a POST request to upload an image to Firebase Storage.
 # DEMONSTRATION ONLY, USE NO FURTHER!

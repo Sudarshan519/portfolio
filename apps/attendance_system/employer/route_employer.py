@@ -3,14 +3,16 @@ from datetime import date, datetime, time, timedelta
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile,status
 from psycopg2 import IntegrityError
 from pydantic import BaseModel, Field
-from requests import Session
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from core.config import settings
 from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
+from requests import Session
 from db.session import get_db
-from core.security import create_access_token
 from fastapi import Depends, HTTPException, Request
+from core.security import create_access_token
 from typing import Optional
+from db.repository.attendance_repo import AttendanceRepo
+
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
 @router.get('/companies')
@@ -20,7 +22,20 @@ async def get_companies():
 class BaseAttendanceUser(BaseModel):
     phone:str
     otp:str
-
+    
+class UpdateUser(BaseModel):
+    name:str
+    email:str
+    dob:date
+    class Config:
+        orm_mode=True
+        
+class UpdatePhone(BaseModel):
+    current_phone:int
+    new_phone:int
+    class Config:
+        orm_mode=True
+        
 class Company(BaseModel):
     name:str
     address:Optional[str]
@@ -30,7 +45,7 @@ class Company(BaseModel):
     class Config():  #to convert non dict obj to json
         schema_extra = {
             "example": { 
-                             "name": "string",
+                    "name": "string",
                     "address": "string",
                     "start_time": "10:10",
                     "end_time": "10:30",
@@ -40,13 +55,7 @@ class Company(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        # schema_extras={
-        #             "name": "string",
-        #             "address": "string",
-        #             "start_time": "10:10",
-        #             "end_time": "10:30",
-        #             "established_date": "2023-06-30"
-        # }
+        
         
 class Employee(BaseModel):
     name:str
@@ -64,7 +73,7 @@ class Employee(BaseModel):
   "logout_time": "10:10",
   "phone": 9800000000,
   "salary": 0,
-  "duty_time": "string"
+  "duty_time": "10:50"
 }
         }
         orm_mode = True
@@ -107,7 +116,12 @@ def get_user(phone,db):
         return None
     return user
 
-
+def update_user(id:int,db,):
+    try:
+        
+        pass
+    except:
+        pass
 def create_company(user:AttendanceUser,db:Session,company:Company):
     try:
         # name=company.name,address=company.address,start_time=company.start_time,end_time=company.end_time,established_date=company.established_date
@@ -121,7 +135,7 @@ def create_company(user:AttendanceUser,db:Session,company:Company):
         return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=e)
 
 def companies_list(user:AttendanceUser,db:Session):
-    print(user.id)
+
     try: 
         companies= db.query(CompanyModel).filter(CompanyModel.user_id==user.id).all()  
         return companies
@@ -189,8 +203,9 @@ def add_company(company:Company,db: Session = Depends(get_db),current_user:Atten
 @router.post('/get-companies')
 def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     # print(current_user)
-    company_list=companies_list(user=current_user,db=db)
-    return company_list
+    company_list=AttendanceRepo.companies_list(user=current_user,db=db)
+    
+    return {"active":company_list}
 posts=[]
 
 
@@ -199,6 +214,12 @@ def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=De
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
 
+
+@router.post("/send-invitation")
+def sendIntitation(employeeId,companyId,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    
+    invitation=AttendanceRepo.create_company_invitation(employeeId,companyId,db)
+    return invitation
 def allemployees(id,db):
     return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
 @router.get('/employee')
