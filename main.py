@@ -40,7 +40,7 @@ from typing import Annotated, Optional
 from requests import Session
 import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
-from fastapi_sqlalchemy import DBSessionMiddleware, db
+# from fastapi_sqlalchemy import DBSessionMiddleware, db
 from core.hashing import Hasher
 from db.base import Base
 from db.models.user import User
@@ -51,9 +51,9 @@ from schemas.schema import Author as SchemaAuthor
 
 from schemas.schema import Book
 from schemas.schema import Author
-
-from models import Book as ModelBook, FileModel
-from models import Author as ModelAuthor
+from db.models.attendance import *
+# from models import Book as ModelBook, FileModel
+# from models import Author as ModelAuthor
 from db.session import engine   #new
 import os
 from dotenv import load_dotenv
@@ -73,8 +73,8 @@ def get_user(username:str,db: Session)->User:
  
     return user
 
-def create_tables():           #new
-	Base.metadata.create_all(bind=engine)
+# def create_tables():           #new
+# 	Base.metadata.create_all(bind=engine)
 app = FastAPI() 
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
@@ -89,7 +89,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 #         file_type=["text/plain"]
 # )
 from starlette.middleware.base import BaseHTTPMiddleware
-create_tables()
+# create_tables()
 class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
@@ -100,8 +100,8 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
                 return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
 # to avoid csrftokenError
-app.add_middleware(SuppressNoResponseReturnedMiddleware)
-app.add_middleware(DBSessionMiddleware, db_url=settings.SQLITE_URL)#settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
+# app.add_middleware(SuppressNoResponseReturnedMiddleware)
+# app.add_middleware(DBSessionMiddleware, db_url=settings.SQLITE_URL)#settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])
 @app.get('/forms/')
 async def post(username:list[Annotated[str, Form()]]):
     pass
@@ -126,194 +126,194 @@ async def post(username:list[Annotated[str, Form()]]):
 #     except Exception as e:
 #         return f"{e}"
 
-@app.post('/book/', response_model=SchemaBook)
-async def book(book: SchemaBook):
-    try:
-        db_book = ModelBook(title=book.title, rating=book.rating, author_id = book.author_id)
-        db.session.add(db_book)
-        db.session.commit()
-        return db_book
-    except Exception as e:
-        return {"error":f"{e}"}
+# @app.post('/book/', response_model=SchemaBook)
+# async def book(book: SchemaBook):
+#     try:
+#         db_book = ModelBook(title=book.title, rating=book.rating, author_id = book.author_id)
+#         db.session.add(db_book)
+#         db.session.commit()
+#         return db_book
+#     except Exception as e:
+#         return {"error":f"{e}"}
 
-@app.get('/book/',response_model=list[Book])
-async def book():
-    try:
-        book = db.session.query(ModelBook).all()
-        return book
-    except Exception as e:
-        return {"error":f"{e}"}
+# @app.get('/book/',response_model=list[Book])
+# async def book():
+#     try:
+#         book = db.session.query(ModelBook).all()
+#         return book
+#     except Exception as e:
+#         return {"error":f"{e}"}
 
 
   
-@app.post('/author/', response_model=SchemaAuthor)
-async def author(author:SchemaAuthor):
-    db_author = ModelAuthor(name=author.name, age=author.age)
-    db.session.add(db_author)
-    db.session.commit()
-    return db_author
+# @app.post('/author/', response_model=SchemaAuthor)
+# async def author(author:SchemaAuthor):
+#     db_author = ModelAuthor(name=author.name, age=author.age)
+#     db.session.add(db_author)
+#     db.session.commit()
+#     return db_author
 
-@app.get('/author/')
-async def author():
-    author = db.session.query(ModelAuthor).all()
-    return author
+# @app.get('/author/')
+# async def author():
+#     author = db.session.query(ModelAuthor).all()
+#     return author
 
-@app.get('/exchange-rates/')
-async def get_exchanges_rates():
-    rates=  get_rates()
-    return rates
+# @app.get('/exchange-rates/')
+# async def get_exchanges_rates():
+#     rates=  get_rates()
+#     return rates
 
-# @app.get('/images/')
-@app.post("/files/")
-async def create_file(file: Annotated[bytes, File()]):
-    try:
-        contents = file.file.read()
-        with open(file.filename, 'wb') as f:
-            f.write(contents)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
+# # @app.get('/images/')
+# @app.post("/files/")
+# async def create_file(file: Annotated[bytes, File()]):
+#     try:
+#         contents = file.file.read()
+#         with open(file.filename, 'wb') as f:
+#             f.write(contents)
+#     except Exception:
+#         return {"message": "There was an error uploading the file"}
+#     finally:
+#         file.file.close()
 
-    return {"message": f"Successfully uploaded {file.filename}"}
+#     return {"message": f"Successfully uploaded {file.filename}"}
 
-from fastapi import File, UploadFile
-from typing import List
-from fastapi.encoders import jsonable_encoder
+# from fastapi import File, UploadFile
+# from typing import List
+# from fastapi.encoders import jsonable_encoder
+# # @app.post("/upload",)
+# # async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
+# #     print(author)
+# #     urls=[]
+# #     for file in files:
+# #         try:
+# #             #TO CHECK IF FILE IS LARGER THAN * MB
+# #             if len(await file.read()) >= 8388608:
+# #                 return {"Your file is more than 8MB"}
+           
+# #             ext=file.filename.split(".")[-1]
+# #             #     filename=file.filename
+# #                 # TO WRITE CONTENTS IN SERVER
+# #                 # while contents := file.file.read(1024 * 1024):
+# #                     # f.write(contents)
+# #             url=firebase_upload(file.file.read(),ext,file.filename)
+# #             urls.append(url)
+# #         except Exception:
+# #             return {"message": "There was an error uploading the file(s)"}
+# #         # finally:
+# #             # file.file.close()
+# #         print(urls)
+# #     for url in urls:
+# #         result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
+# #     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
+# #         #[file.filename for file in files]
 # @app.post("/upload",)
 # async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
 #     print(author)
-#     urls=[]
-#     for file in files:
-#         try:
-#             #TO CHECK IF FILE IS LARGER THAN * MB
-#             if len(await file.read()) >= 8388608:
-#                 return {"Your file is more than 8MB"}
-           
-#             ext=file.filename.split(".")[-1]
-#             #     filename=file.filename
-#                 # TO WRITE CONTENTS IN SERVER
-#                 # while contents := file.file.read(1024 * 1024):
-#                     # f.write(contents)
-#             url=firebase_upload(file.file.read(),ext,file.filename)
-#             urls.append(url)
-#         except Exception:
-#             return {"message": "There was an error uploading the file(s)"}
-#         # finally:
-#             # file.file.close()
-#         print(urls)
-#     for url in urls:
-#         result=await mongo_db['files'].insert_one(  jsonable_encoder (FileModel(url=url)))    
-#     return {"message": f"Successfuly uploaded {[url for url in urls]}"}
-#         #[file.filename for file in files]
-@app.post("/upload",)
-async def upload(author:Author=Form(...),front_img:UploadFile=File(None),tilted_img:UploadFile=File(...),back_img:UploadFile=File(...),profile:UploadFile = File(...),files:Optional[ List[UploadFile]] = File(None)):
-    print(author)
-    print(front_img.filename)
-    return {"message": f"Successfuly uploaded "}# {[url for url in files]}"}
+#     print(front_img.filename)
+#     return {"message": f"Successfuly uploaded "}# {[url for url in files]}"}
 
-@app.post('/forgot-password')
-async def forgot_password(email:str):
+# @app.post('/forgot-password')
+# async def forgot_password(email:str):
 
-    # TODO : ??SEND EMAIL
-    return {"message":"Reset password link sent to email."}
-@app.post('/reset-password/{str}')
-async def reset_password(link:str,password:str):
-    user = get_user(id=link,db=db.session) 
-    user.hashed_password=Hasher.get_password_hash(user.password)
-    return {"message":"Password Updated Sucessfully."}                                              
-@app.post('/register',)
-async def create_user(user:UserCreate):
-    try:
-        user = User( 
-            email = user.email,
-            hashed_password=Hasher.get_password_hash(user.password),
-            is_active=True,
-            is_superuser=False)
-        
-        db.session.add(user)
-        db.session.commit()
-        db.session.refresh(user)
-        return user
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Email already registered.")
-from db.session import get_db    
-from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
-from utils import OAuth2PasswordBearerWithCookie    #new
-from jose import JWTError, jwt
-from datetime import timedelta
-from core.security import create_access_token
-
-def authenticate_user(username: str, password: str,db: Session):
-    user = get_user(username=username,db=db) 
-    if not user:
-        return False
-    if not Hasher.verify_password(password, user.hashed_password):
-        return False
-    return user
-
-@app.post("/token", )#response_model=Token)
-def login_for_access_token(response: Response,form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):  #added response as a function parameter
-    user = authenticate_user(form_data.username, form_data.password,db)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
-    
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
-    response.set_cookie(key="name",value=user.email,httponly=False)
-    response.set_cookie(key="access_token",value=f"Bearer {access_token}",httponly=True
-                        )  #set HttpOnly cookie in response
-
-    return {"access_token": access_token, "token_type": "Bearer"}
-
-
-# @app.post('/login')
-# async def login(user:UserCreate):
+#     # TODO : ??SEND EMAIL
+#     return {"message":"Reset password link sent to email."}
+# @app.post('/reset-password/{str}')
+# async def reset_password(link:str,password:str):
+#     user = get_user(id=link,db=db.session) 
+#     user.hashed_password=Hasher.get_password_hash(user.password)
+#     return {"message":"Password Updated Sucessfully."}                                              
+# @app.post('/register',)
+# async def create_user(user:UserCreate):
 #     try:
-#         pass
+#         user = User( 
+#             email = user.email,
+#             hashed_password=Hasher.get_password_hash(user.password),
+#             is_active=True,
+#             is_superuser=False)
+        
+#         db.session.add(user)
+#         db.session.commit()
+#         db.session.refresh(user)
+#         return user
 #     except Exception as e:
-#         pass
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/login/token")
-def get_current_user_from_token(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-    )
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        username: str = payload.get("sub")
+#         print(e)
+#         raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Email already registered.")
+# from db.session import get_db    
+# from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
+# from utils import OAuth2PasswordBearerWithCookie    #new
+# from jose import JWTError, jwt
+# from datetime import timedelta
+# from core.security import create_access_token
+
+# def authenticate_user(username: str, password: str,db: Session):
+#     user = get_user(username=username,db=db) 
+#     if not user:
+#         return False
+#     if not Hasher.verify_password(password, user.hashed_password):
+#         return False
+#     return user
+
+# @app.post("/token", )#response_model=Token)
+# def login_for_access_token(response: Response,form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):  #added response as a function parameter
+#     user = authenticate_user(form_data.username, form_data.password,db)
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Incorrect username or password",
+#         )
+    
+#     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+#     access_token = create_access_token(
+#         data={"sub": user.email}, expires_delta=access_token_expires
+#     )
+#     response.set_cookie(key="name",value=user.email,httponly=False)
+#     response.set_cookie(key="access_token",value=f"Bearer {access_token}",httponly=True
+#                         )  #set HttpOnly cookie in response
+
+#     return {"access_token": access_token, "token_type": "Bearer"}
+
+
+# # @app.post('/login')
+# # async def login(user:UserCreate):
+# #     try:
+# #         pass
+# #     except Exception as e:
+# #         pass
+# oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/login/token")
+# def get_current_user_from_token(
+#     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+# ):
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#     )
+#     try:
+#         payload = jwt.decode(
+#             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+#         )
+#         username: str = payload.get("sub")
  
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    user = db.query(User).filter(User.email == username).first()
-    if user is None:
-        raise credentials_exception
-    return user
+#         if username is None:
+#             raise credentials_exception
+#     except JWTError:
+#         raise credentials_exception
+#     user = db.query(User).filter(User.email == username).first()
+#     if user is None:
+#         raise credentials_exception
+#     return user
 
-# To run locally
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+# # To run locally
+# if __name__ == '__main__':
+#     uvicorn.run(app, host='0.0.0.0', port=8000)
 
-# def create_tables():           #new
-# 	Base.metadata.create_all(bind=engine)
-# def start_application():
-# 	app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
-# 	# include_router(app)
-# 	# configure_static(app)
-# 	# add_pagination(app)
-# 	# create_tables()       #new
-# 	return app
+# # def create_tables():           #new
+# # 	Base.metadata.create_all(bind=engine)
+# # def start_application():
+# # 	app = FastAPI(title=settings.PROJECT_NAME,version=settings.PROJECT_VERSION)
+# # 	# include_router(app)
+# # 	# configure_static(app)
+# # 	# add_pagination(app)
+# # 	# create_tables()       #new
+# # 	return app
 
-# app = start_application()
+# # app = start_application()
