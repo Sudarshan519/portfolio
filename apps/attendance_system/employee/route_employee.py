@@ -47,14 +47,84 @@ class EmployeeProfile(BaseModel):
         return value   
     class Config:
         orm_mode=True
-@router.post('/get-today-details')#,response_model=AttendanceTodayDetailModel)
-async def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+
+class Breaks(BaseModel):
+    id:int
+    break_start:time
+    break_end:Optional[time]
+    class Config:
+        orm_mode=True
+class Employee(BaseModel):
+    salary:Optional[float]
+    name:Optional[str]
+    duty_time:Optional[time]
+    class Config:
+        orm_mode=True
+
+class CreateAttendance(BaseModel):
+    id:int
+    attendance_date:date
+    employee_id:Optional[int]
+    company_id:Optional[int]
+    login_time:time=None
+    logout_time:time=None
+    breaks:list[Breaks]
+    # employee:Employee
+        
+    salary:Optional[float]
+    name:Optional[str]
+    duty_time:Optional[time]
+    class Config:
+        orm_mode=True
+
+class ResponseAttendance(BaseModel):
+    id:int
+    attendance_date:date
+    employee_id:Optional[int]
+    company_id:Optional[int]
+    login_time:time=None 
+    logout_time:time=None
+    breaks:list[Breaks]
+    salary:Optional[float]
+    name:Optional[str]
+    duty_time:Optional[time]
+    
+    # class Config:
+    #     orm_mode=True
+        # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
+@router.post('/get-today-details',response_model=CreateAttendance)#,response_model=AttendanceTodayDetailModel)
+def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db)
+ 
     today_details=AttendanceRepo.get_today_details(employeeId=employee.id,db=db,companyId=companyId)
     return today_details  
 
+@router.post('/attendance-store',response_model=CreateAttendance,)
+async def store_attendance(companyId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
+    employee=AttendanceRepo.get_employee(current_user.phone,db)
+    attendance=AttendanceRepo.store_attendance(compId=companyId,empId=employee.id,db=db,loginTime=datetime.now().time(),logoutTime=None )
 
-     
+    return attendance
+@router.post('/attendance-stop',response_model=CreateAttendance,)
+async def store_attendance(attendanceId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
+    attendance=AttendanceRepo.store_logout(attendanceId=attendanceId,db=db,logoutTime=datetime.now().time() )
+
+    return attendance
+@router.post('/break-store')
+async def break_store( attendanceId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    break_start=AttendanceRepo.store_break_start(attendanceId,db)
+    return break_start
+
+@router.post('/break-stop-store')
+async def break_stop( break_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    break_stop_detail=AttendanceRepo.store_break_stop(break_id,db)
+    return break_stop_detail
+@router.get('all-attendances')
+def get_all_attendance(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=AttendanceRepo.get_employee(current_user.phone,db)
+    return AttendanceRepo.get_all_attendance(companyId,employee.id,db)
+
+
 @router.get('/profile')
 async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     return current_user
@@ -72,7 +142,7 @@ async def updateProfile(profile:EmployeeProfile=Form(...),photo:UploadFile(...)=
             # if len(await file.read()) >= 8388608:
             #     return {"Your file is more than 8MB"}
             contents = photo.file.read()
-
+            print(photo.__dict__)
             ext=photo.filename.split(".")[-1]
             url =firebase_upload(contents,ext,photo.filename)
             print(url)
@@ -133,18 +203,13 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
     return  allInvitations
 
-@router.post('attendance-store')
-async def store_attendance():
-    return {
-        
-    }
-@router.post('start-break-submit')
+@router.post('/start-break-submit')
 async def store_break_start():
 
     return {}
 
 
-@router.post('brek-end-submit')
+@router.post('/brek-end-submit')
 async def store_break_end():
     return {}
 

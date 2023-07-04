@@ -73,8 +73,8 @@ def get_user(username:str,db: Session)->User:
  
     return user
 
-# def create_tables():           #new
-# 	Base.metadata.create_all(bind=engine)
+def create_tables():           #new
+	Base.metadata.create_all(bind=engine)
 app = FastAPI() 
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
@@ -89,7 +89,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 #         file_type=["text/plain"]
 # )
 from starlette.middleware.base import BaseHTTPMiddleware
-# create_tables()
+create_tables()
 class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):

@@ -78,7 +78,8 @@ class AttendanceTodayDetailModel(BaseModel):
     per_minute_salary: float
     class Config:
         arbitrary_types_allowed=True
-class AttendanceModel(BaseModel): 
+
+class AttendanceBase(BaseModel): 
     date_posted : Optional[date] = datetime.now().date()
     date_updated:Optional[date]=date
     attendance_date= (date)

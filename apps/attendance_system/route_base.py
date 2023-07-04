@@ -5,7 +5,7 @@ router =APIRouter(include_in_schema=True)
 
 from apps.attendance_system.schemas.company import CompanyBase
 from apps.attendance_system.schemas.employee import EmployeeBase
-from apps.attendance_system.schemas.attendance import AttendanceModel,AttendanceTodayDetailModel
+from apps.attendance_system.schemas.attendance import AttendanceTodayDetailModel
 
 # @router.get('index',tags=[])
 # async def hello():
