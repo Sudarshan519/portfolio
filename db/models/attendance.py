@@ -69,7 +69,7 @@ class CompanyModel(Base):
 
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
-    phone=Column(BigInteger,unique=True)
+    phone=Column(BigInteger,unique=False)
     name=Column(String,nullable=False)
     login_time=Column(Time)
     logout_time=Column(Time)
