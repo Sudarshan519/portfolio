@@ -8,9 +8,55 @@ from core.config import settings
 from datetime import date, datetime, time, timedelta
 from core.security import create_access_token
 from schemas.attendance import Status
+from sqlalchemy import and_, func
+
+from week_util import getMonthRange, getWeekDate
 class AttendanceRepo:
     @staticmethod
-    def get_employee(phone,db):
+    def getAllAttendance(companyId,db):
+        return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
+    @staticmethod
+    def getWeeklyAttendance(companyId,startDate,endDate,db):
+        
+       
+        return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId,AttendanceModel.attendance_date.between(startDate,endDate)).all()
+    @staticmethod
+    def store_break_start(attendanceId:int,db):
+        new_break=BreakModel(attendance_id=attendanceId,break_start=datetime.now().time())
+        db.add(new_break)
+        db.commit()
+        db.refresh(new_break)
+        return new_break
+    @staticmethod 
+    def store_break_stop(breakId:int,db):
+        break_to_update=db.get(BreakModel,breakId)
+        break_to_update.break_end=datetime.now().time()
+        db.commit()
+        db.refresh(break_to_update)
+        return break_to_update
+    @staticmethod
+    def get_all_attendance(compId,empId,db,):
+        attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date==datetime.today().date()).order_by(AttendanceModel.id).all()#.desc(),AttendanceModel.attendance_date==datetime.now().date
+    
+        return attendancelist
+    
+    @staticmethod
+    def store_logout(attendanceId,logoutTime,db):
+        attetndance=db.get(AttendanceModel,attendanceId)
+        print(logoutTime)
+        attetndance.logout_time=logoutTime
+        db.commit()
+        db.refresh(attetndance)
+        return attetndance
+    @staticmethod
+    def store_attendance(compId,empId,db,loginTime,logoutTime):
+        attendance=AttendanceModel(attendance_date=datetime.today(), company_id=compId,employee_id=empId,login_time=loginTime,logout_time=logoutTime)
+        db.add(attendance)
+        db.commit()
+        db.refresh(attendance)
+        return attendance
+    @staticmethod
+    def get_employee(phone,db,companyId):
         employee=db.query(EmployeeModel).filter(EmployeeModel.phone==phone,EmployeeModel.company_id==companyId).first()
         if employee: 
             return
@@ -19,10 +65,10 @@ class AttendanceRepo:
     @staticmethod
     def get_today_details(employeeId,db,companyId):
         
-            today_attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employeeId,AttendanceModel.company_id==companyId).first()#,AttendanceModel.attendance_date==datetime.now().date
+            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employeeId,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today().date()).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
             
             if not today_attendance:
-                return AttendanceModel(attendance_date=datetime.now(),company_id=companyId,login_time=None,logout_time=None)
+                return AttendanceModel(attendance_date=datetime.now(),company_id=companyId,employee_id=employeeId,login_time=None,logout_time=None)
             else:
                 return today_attendance
         
@@ -54,6 +100,7 @@ class AttendanceRepo:
     @staticmethod 
     def verify_otp(code,phone,db):
         otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
+        print(otp.code)
         if otp is not None: 
         
             if otp.code==code:# and otp.isvalid():
@@ -155,3 +202,84 @@ class AttendanceRepo:
 
         except Exception as e:
             return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Employee is already registered.")
+    @staticmethod
+    def allemployees(id,db):
+        return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
+    
+    @staticmethod
+    def employeewithAttendanceWeeklyReport(companyId,db,):
+        dates= getWeekDate()
+        data=[]
+        candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0].date(),dates[1].date())).all()
+        for candidate in candidates:
+           
+            attendance_records = [
+                {
+                    "date": attendance.attendance_date,
+                    "login_time":attendance.login_time,
+                    "logout_time":attendance.logout_time,
+                    "breaks":attendance.breaks,
+                    "hours_worked":attendance.hours_worked
+                    # "status": attendance.status
+                }
+                for attendance in candidate.attendance
+            ]
+            data.append({
+                "id": candidate.id,
+                "name": candidate.name,
+                # "email": candidate.email,
+                "attendance": attendance_records
+            })
+        return data
+    @staticmethod
+    def employeeWithAttendanceMonthlyReport(companyId,db):
+        now=datetime.now()
+        dates= getMonthRange(now.year,now.month)
+        data=[]
+        candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
+        for candidate in candidates:
+           
+            attendance_records = [
+                {
+                    "date": attendance.attendance_date,
+                    "login_time":attendance.login_time,
+                    "logout_time":attendance.logout_time,
+                    "breaks":attendance.breaks,
+                    "hours_worked":attendance.hours_worked
+                    # "status": attendance.status
+                }
+                for attendance in candidate.attendance
+            ]
+            data.append({ "present":len(candidate.attendance,),#np.unique(dates.date) for unique date
+                "id": candidate.id,
+                "name": candidate.name,
+                # "email": candidate.email,
+                "attendance": attendance_records
+            })
+        return data
+    @staticmethod
+    def employeewithAttendance(companyId,db):
+        data=[]
+        # today=datetime.today().strftime("%Y-%m-%d")
+        # print(today)
+        candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.today().date()).all()
+        for candidate in candidates:
+           
+            attendance_records = [
+                {
+                    "date": attendance.attendance_date,
+                    "login_time":attendance.login_time,
+                    "logout_time":attendance.logout_time,
+                    "breaks":attendance.breaks,
+                    "hours_worked":attendance.hours_worked
+                    # "status": attendance.status
+                }
+                for attendance in candidate.attendance
+            ]
+            data.append({ "present":len(candidate.attendance,),#np.unique(dates.date) for unique date
+                "id": candidate.id,
+                "name": candidate.name,
+                # "email": candidate.email,
+                "attendance": attendance_records
+            })
+        return data

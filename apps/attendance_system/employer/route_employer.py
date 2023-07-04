@@ -12,6 +12,7 @@ from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
+from week_util import getWeekDate
 
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
@@ -35,7 +36,13 @@ class UpdatePhone(BaseModel):
     new_phone:int
     class Config:
         orm_mode=True
-        
+class AttendanceReport(BaseModel):
+    name:str
+    attendance_date:date
+    login_time=time
+    logout_time=time
+
+
 class Company(BaseModel):
     name:str
     address:Optional[str]
@@ -77,6 +84,24 @@ class Employee(BaseModel):
 }
         }
         orm_mode = True
+
+ 
+@router.get('/monthly-report')
+async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
+    return AttendanceRepo.employeeWithAttendanceMonthlyReport(companyId,db)
+
+@router.get("/today-report")
+async def attendance(companyId:int, db: Session = Depends(get_db)):
+    allAttendances=AttendanceRepo.employeewithAttendance(companyId,db)
+    return allAttendances
+
+@router.get("/weekly-report")
+async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
+    dates= getWeekDate()
+ 
+    weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
+ 
+    return weekdata
 @router.get('/users')#,response_model=list[AttendanceUser])
 async def all_employers(db: Session = Depends(get_db)):
     return db.query(AttendanceUser).all()
