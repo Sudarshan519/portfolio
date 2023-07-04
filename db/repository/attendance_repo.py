@@ -9,9 +9,13 @@ from datetime import date, datetime, time, timedelta
 from core.security import create_access_token
 from schemas.attendance import Status
 from sqlalchemy import and_, func
-
+from sqlalchemy import or_, and_
 from week_util import getMonthRange, getWeekDate
+from sqlalchemy.orm import joinedload
 class AttendanceRepo:
+    @staticmethod
+    def updateEmployee(id,employee,db,compId):
+        return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
     @staticmethod
     def getAllAttendance(companyId,db):
         return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
@@ -262,9 +266,11 @@ class AttendanceRepo:
         data=[]
         # today=datetime.today().strftime("%Y-%m-%d")
         # print(today)
-        candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.today().date()).all()
-        for candidate in candidates:
-           
+        candidates = db.query(EmployeeModel).join(AttendanceModel)
+        candidates=candidates.filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId)
+        results=candidates.all()
+        for candidate in results:
+            
             attendance_records = [
                 {
                     "date": attendance.attendance_date,
@@ -283,3 +289,58 @@ class AttendanceRepo:
                 "attendance": attendance_records
             })
         return data
+    
+    @staticmethod
+    def todayReport(companyId,db):
+        data=[]
+    # Return the attendance records as a response 
+        attendance_data = {}
+        # candidates=db.query(EmployeeModel.employee_id,EmployeeModel.login_time.label('start_time'),EmployeeModel.logout_time.label('stop_time')).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId).all()
+        # print((candidates[0].__dict__))
+        # return candidates
+        candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
+        for employee,attendance in candidates:
+            employee_id = employee.id
+            if employee_id not in attendance_data:
+                attendance_data[employee_id] = {
+                    "employee_i": employee,
+                    "attendance": []
+                }
+            attendance_data[employee_id]["attendance"].append( 
+                attendance 
+            # "attendance_id": attendance.id,
+            # "date": attendance.attendance_date,
+            # "status": attendance.status
+            )
+              
+        
+        return [attendance_data]
+    # {
+    #     "employee_id": employee_id,
+    #     "attendance": [
+    #         {
+    #             "attendance_id": attendance.id,
+    #             "date": attendance.date,
+    #             "status": attendance.status,
+    #         }
+    #         for employee, attendance in employee_attendance
+    #     ],
+        # for candidate in candidates:
+            
+        #     attendance_records = [
+        #         {
+        #             "date": attendance.attendance_date,
+        #             "login_time":attendance.login_time,
+        #             "logout_time":attendance.logout_time,
+        #             "breaks":attendance.breaks,
+        #             "hours_worked":attendance.hours_worked,  
+        #         }
+        #         for attendance in candidate.attendance
+        #         # if attendance.attendance_date==datetime.now().today().date()
+        #     ]
+        #     data.append({ "present":True if (candidate.attendance,) else False,#np.unique(dates.date) for unique date
+        #         "id": candidate.id,
+        #         "name": candidate.name,
+        #         "attendance": attendance_records
+        #     })
+        # return data

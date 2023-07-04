@@ -92,7 +92,7 @@ async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
 
 @router.get("/today-report")
 async def attendance(companyId:int, db: Session = Depends(get_db)):
-    allAttendances=AttendanceRepo.employeewithAttendance(companyId,db)
+    allAttendances=AttendanceRepo.todayReport(companyId,db)
     return allAttendances
 
 @router.get("/weekly-report")
@@ -237,6 +237,11 @@ posts=[]
 @router.post('/add-employee')
 def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=create_employee(current_user,db,employee,companyId)
+    return employee  
+
+@router.post('/add-employee')
+def add_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=AttendanceRepo.update_employee(id,db,employee,companyId)
     return employee  
 
 
