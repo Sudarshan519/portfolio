@@ -17,7 +17,7 @@ from db.session import get_db
 
 class Otp(Base):
     id=Column(Integer,primary_key=True,index=True)
-    code=Column(String,nullable=False)
+    code=Column(String(256),nullable=False)
     phone=Column(BigInteger,nullable=False)
     created_at=Column(DateTime)  
     
@@ -32,22 +32,22 @@ class Otp(Base):
 # class AttendanceUser(Base):
 #     id = Column(Integer,primary_key=True,index=True)
 #     phone=Column(Integer,unique=True)
-#     photoUrl=Column(String,default='')
-#     name=Column(String,default='')
+#     photoUrl=Column(String(256),default='')
+#     name=Column(String(256),default='')
 #     otp = Column(Integer,ForeignKey('otp.id'))
  
 
 class AttendanceUser(Base):
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=True,nullable=True,)
-    photoUrl=Column(String,default='')
-    name=Column(String,default='')
-    email=Column(String,default='')
+    photoUrl=Column(String(256) ,default='')
+    name=Column(String(256),default='')
+    email=Column(String(256),default='')
     is_verified=Column(Boolean,default=False)
     is_employer=Column(Boolean,default=False)
     is_approver=Column(Boolean,default=False)
-    otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
-    employee_id=Column(Integer,ForeignKey('employeemodel.id'),nullable=True)
+    # otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
+    # employee_id=Column(Integer,ForeignKey('employeemodel.id'),nullable=True)
     # employee=relationship("EmployeeModel")
     dob=Column(Date,nullable=True)
     # def employee(self,db: Session = Depends(get_db), ):
@@ -58,8 +58,8 @@ class AttendanceUser(Base):
     #     return self.employee.salary
 class CompanyModel(Base):
     id = Column(Integer,primary_key=True,index=True)
-    name=Column(String, unique=True)
-    address=Column(String)
+    name=Column(String(256), unique=True)
+    address=Column(String(256))
     start_time=Column(Time)
     end_time=Column(Time)
     established_date=Column(Date) 
@@ -70,7 +70,7 @@ class CompanyModel(Base):
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=False)
-    name=Column(String,nullable=False)
+    name=Column(String(256),nullable=False)
     login_time=Column(Time)
     logout_time=Column(Time)
     salary=Column(Float)
@@ -104,7 +104,7 @@ def calcTime(enter,exit):
     return exitTime - enterTime
 class AttendanceModel(Base):
     id = Column(Integer,primary_key=True,index=True)
-    attendance_date=Column(Date )
+    attendance_date=Column(Date)
     login_time=Column(Time,nullable=False)
     logout_time=Column(Time,nullable=True,)
     # breaks= Column(Integer,ForeignKey('breakmodel.id'),default=1)
@@ -112,6 +112,8 @@ class AttendanceModel(Base):
     employee_id=Column(Integer,ForeignKey("employeemodel.id",),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
+
+# GROUP BY, HAVING PLUS
     @property
     def hours_worked(self):
         if self.logout_time is not None:
@@ -128,6 +130,10 @@ class AttendanceModel(Base):
     @property
     def name(self):
         return self.employee.name
+    
+    __table_args__ = (
+        UniqueConstraint('attendance_date', 'employee_id','company_id', name='uq_attendance_date_company_employee'),
+    )
     # def breaks(self ,db: Session = Depends(get_db)):
     #     return db.query(BreakModel).filter(BreakModel.attendance==self.id).all()
 
