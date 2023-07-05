@@ -15,7 +15,15 @@ sys.path.append(BASE_DIR)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option('sqlalchemy.url',settings.SQLITE_URL)# os.environ['POSTGRES_URL'])
+# config.set_main_option('sqlalchemy.url',settings.SQLITE_URL)# os.environ['POSTGRES_URL'])
+section=config.config_ini_section
+config.set_section_option(section,"DB_USER",settings.MySQL_USER)
+config.set_section_option(section,"DB_PASS",settings.MySQL_PASSWORD)
+config.set_section_option(section,"DB_HOST",settings.MySQL_SERVER)
+config.set_section_option(section,"DB_NAME",settings.MySQL_DB)
+
+
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -51,8 +59,8 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
-        literal_binds=True,
-          render_as_batch=True,
+        # literal_binds=True,
+        # render_as_batch=True,
         dialect_opts={"paramstyle": "named"},
     )
 
