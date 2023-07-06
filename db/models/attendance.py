@@ -1,6 +1,6 @@
  
 from datetime import datetime,timedelta
-from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum
+from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum,func
 from sqlalchemy.orm import relationship
 from db.base import Base
 import random
@@ -65,8 +65,18 @@ class CompanyModel(Base):
     established_date=Column(Date) 
     is_active=Column(Boolean,default=True)
     user_id =  Column(Integer,ForeignKey("attendanceuser.id"),nullable=True)
-    
+    employee=relationship("EmployeeModel",back_populates="company")
+    @hybrid_property
+    def employee_count(self):
+        return len(self.attendance)
 
+    @attendance_count.expression
+    def attendance_count(cls):
+        return (
+            select([func.count()])
+            .where(Attendance.employee_id == cls.id)
+            .label("attendance_count")
+        )
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=False)
@@ -82,8 +92,10 @@ class EmployeeModel(Base):
     # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
     # status=Column(Enum(Status),default=False)
     
-    # company = relationship("companymodel",)
-
+    company=relationship("CompanyModel",back_populates="employee")
+    __table_args__ = (
+        UniqueConstraint('company_id','phone', name='uq_company_employee'),
+    )
 
 class BreakModel(Base):
     id = Column(Integer,primary_key=True,index=True)

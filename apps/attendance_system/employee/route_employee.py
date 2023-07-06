@@ -88,7 +88,46 @@ class ResponseAttendance(BaseModel):
     salary:Optional[float]
     name:Optional[str]
     duty_time:Optional[time]
+
+
+
+
+@router.post('/login')
+async def login(phone:int, db: Session = Depends(get_db)):
+    employee=AttendanceRepo.get_employee(phone,db)
+    if   employee is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee does not exist.")
+    else:
+        user=AttendanceRepo.get_user(phone,db)
+        if not user:
+            AttendanceRepo.create_user(phone,db)
+        otp=AttendanceRepo.create_otp(phone,db)
+        return {"otp":otp.code}
+ 
+
+@router.post('/verify-otp')
+async def verifyOtp(phone,otp:str,db: Session = Depends(get_db)):
     
+   return AttendanceRepo.verify_otp(otp,phone,db)
+@router.get('/companies'  ,response_model=list[Invitations])
+async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    
+    if current_user.is_employer:
+        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
+    employee=AttendanceRepo.get_employee(phone=int(current_user.phone),db=db)
+    allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
+    return allInvitations
+
+class InvitationsResponse(BaseModel):
+    invitations:list[Invitations]
+    class Config:
+        orm_mode=True
+@router.get('/invitations',response_model=list[Invitations])
+async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=AttendanceRepo.get_employee(phone=current_user.phone,db=db)
+    allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
+    return  allInvitations
+
     # class Config:
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
@@ -166,42 +205,6 @@ async def accept_invitations(id:int,current_user:AttendanceUser=Depends(get_curr
     return invitation
      
 
-
-@router.post('/login')
-async def login(phone:int, db: Session = Depends(get_db)):
-    employee=AttendanceRepo.get_employee(phone,db)
-    if   employee is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee does not exist.")
-    else:
-        user=AttendanceRepo.get_user(phone,db)
-        if not user:
-            AttendanceRepo.create_user(phone,db)
-        otp=AttendanceRepo.create_otp(phone,db)
-        return {"otp":otp.code}
- 
-
-@router.post('/verify-otp')
-async def verifyOtp(phone,otp:str,db: Session = Depends(get_db)):
-    
-   return AttendanceRepo.verify_otp(otp,phone,db)
-@router.get('/companies'  ,response_model=list[Invitations])
-async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    
-    if current_user.is_employer:
-        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
-    employee=AttendanceRepo.get_employee(phone=int(current_user.phone),db=db)
-    allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
-    return allInvitations
-
-class InvitationsResponse(BaseModel):
-    invitations:list[Invitations]
-    class Config:
-        orm_mode=True
-@router.get('/invitations',response_model=list[Invitations])
-async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    employee=AttendanceRepo.get_employee(phone=current_user.phone,db=db)
-    allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
-    return  allInvitations
 
 @router.post('/start-break-submit')
 async def store_break_start():

@@ -13,7 +13,10 @@ from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
 from week_util import getWeekDate
-
+# {
+#   "phone": "9863450107",
+#   "otp": "0726"
+# }eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODYzNDUwMTA3IiwiZXhwIjoxNjg4NjYxMzk3fQ.DGBN1ULWnN9db1_QMFLrQ4c8UmpZFqeEljuOtaIeatU
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
 @router.get('/companies')
@@ -92,8 +95,10 @@ async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
 
 @router.get("/today-report")
 async def attendance(companyId:int, db: Session = Depends(get_db)):
-    allAttendances=AttendanceRepo.todayReport(companyId,db)
-    return allAttendances
+ 
+        allAttendances=AttendanceRepo.todayReport(companyId,db)
+        return allAttendances
+ 
 
 @router.get("/weekly-report")
 async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
@@ -131,7 +136,8 @@ def create_user(phone,db,is_employer:bool=False):
         db.refresh(user)
         return user
     except Exception as e:
-        return HTTPException(status_code=400,detail=f'{e}')
+        raise HTTPException(status_code=409, detail="This candidate alredy registered")
+        raise HTTPException(status_code=400,detail=f'{e}')
     
 
 def get_user(phone,db):
@@ -157,7 +163,7 @@ def create_company(user:AttendanceUser,db:Session,company:Company):
  
         return new_company
     except Exception as e:
-        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=e)
+        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Company Name Already Registered.")
 
 def companies_list(user:AttendanceUser,db:Session):
 
@@ -177,7 +183,7 @@ def create_employee(user:AttendanceUser,db:Session,employee:Employee,companyId:i
         return new_employee
 
     except Exception as e:
-        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Employee is already registered.")
+        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Employee is already registered.{e}")
 
 @router.post("/register",)#response_model = BaseAttendanceUser)
 async def signup(phone:int,db: Session = Depends(get_db)):
@@ -239,10 +245,10 @@ def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=De
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
 
-@router.post('/add-employee')
-def add_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    employee=AttendanceRepo.update_employee(id,db,employee,companyId)
-    return employee  
+# @router.post('/add-employee')
+# def add_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+#     employee=AttendanceRepo.update_employee(id,db,employee,companyId)
+#     return employee  
 
 
 @router.post("/send-invitation")
