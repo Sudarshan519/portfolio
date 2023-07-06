@@ -20,6 +20,21 @@ class AttendanceRepo:
     def serialize_instance(obj):
         return obj.to_dict()
     @staticmethod
+    def import_db_from_json(data_dict,db):
+        modelslist = Base.__subclasses__()
+        data = {}
+        for model in modelslist:
+            db.bulk_insert_mappings(
+            model,data_dict[model.__name__])
+
+            db.commit()
+            # if model.__name__=='Otp':
+                # otps=[Otp() for otp in data_dict[model.__name__]]
+                # print(otps)
+                # db.bulk_save_objects(otps)
+            
+                # print([Otp(**data) in data for data_dict[model.__name__]])
+    @staticmethod
     def export_db(db): 
         modelslist = Base.__subclasses__()
         print(modelslist)
