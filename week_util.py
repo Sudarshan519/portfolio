@@ -33,3 +33,14 @@ def getMonthRange(year, month):
 
 now=datetime.now()
 print(getMonthRange(now.year,now.month+2))
+import calendar
+def get_no_of_week():
+    return len(calendar.monthcalendar(2019, 3))
+
+from datetime import datetime, timedelta
+def get_week_dates():
+
+    day = '12/Oct/2013'
+    dt = datetime.strptime(day, '%d/%b/%Y')
+    start = dt - timedelta(days=dt.weekday())
+    end = start + timedelta(days=6)

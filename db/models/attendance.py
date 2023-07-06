@@ -160,7 +160,7 @@ class EmployeeCompany(Base):
     is_active=Column(Boolean,default=True)
     employee=relationship("EmployeeModel")#,back_populates="employeemodel")
     company=relationship("CompanyModel",)#back_populates="company")
-    status=Column(Enum(Status),default=1,nullable=True)
+    status=Column(Enum(Status),default=Status.INIT,nullable=True)
     # def company_name(self):
     #     print(self.company)
     #     return self.company.name
