@@ -22,7 +22,23 @@ from fastapi.encoders import jsonable_encoder
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
 import json
-@router.get('export-db')
+
+@router.get('/import-db')
+async def import_db(db: Session = Depends(get_db)):
+ 
+    with open("exported_data.json", "r") as f:
+        result=json.load(f)
+        # print(result)
+    if result is None:
+        return {}
+    else:
+        data=AttendanceRepo.import_db_from_json(result,db)
+    #     print(result)
+    print(data)    
+    
+    return data
+
+@router.get('/export-db')
 async def export_db(db: Session = Depends(get_db)):
     data=AttendanceRepo.export_db(db)
     with open("exported_data.json", "w") as f:
@@ -90,13 +106,13 @@ class Employee(BaseModel):
     class Config():  #to convert non dict obj to json
         schema_extra={
             "example":{
-  "name": "string",
-  "login_time": "10:10",
-  "logout_time": "10:10",
-  "phone": 9800000000,
-  "salary": 0,
-  "duty_time": "10:50"
-}
+            "name": "string",
+            "login_time": "10:10",
+            "logout_time": "10:10",
+            "phone": 9800000000,
+            "salary": 0,
+            "duty_time": "10:50"
+            }
         }
         orm_mode = True
 
