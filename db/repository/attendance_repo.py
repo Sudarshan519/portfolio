@@ -11,8 +11,32 @@ from schemas.attendance import Status
 from sqlalchemy import and_, func
 from sqlalchemy import or_, and_
 from week_util import getMonthRange, getWeekDate
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload,declarative_base
+from db.models.attendance import Base
+import json
+# Base = declarative_base()
 class AttendanceRepo:
+    @staticmethod
+    def serialize_instance(obj):
+        return obj.to_dict()
+    @staticmethod
+    def export_db(db): 
+        modelslist = Base.__subclasses__()
+        print(modelslist)
+        data = {}
+
+        for model in modelslist:
+            model_data = db.query(model).all()
+            data[model.__name__] = [item.__dict__  for item in model_data]
+        
+
+        return data
+        # data = db.query(Base).all()
+        # json_data = [item.to_dict() for item in data]
+
+        # with open("exported_data.json", "w") as f:
+        #     json.dump(json_data, f, indent=4)
+        # return json_data
     @staticmethod
     def updateEmployee(id,employee,db,compId):
         return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
@@ -243,6 +267,7 @@ class AttendanceRepo:
                 "attendance": attendance_records
             })
         return data
+    
     @staticmethod
     def employeeWithAttendanceMonthlyReport(companyId,db):
         now=datetime.now()
@@ -317,7 +342,10 @@ class AttendanceRepo:
                 "attendance": attendance_records
             })
         return data
-    
+    @staticmethod
+    def newtodayReport(companyId,db):
+        query=db.query(EmployeeModel)
+
     @staticmethod
     def todayReport(companyId,db):
         data=[]
@@ -327,7 +355,7 @@ class AttendanceRepo:
        
         try:
             candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel)#.filter(AttendanceModel.attendance_date==date.today()).all()#
-            query=candidates.filter(EmployeeModel.attendance.any(AttendanceModel.attendance_date==date.today())).all()
+            query=candidates.filter(EmployeeModel.attendance.and_(AttendanceModel.attendance_date==date.today())).all()
             employee_data = []
             for employee,attendance in candidates:
                 records=[]
