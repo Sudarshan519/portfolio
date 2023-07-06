@@ -140,7 +140,7 @@ def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_curr
 
 @router.post('/attendance-store',response_model=CreateAttendance,)
 async def store_attendance(companyId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
-    employee=AttendanceRepo.get_employee(current_user.phone,db)
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
     attendance=AttendanceRepo.store_attendance(compId=companyId,empId=employee.id,db=db,loginTime=datetime.now().time(),logoutTime=None )
 
     return attendance

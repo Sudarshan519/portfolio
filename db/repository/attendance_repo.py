@@ -155,9 +155,9 @@ class AttendanceRepo:
         else:
             return HTTPException(status_code=404,detail=f"Otp not found for user {phone}")
     @staticmethod
-    def get_employee(phone:str,db):
+    def get_employee(phone:str,db,companyId):
  
-        employee=db.query(EmployeeModel).filter(EmployeeModel.phone== phone).first()
+        employee=db.query(EmployeeModel).filter(EmployeeModel.phone== phone,EmployeeModel.company_id==companyId).first()
  
         if employee is not None:
             return employee
@@ -260,7 +260,13 @@ class AttendanceRepo:
     def employeewithAttendanceWeeklyReport(companyId,db,):
         dates= getWeekDate()
         data=[]
-        candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0].date(),dates[1].date())).all()
+        candidates=( db.query(EmployeeModel) 
+                         .outerjoin(AttendanceModel, 
+                                   and_(  AttendanceModel.attendance_date.between(dates[0],dates[1]))# == date.today())
+                                    ) 
+                         .filter(EmployeeModel.company_id==companyId)
+                         .all() )
+        # candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0].date(),dates[1].date())).all()
         for candidate in candidates:
            
             attendance_records = [
@@ -289,25 +295,34 @@ class AttendanceRepo:
         dates= getMonthRange(now.year,now.month)
         data=[]
         attendance_data = {}
- 
-        print(db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).count())#)
-        candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).all()#
-        for employee,attendance in candidates:
-            employee_id = employee.id
-            if employee_id not in attendance_data:
-                attendance_data[employee_id] = {
-                    "employee_i": employee,
-                    "attendance": []
+        employees = ( db.query(EmployeeModel) 
+                        #  .outerjoin(AttendanceModel, 
+                        #            and_(  AttendanceModel.attendance_date.between(dates[0],dates[1]))# == date.today())
+                        #             ) 
+                        #  .filter(EmployeeModel.company_id==companyId)
+                         .all() )
+        # print(db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).count())#)
+        # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).all()#
+        for employee  in employees: 
+            # if employee_id not in attendance_data:
+            attendance_records = [
+                {
+                    "date": attendance.attendance_date,
+                    "login_time":attendance.login_time,
+                    "logout_time":attendance.logout_time,
+                    "breaks":attendance.breaks,
+                    "hours_worked":attendance.hours_worked
+                    # "status": attendance.status
                 }
-            attendance_data[employee_id]["attendance"].append( 
-                attendance 
-            # "attendance_id": attendance.id,
-            # "date": attendance.attendance_date,
-            # "status": attendance.status
-            )
-              
+                for attendance in employee.attendance]
+            data.append({ "present":len(employee.attendance,),#np.unique(dates.date) for unique date
+                "id": employee.id,
+                "name": employee.name,
+                # "email": candidate.email,
+                "attendance": attendance_records
+            })
         
-        return [attendance_data]
+        return  data 
         # candidates = db.query(EmployeeModel).join(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
         # for candidate in candidates:
            
@@ -369,12 +384,21 @@ class AttendanceRepo:
         # candidates=db.query(EmployeeModel.employee_id,EmployeeModel.login_time.label('start_time'),EmployeeModel.logout_time.label('stop_time')).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId).all()
        
         try:
-            candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel)#.filter(AttendanceModel.attendance_date==date.today()).all()#
-            query=candidates.filter(EmployeeModel.attendance.and_(AttendanceModel.attendance_date==date.today())).all()
+            employees = ( db.query(EmployeeModel) 
+                         .outerjoin(AttendanceModel, 
+                                   # and_(  AttendanceModel.attendance_date == date.today())
+                                    ) 
+                         #.filter(EmployeeModel.company_id==companyId)
+                         .all() )
+            # candidates = db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel)#.filter(AttendanceModel.attendance_date==date.today()).all()#
+            # print(candidates.all())
+            # query=candidates.filter(EmployeeModel.attendance.any(AttendanceModel.attendance_date==date.today())).all()
             employee_data = []
-            for employee,attendance in candidates:
+            for employee in employees:
+                print(employee.id)
                 records=[]
                 for attendance in employee.attendance:
+                    print(attendance)
                     records.append(attendance)
                 employee_data.append(employee)
                 # employee_id = employee.id

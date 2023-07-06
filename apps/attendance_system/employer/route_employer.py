@@ -287,7 +287,7 @@ def sendIntitation(employeeId,companyId,current_user:AttendanceUser=Depends(get_
 def allemployees(id,db):
     return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
 @router.get('/employee')
-def all_employee(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def all_employee(companyId:int,db: Session = Depends(get_db)):# current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     employeelist=allemployees(companyId,db)
     return employeelist
 # @router.post("/posts",  tags=["posts"])#dependencies=[Depends(JWTBearer())],

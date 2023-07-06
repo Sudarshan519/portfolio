@@ -16,13 +16,13 @@ sys.path.append(BASE_DIR)
 # access to the values within the .ini file in use.
 config = context.config
 # config.set_main_option('sqlalchemy.url',settings.SQLITE_URL)#DBURL os.environ['POSTGRES_URL'])
-# config.set_main_option('sqlalchemy.url',settings.DATABASE_URL)#DBURL os.environ['POSTGRES_URL'])
+config.set_main_option('sqlalchemy.url',settings.DATABASE_URL)#DBURL os.environ['POSTGRES_URL'])
 
 section=config.config_ini_section
-config.set_section_option(section,"DB_USER",settings.MySQL_USER)
-config.set_section_option(section,"DB_PASS",settings.MySQL_PASSWORD)
-config.set_section_option(section,"DB_HOST",settings.MySQL_SERVER)
-config.set_section_option(section,"DB_NAME",settings.MySQL_DB)
+# config.set_section_option(section,"DB_USER",settings.MySQL_USER)
+# config.set_section_option(section,"DB_PASS",settings.MySQL_PASSWORD)
+# config.set_section_option(section,"DB_HOST",settings.MySQL_SERVER)
+# config.set_section_option(section,"DB_NAME",settings.MySQL_DB)
 
 
 
