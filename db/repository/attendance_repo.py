@@ -188,9 +188,16 @@ class AttendanceRepo:
 
     @staticmethod
     def companies_list(user:AttendanceUser,db:Session):
-
+        data=[]
         try: 
-            companies= db.query(CompanyModel).filter(CompanyModel.user_id==user.id).all()  
+            companies= db.query(CompanyModel).filter(CompanyModel.user_id==user.id).all() 
+            for company in companies :
+                data={
+                    "id":company.id,
+                    "name":company.name,
+                    "start_time":company.start_time,
+                    "employee":company.employee
+                }
             return companies
         except Exception as e:
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e)
@@ -317,25 +324,33 @@ class AttendanceRepo:
     # Return the attendance records as a response 
         attendance_data = {}
         # candidates=db.query(EmployeeModel.employee_id,EmployeeModel.login_time.label('start_time'),EmployeeModel.logout_time.label('stop_time')).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId).all()
-        # print((candidates[0].__dict__))
-        # return candidates
-        candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==date.today()).all()#
-        for employee,attendance in candidates:
-            employee_id = employee.id
-            if employee_id not in attendance_data:
-                attendance_data[employee_id] = {
-                    "employee_i": employee,
-                    "attendance": []
-                }
-            attendance_data[employee_id]["attendance"].append( 
-             attendance 
-            # "attendance_id": attendance.id,
-            # "date": attendance.attendance_date,
-            # "status": attendance.status
-            )
-              
-        
-        return [attendance_data]
+       
+        try:
+            candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel)#.filter(AttendanceModel.attendance_date==date.today()).all()#
+            query=candidates.filter(EmployeeModel.attendance.any(AttendanceModel.attendance_date==date.today())).all()
+            employee_data = []
+            for employee,attendance in candidates:
+                records=[]
+                for attendance in employee.attendance:
+                    records.append(attendance)
+                employee_data.append(employee)
+                # employee_id = employee.id
+                # if employee_id not in attendance_data:
+                #     attendance_data[employee_id] = {
+                #         "employee_id": employee,
+                #         "attendance": []
+                #     }
+                # attendance_data[employee_id]["attendance"].append( 
+                # attendance 
+                # # "attendance_id": attendance.id,
+                # # "date": attendance.attendance_date,
+                # # "status": attendance.status
+                # )
+                
+            
+            return employee_data
+        except Exception as e:
+            return e
     # {
     #     "employee_id": employee_id,
     #     "attendance": [

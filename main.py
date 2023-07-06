@@ -64,7 +64,7 @@ from upload_file import firebase_upload
 from webapps.base import webapp_router
 from apps.attendance_system.route_attendance import attendance_router
 from fastapi import FastAPI, Form
-import api  as mongorouter
+# import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
 # from db.mongo_db import db_mongo as mongo_db
 

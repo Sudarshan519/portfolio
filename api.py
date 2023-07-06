@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, EmailStr
 from bson import ObjectId
 from typing import Optional, List
-import motor.motor_asyncio
+# import motor.motor_asyncio
 from core.config import settings
 from db.mongo_db import db_mongo as mongo_db
 # from dotenv import load_dotenv
