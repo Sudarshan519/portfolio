@@ -13,12 +13,24 @@ from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
 from week_util import getWeekDate
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 # {
 #   "phone": "9863450107",
 #   "otp": "0726"
 # }eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODYzNDUwMTA3IiwiZXhwIjoxNjg4NjYxMzk3fQ.DGBN1ULWnN9db1_QMFLrQ4c8UmpZFqeEljuOtaIeatU
 router =APIRouter(include_in_schema=True, tags=['Employer'])
 import random
+import json
+@router.get('export-db')
+async def export_db(db: Session = Depends(get_db)):
+    data=AttendanceRepo.export_db(db)
+    with open("exported_data.json", "w") as f:
+        result=json.dump( (jsonable_encoder(data)),f)
+    #     print(result)
+    print(data)    
+    
+    return data
 @router.get('/companies')
 async def get_companies():
     return {'companines':[],'inactive':[]}

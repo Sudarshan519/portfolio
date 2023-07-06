@@ -4,11 +4,13 @@ from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Floa
 from sqlalchemy.orm import relationship
 from db.base import Base
 import random
- 
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from schemas.attendance import Status
 from fastapi import Depends
 from requests import Session
 from db.session import get_db
+modelslist = Base.__subclasses__()
 # Declare Classes / Tables
 # employee_companies = Table('employee_companies', Base.metadata,
 #     Column('employee_id', ForeignKey('employeemodel.id'), primary_key=True),
@@ -66,15 +68,15 @@ class CompanyModel(Base):
     is_active=Column(Boolean,default=True)
     user_id =  Column(Integer,ForeignKey("attendanceuser.id"),nullable=True)
     employee=relationship("EmployeeModel",back_populates="company")
-    @hybrid_property
+    @property
     def employee_count(self):
         return len(self.attendance)
 
-    @attendance_count.expression
+    # @attendance_count.expression
     def attendance_count(cls):
         return (
             select([func.count()])
-            .where(Attendance.employee_id == cls.id)
+            .where(EmployeeModel.id == cls.id)
             .label("attendance_count")
         )
 class EmployeeModel(Base):
