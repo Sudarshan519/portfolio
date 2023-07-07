@@ -1,12 +1,12 @@
  
 from datetime import datetime,timedelta
-from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum,func
+from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum,func, select
 from sqlalchemy.orm import relationship
 from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from schemas.attendance import Status
+from schemas.attendance import Status,AttendanceStatus
 from fastapi import Depends
 from requests import Session
 from db.session import get_db
@@ -66,7 +66,7 @@ class CompanyModel(Base):
     end_time=Column(Time)
     established_date=Column(Date) 
     is_active=Column(Boolean,default=True)
-    user_id =  Column(Integer,ForeignKey("attendanceuser.id"),nullable=True)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
     employee=relationship("EmployeeModel",back_populates="company")
     @property
     def employee_count(self):
@@ -88,8 +88,8 @@ class EmployeeModel(Base):
     salary=Column(Float)
     duty_time=Column(Time)
     is_active=Column(Boolean,default=False)
-    user_id =  Column(Integer,ForeignKey("attendanceuser.id",),default=1)
-    company_id =  Column(Integer,ForeignKey("companymodel.id",),default=1)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),default=1)
+    company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
     attendance = relationship("AttendanceModel", back_populates="employee")
     # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
     # status=Column(Enum(Status),default=False)
@@ -103,8 +103,8 @@ class BreakModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     break_start=Column(Time)
     break_end=Column(Time)
-    company_id =  Column(Integer,ForeignKey("employeemodel.id",),default=1)
-    attendance_id=Column(Integer,ForeignKey('attendancemodel.id'), nullable=True)
+    company_id =  Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
+    attendance_id=Column(Integer,ForeignKey('attendancemodel.id',ondelete='CASCADE'), nullable=True )
     attendance=relationship("AttendanceModel",back_populates='breaks')
 def calcTime(enter,exit):
     format="%H:%M:%S"
@@ -122,8 +122,9 @@ class AttendanceModel(Base):
     login_time=Column(Time,nullable=False)
     logout_time=Column(Time,nullable=True,)
     # breaks= Column(Integer,ForeignKey('breakmodel.id'),default=1)
-    company_id =  Column(Integer,ForeignKey("companymodel.id",),default=1)
-    employee_id=Column(Integer,ForeignKey("employeemodel.id",),default=1)
+    status=Column(Enum(AttendanceStatus),default=AttendanceStatus.ABSENT,)
+    company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
+    employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
 
@@ -153,8 +154,8 @@ class AttendanceModel(Base):
 
 class EmployeeCompany(Base):
     id = Column(Integer,primary_key=True,index=True)
-    employee_id=Column(Integer,ForeignKey('employeemodel.id'),default=1)
-    company_id=Column(Integer,ForeignKey('companymodel.id'),default=1)
+    employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
+    company_id=Column(Integer,ForeignKey('companymodel.id',ondelete='CASCADE'),default=1)
     is_invited=Column(Boolean,default=True)
     is_accepted=Column(Boolean,default=False)
     is_active=Column(Boolean,default=True)

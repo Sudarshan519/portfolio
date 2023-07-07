@@ -22,8 +22,10 @@ class AttendanceRepo:
     @staticmethod
     def import_db_from_json(data_dict,db):
         modelslist = Base.__subclasses__()
+        
         data = {}
         for model in modelslist:
+            db.query(model) .delete()
             db.bulk_insert_mappings(
             model,data_dict[model.__name__])
 
@@ -386,19 +388,24 @@ class AttendanceRepo:
         try:
             employees = ( db.query(EmployeeModel) 
                          .outerjoin(AttendanceModel, 
-                                   # and_(  AttendanceModel.attendance_date == date.today())
+                                   and_(  AttendanceModel.attendance_date == date.today())
                                     ) 
-                         #.filter(EmployeeModel.company_id==companyId)
+                         .filter(EmployeeModel.company_id==companyId)
                          .all() )
             # candidates = db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel)#.filter(AttendanceModel.attendance_date==date.today()).all()#
             # print(candidates.all())
             # query=candidates.filter(EmployeeModel.attendance.any(AttendanceModel.attendance_date==date.today())).all()
+            # attendance_count=db.query(AttendanceModel).count()
+            # print(empcount)
+            attendance_count=db.query(AttendanceModel).filter(AttendanceModel.attendance_date == date.today(),AttendanceModel.company_id==companyId).count()
+            print(attendance_count)
+            print(len(employees))
             employee_data = []
             for employee in employees:
-                print(employee.id)
+ 
                 records=[]
                 for attendance in employee.attendance:
-                    print(attendance)
+ 
                     records.append(attendance)
                 employee_data.append(employee)
                 # employee_id = employee.id
@@ -415,7 +422,7 @@ class AttendanceRepo:
                 # )
                 
             
-            return employee_data
+            return {"present_count":attendance_count,"absent_count":len(employees)-attendance_count,"employees":employee_data}
         except Exception as e:
             return e
     # {
