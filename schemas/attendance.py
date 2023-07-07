@@ -7,6 +7,14 @@ class Status(Enum):
     INVITED="INVITED"
     ACCEPTED="ACCEPTED"
     REJECTED="REJECTED"
+
+    
+class AttendanceStatus(Enum):
+    LATE="LATE"
+    EARLY="EARLY"
+    PRESENT="PRESENT"
+    ABSENT="ABSENT"
+
 class BaseAttendanceUser(BaseModel):
     phone:str
     otp:str
