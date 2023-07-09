@@ -6,6 +6,7 @@ from typing import Generator            #new
 
 # SQLALCHEMY_DATABASE_URL = settings.SQLITE_URL
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+# SQLALCHEMY_DATABASE_URL=settings.POSTGRES_URL
 engine = create_engine(SQLALCHEMY_DATABASE_URL,)#connect_args={'check_same_thread': False})
 
 

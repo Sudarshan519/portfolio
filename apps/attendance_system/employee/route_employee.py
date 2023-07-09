@@ -3,6 +3,7 @@ from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
 from apps.attendance_system.schemas.attendance import AttendanceTodayDetailModel,Company,CompanyInvitation
 from db.models.attendance import Otp
 from requests import Session
+from db.repository.fake_attendance import FakeAttendance
 from db.session import get_db
 from fastapi import Depends, HTTPException, Request,status,UploadFile,Form,File
 from db.repository.attendance_repo import AttendanceRepo
@@ -91,7 +92,12 @@ class ResponseAttendance(BaseModel):
 
 
 
-
+@router.post('/fakeattendance')
+async def fakeAttendance(db: Session = Depends(get_db)):
+    return FakeAttendance.addAttendance(db)
+@router.post('/fakeemployee')
+async def fakeEmployee(db: Session = Depends(get_db)):
+    return FakeAttendance.addEmployee(db)
 @router.post('/login')
 async def login(phone:int, db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone,db)

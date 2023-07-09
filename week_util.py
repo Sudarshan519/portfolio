@@ -28,7 +28,7 @@ def getMonthRange(year, month):
     else:
         last_date = datetime(year, month + 1, 1) + timedelta(days=-1)
     start_date=datetime(year, month, 1)
-    return [start_date,last_date.strftime("%Y-%m-%d")]
+    return [start_date.date(),last_date.date() ]
 
 
 now=datetime.now()

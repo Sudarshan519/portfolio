@@ -48,16 +48,8 @@ class AttendanceUser(Base):
     is_verified=Column(Boolean,default=False)
     is_employer=Column(Boolean,default=False)
     is_approver=Column(Boolean,default=False)
-    # otp_id = Column(Integer,ForeignKey('otp.id'),nullable=True)
-    # employee_id=Column(Integer,ForeignKey('employeemodel.id'),nullable=True)
-    # employee=relationship("EmployeeModel")
-    dob=Column(Date,nullable=True)
-    # def employee(self,db: Session = Depends(get_db), ):
-    #     employee=AttendanceRepo.get_employee(self.phone,db)
-    #     return employee
-    # @property
-    # def salary(self):
-    #     return self.employee.salary
+    dob=Column(Date,nullable=True) 
+
 class CompanyModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     name=Column(String(256), unique=True)
@@ -79,6 +71,8 @@ class CompanyModel(Base):
             .where(EmployeeModel.id == cls.id)
             .label("attendance_count")
         )
+    
+    
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=False)
@@ -91,9 +85,10 @@ class EmployeeModel(Base):
     user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),default=1)
     company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
     attendance = relationship("AttendanceModel", back_populates="employee")
+    is_approver=Column(Boolean,default=False)
     # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
     # status=Column(Enum(Status),default=False)
-    
+    status=Column(Enum(Status),default=Status.INIT,nullable=True)
     company=relationship("CompanyModel",back_populates="employee")
     __table_args__ = (
         UniqueConstraint('company_id','phone', name='uq_company_employee'),
@@ -115,7 +110,8 @@ def calcTime(enter,exit):
     #Creating enter and exit time objects from str in the format (H:M:S)
     enterTime = datetime.strptime(enterStr, format)
     exitTime = datetime.strptime(exitStr, format)
-    return exitTime - enterTime
+    td=(exitTime-enterTime).total_seconds()
+    return td
 class AttendanceModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     attendance_date=Column(Date)
@@ -171,3 +167,8 @@ class EmployeeCompany(Base):
     #     return self.company.end_time
     # def established_date(self):
     #     return self.company.established_date
+class MonthlyReport(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
+    employee=relationship("EmployeeModel",back_populates='monthly_report')
+    salary=Column(Float,default=0)
