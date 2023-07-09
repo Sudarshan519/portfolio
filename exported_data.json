@@ -3,56 +3,56 @@
     "Otp": [
         {
             "phone": 9863450107,
-            "code": "0726",
+            "created_at": "2023-07-05",
             "id": 1,
-            "created_at": "2023-07-05T22:21:00"
+            "code": "0726"
         },
         {
             "phone": 9800000000,
-            "code": "1117",
+            "created_at": "2023-07-06",
             "id": 2,
-            "created_at": "2023-07-06T21:26:47"
+            "code": "1117"
         },
         {
             "phone": 9800000001,
-            "code": "0509",
+            "created_at": "2023-07-06",
             "id": 3,
-            "created_at": "2023-07-06T21:52:33"
+            "code": "0509"
         }
     ],
     "AttendanceUser": [
         {
-            "id": 1,
-            "name": "",
-            "is_verified": true,
-            "is_approver": false,
-            "email": "",
             "phone": 9863450107,
             "photoUrl": "",
+            "email": "",
             "is_employer": true,
-            "dob": null
+            "dob": null,
+            "name": "",
+            "id": 1,
+            "is_verified": true,
+            "is_approver": false
         },
         {
-            "id": 2,
-            "name": "",
-            "is_verified": false,
-            "is_approver": false,
-            "email": "",
             "phone": 9800000000,
             "photoUrl": "",
+            "email": "",
             "is_employer": false,
-            "dob": null
+            "dob": null,
+            "name": "",
+            "id": 2,
+            "is_verified": false,
+            "is_approver": false
         },
         {
-            "id": 3,
-            "name": "",
-            "is_verified": false,
-            "is_approver": false,
-            "email": "",
             "phone": 9800000001,
             "photoUrl": "",
+            "email": "",
             "is_employer": false,
-            "dob": null
+            "dob": null,
+            "name": "",
+            "id": 3,
+            "is_verified": false,
+            "is_approver": false
         }
     ],
     "CompanyModel": [
@@ -94,11 +94,12 @@
             "salary": 0.0,
             "is_active": false,
             "company_id": 1,
-            "name": "string",
             "phone": 9800000000,
+            "name": "string",
             "logout_time": "10:10:00",
             "duty_time": "10:50:00",
-            "user_id": 1
+            "user_id": 1,
+            "status": "INIT"
         },
         {
             "id": 7,
@@ -106,11 +107,12 @@
             "salary": 0.0,
             "is_active": false,
             "company_id": 4,
-            "name": "string",
             "phone": 9800000000,
+            "name": "string",
             "logout_time": "10:10:00",
             "duty_time": "10:50:00",
-            "user_id": 1
+            "user_id": 1,
+            "status": "INIT"
         },
         {
             "id": 9,
@@ -118,11 +120,12 @@
             "salary": 0.0,
             "is_active": false,
             "company_id": 4,
-            "name": "string",
             "phone": 9800000001,
+            "name": "string",
             "logout_time": "10:10:00",
             "duty_time": "10:50:00",
-            "user_id": 1
+            "user_id": 1,
+            "status": "INIT"
         },
         {
             "id": 10,
@@ -130,21 +133,23 @@
             "salary": 0.0,
             "is_active": false,
             "company_id": 1,
-            "name": "string",
             "phone": 9800000001,
+            "name": "string",
             "logout_time": "10:10:00",
             "duty_time": "10:50:00",
-            "user_id": 1
+            "user_id": 1,
+            "status": "INIT"
         }
     ],
     "BreakModel": [],
     "AttendanceModel": [
         {
-            "attendance_date": "2023-07-07",
-            "login_time": "13:01:16",
-            "company_id": 1,
             "id": 1,
             "logout_time": null,
+            "company_id": 1,
+            "attendance_date": "2023-07-07",
+            "login_time": "13:01:16",
+            "status": "ABSENT",
             "employee_id": 1
         }
     ],

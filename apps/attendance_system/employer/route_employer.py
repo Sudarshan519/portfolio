@@ -123,16 +123,16 @@ async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
 
 @router.get("/today-report")
 async def attendance(companyId:int, db: Session = Depends(get_db)):
- 
-        allAttendances=AttendanceRepo.todayReport(companyId,db)
-        return allAttendances
+        return AttendanceRepo.reportToday(companyId,db)
+        # allAttendances=AttendanceRepo.todayReport(companyId,db)
+        # return allAttendances
  
 
 @router.get("/weekly-report")
 async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
     dates= getWeekDate()
- 
-    weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db)
+    # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
  
     return weekdata
 @router.get('/users')#,response_model=list[AttendanceUser])
@@ -212,7 +212,13 @@ def create_employee(user:AttendanceUser,db:Session,employee:Employee,companyId:i
 
     except Exception as e:
         return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Employee is already registered.{e}")
-
+def update_employee(user:AttendanceUser,employee:Employee,employeeId:int,companyId:int,db):
+    employee_update=db.get(EmployeeModel,employeeId)
+    new_employee=EmployeeModel(**employee.dict(), user_id=user.id,company_id=companyId)
+    db.add(new_employee)
+    db.commit()
+    db.refresh(new_employee) 
+    return new_employee 
 @router.post("/register",)#response_model = BaseAttendanceUser)
 async def signup(phone:int,db: Session = Depends(get_db)):
     try:
