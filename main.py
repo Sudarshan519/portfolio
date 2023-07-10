@@ -36,7 +36,7 @@
 #     return {"message": f"This is /path/{path_id} endpoint, use post request to retrieve result"}
 
 
-from typing import Annotated, Optional
+# from typing import Annotated, Optional
 from requests import Session
 import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
@@ -57,7 +57,7 @@ from db.models.attendance import *
 from db.session import engine   #new
 import os
 from dotenv import load_dotenv
-import motor.motor_asyncio
+# import motor.motor_asyncio
 from schemas.users import UserCreate
 from core.config import settings
 from upload_file import firebase_upload

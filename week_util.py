@@ -5,8 +5,8 @@ def getWeekDate():
     date=datetime.today() 
     newdate=date 
     start_of_week = newdate - timedelta(days = newdate.weekday()) 
-    
-    end_of_week = start_of_week + timedelta(days = 3)    
+    start_of_week=start_of_week-timedelta(days=1)
+    end_of_week = start_of_week + timedelta(days = 7)    
     return [start_of_week,end_of_week]
     # return [(start_of_week+timedelta(days=x)) for x in range(7)]
 

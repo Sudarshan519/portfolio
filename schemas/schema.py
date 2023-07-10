@@ -1,6 +1,6 @@
 # build a schema using pydantic
 import json
-from typing import Optional
+from typing import Optional,List
 from pydantic import BaseModel
  
 class CustomObject(BaseModel):
@@ -13,7 +13,7 @@ from fastapi import File, UploadFile
 class Author(BaseModel):
     name:str
     age:int
-    contacts:Optional[list[CustomObject]]
+    contacts:Optional[List[CustomObject]]
     file:UploadFile=File(...)
     @classmethod
     def __get_validators__(cls) :
@@ -27,12 +27,12 @@ class Author(BaseModel):
     class Config:
         orm_mode = True
 class ContactDict(BaseModel):
-    data:list[Author]
+    data:List[Author]
     class Config:
         orm_mode =True
         
 class ExtraDataDict(BaseModel):
-    data:list[Author]
+    data:List[Author]
     class Config:
         orm_mode = True
         

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional,List
 from pydantic import BaseModel,root_validator
 from datetime import date,datetime,time
 
@@ -72,7 +72,7 @@ class AttendanceTodayDetailModel(BaseModel):
     attendance_date= (date)
     login_time: (datetime)
     logout_time:datetime
-    breaks:list[BreakModel]
+    breaks:List[BreakModel]
     company_id : int
     employee_id: int
     per_minute_salary: float
@@ -86,4 +86,4 @@ class AttendanceBase(BaseModel):
     attendance_id=int
     login_time: (datetime)
     logout_time:datetime
-    breaks:list[BreakModel] 
+    breaks:List[BreakModel] 

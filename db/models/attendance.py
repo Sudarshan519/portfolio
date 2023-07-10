@@ -118,7 +118,7 @@ class AttendanceModel(Base):
     login_time=Column(Time,nullable=False)
     logout_time=Column(Time,nullable=True,)
     # breaks= Column(Integer,ForeignKey('breakmodel.id'),default=1)
-    status=Column(Enum(AttendanceStatus),default=AttendanceStatus.ABSENT,)
+    status=Column(Enum(AttendanceStatus),default=AttendanceStatus.PRESENT,)
     company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
     employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
@@ -167,8 +167,8 @@ class EmployeeCompany(Base):
     #     return self.company.end_time
     # def established_date(self):
     #     return self.company.established_date
-class MonthlyReport(Base):
-    id = Column(Integer,primary_key=True,index=True)
-    employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
-    employee=relationship("EmployeeModel",back_populates='monthly_report')
-    salary=Column(Float,default=0)
+# class MonthlyReport(Base):
+#     id = Column(Integer,primary_key=True,index=True)
+#     employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
+#     employee=relationship("EmployeeModel",back_populates='monthly_report')
+#     salary=Column(Float,default=0)

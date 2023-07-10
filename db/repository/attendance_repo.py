@@ -262,6 +262,7 @@ class AttendanceRepo:
     @staticmethod
     def employeewithAttendanceWeeklyReport(companyId,db,):
         dates= getWeekDate()
+        # dates= getMonthRange(2023,6)
         data=[]
         print(dates[0])
         print(dates[1])
@@ -294,48 +295,85 @@ class AttendanceRepo:
         #     })
         
         # Retrieve all employees with attendances within the date range
-        employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0].date(), dates[1].date()) | AttendanceModel.attendance_date.is_(None)).all()
+        employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()#.filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()
         # Process the results
-
-        for employee, attendance in employees:
-            emp_dict=employee.__dict__
-
-            # print(f"Employee ID: {employee.id}, Name: {employee.name}")
+        attendance_data = {}
+        # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
+        for employee,attendance in employees:
+            employee_id = employee.id
+            if employee_id not in attendance_data:
+                attendance_data[employee_id] = {
+                    "employee": employee.phone,
+                    "attendance": []
+                }
+            print(attendance)
             if attendance:
-                emp_dict['attendance_date']=attendance.attendance_date
-                emp_dict['attendance_time']=attendance.login_time
-                emp_dict['clock_out_time']=attendance.logout_time
-                emp_dict['hour_worked']=attendance.hours_worked
-                # print(f"Attendance ID: {attendance.id}, Date: {attendance.attendance_date}, LOGIN:{attendance.login_time}, LOGOUT:{attendance.login_time}")
-                data.append(emp_dict)
-            else:
-                data.append(emp_dict)
-                # print(f"Attendance ID: NIL")
-        return data
+                attendance_data[employee_id]["attendance"].append( 
+                    attendance  
+                # "attendance_id": attendance.id,
+                # "date": attendance.attendance_date,
+                # "status": attendance.status
+                ) 
+              
+        
+        return  attendance_data#[attendance_data
+            #]
+            # print(f"Employee ID: {employee.id}, Name: {employee.name}")
+        #     if attendance:
+        #         emp_dict['attendance_date']=attendance.attendance_date
+        #         emp_dict['attendance_time']=attendance.login_time
+        #         emp_dict['clock_out_time']=attendance.logout_time
+        #         emp_dict['hour_worked']=attendance.hours_worked
+        #         # print(f"Attendance ID: {attendance.id}, Date: {attendance.attendance_date}, LOGIN:{attendance.login_time}, LOGOUT:{attendance.login_time}")
+        #         data.append(emp_dict)
+        #     else:
+        #         data.append(emp_dict)
+        #         # print(f"Attendance ID: NIL")
+        # return attendance_data
     
     @staticmethod
     def employeeWithAttendanceMonthlyReport(companyId,db):
         now=datetime.now()
         dates= getMonthRange(now.year,now.month)
         # print(dates)
-        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).all()
-        data=[
-            {
-                'employee':employee,
-                'attendance':attendance
-            }
-            for employee,attendance 
-            in employees 
-            # if attendance.attendance_date>(dates[0])
-            # and attendance.attendance_date<(dates[1])
-        ]
+        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()
+        attendance_data = {}
         for employee,attendance in employees:
-            # print(employee)
-            data.append({
-                'employee':employee,
-                'attendance':attendance
-            })
-        return data
+                employee_id = employee.id
+                if employee_id not in attendance_data:
+                    attendance_data[employee_id] = {
+                        "employee": employee.phone,
+                        "attendance": []
+                    }
+                print(attendance)
+                if attendance:
+                    attendance_data[employee_id]["attendance"].append( 
+                        attendance  
+                    # "attendance_id": attendance.id,
+                    # "date": attendance.attendance_date,
+                    # "status": attendance.status
+                    ) 
+                
+            
+        return  attendance_data
+        # data=[
+        #     {
+        #         'employee':employee,
+        #         'attendance':attendance
+        #     }
+        #     for employee,attendance 
+        #     in employees 
+        #     # if attendance.attendance_date>(dates[0])
+        #     # and attendance.attendance_date<(dates[1])
+        # ]
+        # for employee,attendance in employees:
+            
+        #     # print(employee)
+        #     data.append({
+        #         'employee':employee,
+        #         'attendance':attendance
+        #     })
+        # return data
         # data=[]
         # attendance_data = {}
         # employees = ( db.query(EmployeeModel) 
