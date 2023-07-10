@@ -334,10 +334,14 @@ class AttendanceRepo:
     @staticmethod
     def employeeWithAttendanceMonthlyReport(companyId,db):
         now=datetime.now()
+        print(now)
         dates= getMonthRange(now.year,now.month)
         # print(dates)
         employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()
         attendance_data = {}
+        employee_count=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).count()
+        present_count=0
+        absent_count=0
         for employee,attendance in employees:
                 employee_id = employee.id
                 if employee_id not in attendance_data:
@@ -346,15 +350,32 @@ class AttendanceRepo:
                         "attendance": []
                     }
                 print(attendance)
+                
                 if attendance:
+                    present_count+=1
+                    attendance.breaks
                     attendance_data[employee_id]["attendance"].append( 
-                        attendance  
+                  attendance,
+                  
                     # "attendance_id": attendance.id,
                     # "date": attendance.attendance_date,
                     # "status": attendance.status
-                    ) 
+                    )
+                else:
+                    absent_count+=1
+                # print(attendance_data[employee_id]["attendance"])
+                attendance_data[employee_id]["present_count"]=len(attendance_data[employee_id]["attendance"])
+
+                    # print(len(attendance_data[employee_id]["attendance"]))
                 
-            
+        # print(datetime.now())
+        # print(now)
+        # print(datetime.now()-now)
+        # print(present_count)
+        # print(absent_count)
+        # print(employee_count)
+        attendance_data['present_count']=present_count
+        attendance_data['absent_count']=employee_count*30-present_count
         return  attendance_data
         # data=[
         #     {
