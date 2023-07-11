@@ -71,7 +71,7 @@ class CreateAttendance(BaseModel):
     logout_time:time=None
     breaks:list[Breaks]
     # employee:Employee
-        
+    is_approver:bool=False
     salary:Optional[float]
     name:Optional[str]
     duty_time:Optional[time]
