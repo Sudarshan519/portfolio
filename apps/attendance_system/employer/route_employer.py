@@ -123,7 +123,9 @@ async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
 
 @router.get("/today-report")
 async def attendance(companyId:int, db: Session = Depends(get_db)):
-        return AttendanceRepo.reportToday(companyId,db)
+        return AttendanceRepo.employeeWithDailyReport(companyId,db)
+        # return AttendanceRepo.reportToday(companyId,db)
+
         # allAttendances=AttendanceRepo.todayReport(companyId,db)
         # return allAttendances
  
@@ -212,13 +214,21 @@ def create_employee(user:AttendanceUser,db:Session,employee:Employee,companyId:i
 
     except Exception as e:
         return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Employee is already registered.{e}")
-def update_employee(user:AttendanceUser,employee:Employee,employeeId:int,companyId:int,db):
+
+def update_employee_by_id(user:AttendanceUser,employee:Employee,employeeId:int,companyId:int,db):
     employee_update=db.get(EmployeeModel,employeeId)
-    new_employee=EmployeeModel(**employee.dict(), user_id=user.id,company_id=companyId)
-    db.add(new_employee)
+    # Update the employee record with the new values from the dictionary
+    for key, value in employee.dict().items():
+        print(key)
+        setattr(employee_update, key, value)
+    # print(employee)
     db.commit()
-    db.refresh(new_employee) 
-    return new_employee 
+    db.refresh(employee_update) 
+    return employee_update 
+@router.get('get-employee-by-id')
+async def getEmployeeById(id:int,db: Session = Depends(get_db)):
+    return db.get(EmployeeModel,id)
+# def get_employee_by_id(user:AttendanceUser, employeeId:int,companyId:int,db):
 @router.post("/register",)#response_model = BaseAttendanceUser)
 async def signup(phone:int,db: Session = Depends(get_db)):
     try:
@@ -279,10 +289,10 @@ def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=De
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
 
-# @router.post('/add-employee')
-# def add_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-#     employee=AttendanceRepo.update_employee(id,db,employee,companyId)
-#     return employee  
+@router.post('/update-employee')
+def update_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=update_employee_by_id(current_user,employee,id,companyId,db)
+    return employee  
 
 
 @router.post("/send-invitation")
