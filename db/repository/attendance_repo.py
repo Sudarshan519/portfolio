@@ -19,7 +19,20 @@ import json
 # 9863450107
 # 0689
 class AttendanceRepo:
-
+    @staticmethod
+    def employee_companies(phone,db):
+        all=db.query(Employee).filter(EmployeeModel.phone==phone).all()
+                # all=db.query(EmployeeModel,CompanyModel).filter(EmployeeModel.phone==phone).distinct(EmployeeModel.id).all()
+                # companies=[]
+                # for company,employee in all:
+                #     if employee in companies:
+                #         pass
+                #     else:  
+                #         # compdict=company.dict()
+                #         # compdict['status']=employee.status
+                #         companies.append(employee)
+                
+        return all
     @staticmethod
     def add_approver(empId,companyId,db):
         employee =db.get(EmployeeModel,empId)
@@ -156,10 +169,10 @@ class AttendanceRepo:
         otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
         print(otp.code)
         if otp is not None: 
-        
             if otp.code==code:# and otp.isvalid():
                 access_token=AttendanceRepo.create_token(phone,db)
-               
+                access_token['companies']= []
+                
                 return access_token
             else:
                 return HTTPException(status_code=401,detail=f"Otp does not match.")

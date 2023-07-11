@@ -90,9 +90,14 @@ class EmployeeModel(Base):
     # status=Column(Enum(Status),default=False)
     status=Column(Enum(Status),default=Status.INIT,nullable=True)
     company=relationship("CompanyModel",back_populates="employee")
+
+    @property
+    def company_name(self):
+        return self.company.name
     __table_args__ = (
         UniqueConstraint('company_id','phone', name='uq_company_employee'),
     )
+    
 
 class BreakModel(Base):
     id = Column(Integer,primary_key=True,index=True)
