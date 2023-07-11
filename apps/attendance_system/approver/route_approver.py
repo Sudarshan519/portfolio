@@ -9,6 +9,6 @@ class BaseAttendanceUser(BaseModel):
 
 router =APIRouter(include_in_schema=True,prefix='/approver',tags=['Approver'])
 
-@router.post('/')
-async def create_approver():
-    pass
+# @router.post('/')
+# async def create_approver():
+#     pass
