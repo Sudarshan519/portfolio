@@ -123,7 +123,9 @@ class AttendanceModel(Base):
     employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
-
+    @property
+    def is_approver(self):
+        return self.employee.is_approver
 # GROUP BY, HAVING PLUS
     @property
     def hours_worked(self):
