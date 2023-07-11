@@ -19,7 +19,7 @@ class Settings:
     MySQL_SERVER : str = os.getenv("MySQL_SERVER","localhost")
     MySQL_PORT : str = os.getenv("MySQL_PORT",3306) # default MySQL port is 5432
     MySQL_DB : str = os.getenv("MYSQL_DB")
-    DATABASE_URL = f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}"
+    DATABASE_URL = POSTGRES_URL#f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}"
     SECRET_KEY :str = os.getenv("SECRET_KEY")   #new
     ALGORITHM = "HS256"                         #new
     ACCESS_TOKEN_EXPIRE_MINUTES = 60*24  #in mins  #new

@@ -38,13 +38,13 @@ class FakeAttendance:
         attendance_records=[]
         employees=db.query(EmployeeModel).all()
         try:
-            for _ in range(10):
+            for _ in range(100):
                 random_employee = random.choice(employees)
                 random_date = fake.date_between_dates(date_start=start_date, date_end=end_date)
-
+                
                 attendance_record = AttendanceModel(
                     employee_id=random_employee.id,
-                    attendance_date=random_date,
+                    attendance_date=date.today(),
                     login_time='10:00',
                     logout_time='10:50'
 
@@ -52,7 +52,9 @@ class FakeAttendance:
                 attendance_records.append(attendance_record)
                 db.add(attendance_record)
                 db.commit()
+                print(db.refresh(attendance_record))
         except Exception as e:
+            print(e)
             return None
         # Write attendance records to the database
         db.bulk_save_objects(attendance_records)

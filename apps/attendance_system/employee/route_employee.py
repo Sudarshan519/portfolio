@@ -139,7 +139,7 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
 @router.post('/get-today-details',response_model=CreateAttendance)#,response_model=AttendanceTodayDetailModel)
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    employee=AttendanceRepo.get_employee(current_user.phone,db)
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
     today_details=AttendanceRepo.get_today_details(employeeId=employee.id,db=db,companyId=companyId)
     return today_details  

@@ -14,6 +14,8 @@ class AttendanceStatus(Enum):
     EARLY="EARLY"
     PRESENT="PRESENT"
     ABSENT="ABSENT"
+    PENDING="PENDING"
+    LEAVE="LEAVE"
 
 class BaseAttendanceUser(BaseModel):
     phone:str

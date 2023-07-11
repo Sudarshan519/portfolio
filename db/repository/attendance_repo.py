@@ -9,7 +9,7 @@ from core.config import settings
 from datetime import date, datetime, time, timedelta
 from core.security import create_access_token
 from schemas.attendance import Status
-from sqlalchemy import and_, func
+from sqlalchemy import and_, desc, func
 from sqlalchemy import or_, and_
 from week_util import getMonthRange, getWeekDate
 from sqlalchemy.orm import joinedload,declarative_base
@@ -260,8 +260,38 @@ class AttendanceRepo:
         return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
     
     @staticmethod
+    def employeeWithDailyReport(companyId,db):
+        now=datetime.now()
+        employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter( or_(
+            AttendanceModel.attendance_date == date.today(),
+            AttendanceModel.attendance_date.is_(None)
+        )) .order_by(desc(AttendanceModel.attendance_date)).all()#  | AttendanceModel.attendance_date.is_(None)
+        attendance_data = {}
+        result=[]
+        # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
+        for employee,attendance in employees:
+            employee_id = employee.id
+            if employee_id not in attendance_data:
+                attendance_data[employee_id] = {
+                    "employee": employee.phone,
+                    "attendance": []
+                }
+            # print(attendance)
+            if attendance:
+                attendance_data[employee_id]["attendance"].append( 
+                    attendance  
+                # "attendance_id": attendance.id,
+                # "date": attendance.attendance_date,
+                # "status": attendance.status
+                ) 
+        for k,v in attendance_data.items():
+            result.append(v)      
+        print(datetime.now()-now)
+        return  result
+    @staticmethod
     def employeewithAttendanceWeeklyReport(companyId,db,):
         dates= getWeekDate()
+        now=datetime.now()
         # dates= getMonthRange(2023,6)
         data=[]
         print(dates[0])
@@ -298,6 +328,7 @@ class AttendanceRepo:
         employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()#.filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()
         # Process the results
         attendance_data = {}
+        result=[]
         # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
         for employee,attendance in employees:
             employee_id = employee.id
@@ -306,7 +337,7 @@ class AttendanceRepo:
                     "employee": employee.phone,
                     "attendance": []
                 }
-            print(attendance)
+            # print(attendance)
             if attendance:
                 attendance_data[employee_id]["attendance"].append( 
                     attendance  
@@ -314,9 +345,10 @@ class AttendanceRepo:
                 # "date": attendance.attendance_date,
                 # "status": attendance.status
                 ) 
-              
-        
-        return  attendance_data#[attendance_data
+        for k,v in attendance_data.items():
+            result.append(v)      
+        print(datetime.now()-now)
+        return  result#attendance_data#[attendance_data
             #]
             # print(f"Employee ID: {employee.id}, Name: {employee.name}")
         #     if attendance:
@@ -334,14 +366,15 @@ class AttendanceRepo:
     @staticmethod
     def employeeWithAttendanceMonthlyReport(companyId,db):
         now=datetime.now()
-        print(now)
+        # print(now)
         dates= getMonthRange(now.year,now.month)
         # print(dates)
-        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).all()
+        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).order_by(desc(AttendanceModel.attendance_date)).all()
         attendance_data = {}
         employee_count=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).count()
         present_count=0
         absent_count=0
+        result=[]
         for employee,attendance in employees:
                 employee_id = employee.id
                 if employee_id not in attendance_data:
@@ -349,7 +382,8 @@ class AttendanceRepo:
                         "employee": employee.phone,
                         "attendance": []
                     }
-                print(attendance)
+
+                # print(attendance)
                 
                 if attendance:
                     present_count+=1
@@ -365,18 +399,21 @@ class AttendanceRepo:
                     absent_count+=1
                 # print(attendance_data[employee_id]["attendance"])
                 attendance_data[employee_id]["present_count"]=len(attendance_data[employee_id]["attendance"])
+        for k,v in attendance_data.items():
+            result.append(v)
+        # print(result)
 
                     # print(len(attendance_data[employee_id]["attendance"]))
                 
         # print(datetime.now())
         # print(now)
-        # print(datetime.now()-now)
+        print(datetime.now()-now)
         # print(present_count)
         # print(absent_count)
         # print(employee_count)
-        attendance_data['present_count']=present_count
-        attendance_data['absent_count']=employee_count*30-present_count
-        return  attendance_data
+        # attendance_data['present_count']=present_count
+        # attendance_data['absent_count']=employee_count*30-present_count
+        return result
         # data=[
         #     {
         #         'employee':employee,
@@ -502,7 +539,7 @@ class AttendanceRepo:
             
             employees_count=db.query(EmployeeModel).count()
             total_page = math.ceil(employees_count / limit)
-            # print(total_page)
+ 
             attendance_count=db.query(AttendanceModel).filter(AttendanceModel.attendance_date == date.today(),AttendanceModel.company_id==companyId).count()
  
             employee_data = []
@@ -527,9 +564,11 @@ class AttendanceRepo:
     
     @staticmethod
     def reportToday(companyId,db):
+        now=datetime.now()
         # Retrieve all employees from the database
-        employees = db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).all()#.distinct(EmployeeModel.id)
+        employees = db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId ).all()#.distinct(EmployeeModel.id)
         data=[]
+        present_count=0
         # Retrieve attendance records for today
         today = date.today()
         for employee in employees:
@@ -541,14 +580,23 @@ class AttendanceRepo:
                     
                    })
             attendances_today = [attendance for attendance in employee.attendance if attendance.attendance_date == today]
-            # print(attendances_today)
-            # print(f"Employee ID: {employee.id}, Name: {employee.name}")
+ 
             if attendances_today:
-                
+
+                present_count+=1
                 for attendance in attendances_today:
-                    dict['attendance']=attendance
-                    # print(f"Attendance ID: {attendance.id}, Date: {attendance.attendance_date}")
+                    dict['attendance']=attendance 
             else:
                 dict['attendance']=None
             data.append(dict)
-        return data
+            total=len(data)
+
+        print(datetime.now())
+        print(now)
+        print(datetime.now()-now)
+        return {
+            'total':total,
+            'present_count':present_count,
+            
+            'absent_count':total-present_count,
+            'data':data}

@@ -132,11 +132,26 @@ class AttendanceModel(Base):
         return 4##calcTime(self.login_time+timedelta(hours=4))
     @property
     def salary(self):
-        return self.employee.salary
+        return self.employee.salary/(30*8*60)
     
     @property
     def duty_time(self):
-        return self.employee.duty_time
+        # Convert the time values to datetime.datetime objects using a fixed date (e.g., today's date)
+        # date_today = datetime.date.today()
+        # datetime1 = datetime.datetime.combine(date_today, self.employee.logout_time)
+        # print(datetime1)
+        # datetime2 = datetime.datetime.combine(date_today, self.employee.login_time)
+ 
+        # # Calculate the time difference
+        # time_diff = datetime2 - datetime1
+        # print(time_diff)
+
+        # # Extract the time difference as a timedelta object
+        # duration = time_diff.total_seconds()
+
+        # # Print the duration in seconds
+        # print(duration)
+        return calcTime(self.employee.login_time,self.employee.logout_time)
     
     @property
     def name(self):
