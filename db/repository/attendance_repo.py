@@ -16,9 +16,17 @@ from sqlalchemy.orm import joinedload,declarative_base
 from db.models.attendance import Base
 import json
 # Base = declarative_base()
+# 9863450107
+# 0689
 class AttendanceRepo:
 
-    
+    @staticmethod
+    def add_approver(empId,companyId,db):
+        employee =db.get(EmployeeModel,empId)
+        employee.is_approver=True
+        db.commit()
+        return db.refresh(employee)
+        
     @staticmethod
     def serialize_instance(obj):
         return obj.to_dict()
@@ -231,15 +239,16 @@ class AttendanceRepo:
     @staticmethod
     def companies_list(user:AttendanceUser,db:Session):
         data=[]
+         
         try: 
             companies= db.query(CompanyModel).filter(CompanyModel.user_id==user.id).all() 
-            for company in companies :
-                data={
-                    "id":company.id,
-                    "name":company.name,
-                    "start_time":company.start_time,
-                    "employee":company.employee
-                }
+            # for company in companies :
+            #     data={
+            #         "id":company.id,
+            #         "name":company.name,
+            #         "start_time":company.start_time,
+            #         "employee":company.employee
+            #     }
             return companies
         except Exception as e:
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e)
@@ -265,7 +274,7 @@ class AttendanceRepo:
         employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter( or_(
             AttendanceModel.attendance_date == date.today(),
             AttendanceModel.attendance_date.is_(None)
-        )) .order_by(desc(AttendanceModel.attendance_date)).all()#  | AttendanceModel.attendance_date.is_(None)
+        )) .order_by( (AttendanceModel.attendance_date)).all()#  | AttendanceModel.attendance_date.is_(None)
         attendance_data = {}
         result=[]
         # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
@@ -274,6 +283,7 @@ class AttendanceRepo:
             if employee_id not in attendance_data:
                 attendance_data[employee_id] = {
                     "employee": employee.phone,
+                    "company_id":employee.company_id,
                     "attendance": []
                 }
             # print(attendance)
@@ -369,7 +379,7 @@ class AttendanceRepo:
         # print(now)
         dates= getMonthRange(now.year,now.month)
         # print(dates)
-        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).order_by(desc(AttendanceModel.attendance_date)).all()
+        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).order_by((AttendanceModel.attendance_date)).all()
         attendance_data = {}
         employee_count=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).count()
         present_count=0
@@ -380,6 +390,7 @@ class AttendanceRepo:
                 if employee_id not in attendance_data:
                     attendance_data[employee_id] = {
                         "employee": employee.phone,
+                        "company_id":employee.company_id,
                         "attendance": []
                     }
 
@@ -497,7 +508,7 @@ class AttendanceRepo:
         # today=datetime.today().strftime("%Y-%m-%d")
         # print(today)
         candidates = db.query(EmployeeModel).join(AttendanceModel)
-        candidates=candidates.filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId)
+        candidates=candidates.filter(AttendanceModel.attendance_date==datetime.today().date(),AttendanceModel.company_id==companyId,)
         results=candidates.all()
         for candidate in results:
             

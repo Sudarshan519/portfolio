@@ -15,15 +15,17 @@ from db.repository.attendance_repo import AttendanceRepo
 from week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+# 9863450107
+# 0689
 # {
 #   "phone": "9863450107",
 #   "otp": "0726"
 # }eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODYzNDUwMTA3IiwiZXhwIjoxNjg4NjYxMzk3fQ.DGBN1ULWnN9db1_QMFLrQ4c8UmpZFqeEljuOtaIeatU
-router =APIRouter(include_in_schema=True, tags=['Employer'])
+router =APIRouter(include_in_schema=True, tags=[])
 import random
 import json
 
-@router.get('/import-db')
+@router.get('/import-db',tags=['Import/Export'])
 async def import_db(db: Session = Depends(get_db)):
  
     with open("exported_data.json", "r") as f:
@@ -38,7 +40,7 @@ async def import_db(db: Session = Depends(get_db)):
     
     return data
 
-@router.get('/export-db')
+@router.get('/export-db',tags=['Import/Export'])
 async def export_db(db: Session = Depends(get_db)):
     data=AttendanceRepo.export_db(db)
     with open("exported_data.json", "w") as f:
@@ -47,9 +49,15 @@ async def export_db(db: Session = Depends(get_db)):
     print(data)    
     
     return data
-@router.get('/companies')
-async def get_companies():
-    return {'companines':[],'inactive':[]}
+@router.get('/companies',tags=['Companies'])
+async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    now=datetime.now()
+    print(now)
+    companies_list=AttendanceRepo.companies_list(current_user,db) 
+    
+    data={'companines':list(filter(lambda x:x.is_active==True  ,companies_list)),'inactive':list(filter(lambda x:x.is_active==False ,companies_list))}
+    print( datetime.now())
+    return data
 
 class BaseAttendanceUser(BaseModel):
     phone:str
@@ -117,11 +125,19 @@ class Employee(BaseModel):
         orm_mode = True
 
  
-@router.get('/monthly-report')
+@router.get('/monthly-report',tags=[ 'Employer Report'])
 async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
     return AttendanceRepo.employeeWithAttendanceMonthlyReport(companyId,db)
 
-@router.get("/today-report")
+
+@router.get("/weekly-report",tags=[ 'Employer Report'])
+async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
+    dates= getWeekDate()
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db)
+    # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
+ 
+    return weekdata
+@router.get("/today-report",tags=[ 'Employer Report'])
 async def attendance(companyId:int, db: Session = Depends(get_db)):
         return AttendanceRepo.employeeWithDailyReport(companyId,db)
         # return AttendanceRepo.reportToday(companyId,db)
@@ -130,14 +146,8 @@ async def attendance(companyId:int, db: Session = Depends(get_db)):
         # return allAttendances
  
 
-@router.get("/weekly-report")
-async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
-    dates= getWeekDate()
-    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db)
-    # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
- 
-    return weekdata
-@router.get('/users')#,response_model=list[AttendanceUser])
+
+@router.get('/users',tags=['Companies'])#,response_model=list[AttendanceUser])
 async def all_employers(db: Session = Depends(get_db)):
     return db.query(AttendanceUser).all()
 
@@ -225,11 +235,11 @@ def update_employee_by_id(user:AttendanceUser,employee:Employee,employeeId:int,c
     db.commit()
     db.refresh(employee_update) 
     return employee_update 
-@router.get('get-employee-by-id')
+@router.get('get-employee-by-id',tags=['Companies'])
 async def getEmployeeById(id:int,db: Session = Depends(get_db)):
     return db.get(EmployeeModel,id)
 # def get_employee_by_id(user:AttendanceUser, employeeId:int,companyId:int,db):
-@router.post("/register",)#response_model = BaseAttendanceUser)
+@router.post("/register",tags=['Employer Register/Login'])#response_model = BaseAttendanceUser)
 async def signup(phone:int,db: Session = Depends(get_db)):
     try:
         eixst_user=get_user(phone,db)
@@ -244,12 +254,12 @@ async def signup(phone:int,db: Session = Depends(get_db)):
  
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
-@router.post('/resend-otp')
+@router.post('/resend-otp',tags=['Employer Register/Login'])
 async def resend_otp(phone:int,db: Session = Depends(get_db)):
     otp=create_otp(phone,db)
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
-@router.post('/verify-otp')
+@router.post('/verify-otp',tags=['Employer Register/Login'])
 def verify(code:str,phone:int,db: Session = Depends(get_db),):
     otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
 
@@ -270,12 +280,12 @@ def verify(code:str,phone:int,db: Session = Depends(get_db),):
         return HTTPException(status_code=404,detail=f"Otp not found for user {phone}")
 
  
-@router.post('/add-company',)#response_model=Company
+@router.post('/add-company',tags=['Companies'])#response_model=Company
 def add_company(company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     company=create_company(current_user,db,company)
     return company
 
-@router.post('/get-companies')
+@router.post('/get-companies',tags=['Companies'])
 def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     # print(current_user)
     company_list=AttendanceRepo.companies_list(user=current_user,db=db)
@@ -284,25 +294,28 @@ def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bear
 posts=[]
 
 
-@router.post('/add-employee')
+@router.post('/add-employee',tags=['Companies'])
 def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
 
-@router.post('/update-employee')
+@router.post('/update-employee',tags=['Companies'])
 def update_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=update_employee_by_id(current_user,employee,id,companyId,db)
     return employee  
+@router.post('/add-approver',tags=['Companies'])
+def add_approver(id:int,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    approver=AttendanceRepo.addApprover(id,companyId,db)
+    return approver
 
-
-@router.post("/send-invitation")
+@router.post("/send-invitation",tags=[ 'Companies'])
 def sendIntitation(employeeId,companyId,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     
     invitation=AttendanceRepo.create_company_invitation(employeeId,companyId,db)
     return invitation
 def allemployees(id,db):
     return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
-@router.get('/employee')
+@router.get('/employee',tags=[ 'Companies'])
 def all_employee(companyId:int,db: Session = Depends(get_db)):# current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     employeelist=allemployees(companyId,db)
     return employeelist

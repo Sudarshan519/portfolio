@@ -17,7 +17,7 @@ import json
 import os
 
 
-router =APIRouter(include_in_schema=True,prefix='/api/v1/employee',tags=['Employee'])
+router =APIRouter(include_in_schema=True,prefix='/api/v1/employee' )
 class Invitations(BaseModel):
     id:int
     company:Company 
@@ -33,7 +33,7 @@ class EmployeeCompanies(BaseModel):
     class Config:
         orm_mode=True   
 
-class EmployeeProfile(BaseModel):
+class Profile(BaseModel):
     name:Optional[str] 
     email:Optional[str]
     dob:date
@@ -92,13 +92,13 @@ class ResponseAttendance(BaseModel):
 
 
 
-@router.post('/fakeattendance')
+@router.post('/fakeattendance',tags=['Faker'])
 async def fakeAttendance(db: Session = Depends(get_db)):
     return FakeAttendance.addAttendance(db)
-@router.post('/fakeemployee')
+@router.post('/fakeemployee',tags=['Faker'])
 async def fakeEmployee(db: Session = Depends(get_db)):
     return FakeAttendance.addEmployee(db)
-@router.post('/login')
+@router.post('/login',tags=['Employee Login/Verify'])
 async def login(phone:int, db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone,db)
     if   employee is None:
@@ -111,11 +111,11 @@ async def login(phone:int, db: Session = Depends(get_db)):
         return {"otp":otp.code}
  
 
-@router.post('/verify-otp')
+@router.post('/verify-otp',tags=['Employee Login/Verify'])
 async def verifyOtp(phone,otp:str,db: Session = Depends(get_db)):
     
    return AttendanceRepo.verify_otp(otp,phone,db)
-@router.get('/companies'  ,response_model=list[Invitations])
+@router.get('/companies'  ,response_model=list[Invitations],tags=['Employee Invitations'])
 async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     
     if current_user.is_employer:
@@ -128,7 +128,7 @@ class InvitationsResponse(BaseModel):
     invitations:list[Invitations]
     class Config:
         orm_mode=True
-@router.get('/invitations',response_model=list[Invitations])
+@router.get('/invitations',response_model=list[Invitations],tags=['Employee Invitations'])
 async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone=current_user.phone,db=db)
     allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
@@ -137,48 +137,48 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     # class Config:
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
-@router.post('/get-today-details',response_model=CreateAttendance)#,response_model=AttendanceTodayDetailModel)
+@router.post('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
     today_details=AttendanceRepo.get_today_details(employeeId=employee.id,db=db,companyId=companyId)
     return today_details  
 
-@router.post('/attendance-store',response_model=CreateAttendance,)
+@router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
 async def store_attendance(companyId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
     attendance=AttendanceRepo.store_attendance(compId=companyId,empId=employee.id,db=db,loginTime=datetime.now().time(),logoutTime=None )
 
     return attendance
-@router.post('/attendance-stop',response_model=CreateAttendance,)
+@router.post('/attendance-stop',response_model=CreateAttendance,tags=['Employee Details'])
 async def store_attendance(attendanceId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
     attendance=AttendanceRepo.store_logout(attendanceId=attendanceId,db=db,logoutTime=datetime.now().time() )
 
     return attendance
-@router.post('/break-store')
+@router.post('/break-store',tags=['Employee Details'])
 async def break_store( attendanceId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     break_start=AttendanceRepo.store_break_start(attendanceId,db)
     return break_start
 
-@router.post('/break-stop-store')
+@router.post('/break-stop-store',tags=['Employee Details'])
 async def break_stop( break_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     break_stop_detail=AttendanceRepo.store_break_stop(break_id,db)
     return break_stop_detail
-@router.get('all-attendances')
+@router.get('all-attendances',tags=['Employee Details'])
 def get_all_attendance(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db)
     return AttendanceRepo.get_all_attendance(companyId,employee.id,db)
 
 
-@router.get('/profile')
+@router.get('/profile',tags=['Employee Details'])
 async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     return current_user
 
 
 
 
-@router.post('/update-profile')
-async def updateProfile(profile:EmployeeProfile=Form(...),photo:UploadFile(...)=File(None),current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+@router.post('/update-profile',tags=['Employee Details'])
+async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(None),current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     profiledict=profile.__dict__
     if photo:
         url=None 
@@ -204,23 +204,11 @@ async def updateProfile(profile:EmployeeProfile=Form(...),photo:UploadFile(...)=
     
     return current_user
     
-@router.get('/accept-invitations/{id}',response_model=Invitations)
+@router.get('/accept-invitations/{id}',response_model=Invitations,tags=['Employee Invitations'])
 async def accept_invitations(id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     invitation= AttendanceRepo.updateInvitation(id,db)
 
     return invitation
      
-
-
-@router.post('/start-break-submit')
-async def store_break_start():
-
-    return {}
-
-
-@router.post('/brek-end-submit')
-async def store_break_end():
-    return {}
-
-
+ 
 
