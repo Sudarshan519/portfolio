@@ -1,0 +1,14 @@
+{
+    "id": 7,
+    "login_time": "10:10:00",
+    "salary": 0,
+    "is_active": false,
+    "company_id": 4,
+    "status": "INIT",
+    "phone": 9800000000,
+    "name": "string",
+    "logout_time": "10:10:00",
+    "duty_time": "10:50:00",
+    "user_id": 1,
+    "is_approver": false
+}
