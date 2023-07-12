@@ -152,7 +152,7 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
-    today_details=AttendanceRepo.get_today_details(employeeId=employee.id,db=db,companyId=companyId)
+    today_details=AttendanceRepo.get_today_details( employee.id, db, companyId)
     return today_details  
 
 @router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
