@@ -132,10 +132,10 @@ class AttendanceRepo:
     @staticmethod
     def get_today_details(employeeId,db,companyId):
         
-            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employeeId,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today().date()).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
+            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employeeId,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today() ).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
             
             if not today_attendance:
-                return AttendanceModel(attendance_date=datetime.now(),company_id=companyId,employee_id=employeeId,login_time=None,logout_time=None)
+                return AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employeeId,login_time=None,logout_time=None)
             else:
                 return today_attendance
         
