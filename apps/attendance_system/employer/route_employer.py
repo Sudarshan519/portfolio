@@ -1,6 +1,6 @@
  
 from datetime import date, datetime, time, timedelta
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile,status
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile,status
 from psycopg2 import IntegrityError
 from pydantic import BaseModel, Field
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
@@ -12,6 +12,7 @@ from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
+from schemas.attendance import Status
 from week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -21,7 +22,7 @@ from fastapi.encoders import jsonable_encoder
 #   "phone": "9863450107",
 #   "otp": "0726"
 # }eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODYzNDUwMTA3IiwiZXhwIjoxNjg4NjYxMzk3fQ.DGBN1ULWnN9db1_QMFLrQ4c8UmpZFqeEljuOtaIeatU
-router =APIRouter(include_in_schema=True, tags=[])
+router =APIRouter(prefix='/api/v1', include_in_schema=True, tags=[])
 import random
 import json
 
@@ -55,9 +56,9 @@ async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUse
     print(now)
     companies_list=AttendanceRepo.companies_list(current_user,db) 
     
-    data={'companines':list(filter(lambda x:x.is_active==True  ,companies_list)),'inactive':list(filter(lambda x:x.is_active==False ,companies_list))}
-    print( datetime.now())
-    return data
+    # data={'companines':list(filter(lambda x:x.is_active==True  ,companies_list)),'inactive':list(filter(lambda x:x.is_active==False ,companies_list))}
+    # print( datetime.now())
+    return companies_list
 
 class BaseAttendanceUser(BaseModel):
     phone:str
@@ -260,7 +261,8 @@ async def resend_otp(phone:int,db: Session = Depends(get_db)):
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
 @router.post('/verify-otp',tags=['Employer Register/Login'])
-def verify(code:str,phone:int,db: Session = Depends(get_db),):
+def verify(otp:str=Body(...),phone:str=Body(...),db: Session = Depends(get_db),):
+    return AttendanceRepo.verify_otp(otp,phone,db)
     otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
 
     if otp is not None:
@@ -310,9 +312,12 @@ def add_approver(id:int,companyId:int, current_user:AttendanceUser=Depends(get_c
 
 @router.post("/send-invitation",tags=[ 'Companies'])
 def sendIntitation(employeeId,companyId,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    
-    invitation=AttendanceRepo.create_company_invitation(employeeId,companyId,db)
-    return invitation
+    employee=db.get(EmployeeModel,employeeId)
+    employee.status=Status.INVITED
+    db.commit()
+    return db.refresh(employee)
+    # invitation=AttendanceRepo.create_company_invitation(employeeId,companyId,db)
+    # return invitation
 def allemployees(id,db):
     return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
 @router.get('/employee',tags=[ 'Companies'])

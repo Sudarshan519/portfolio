@@ -119,6 +119,7 @@ async def verifyOtp(phone=Body(...),otp:str=Body(...),db: Session = Depends(get_
 class CompanyOut(BaseModel):
     id:int
     company_name:Optional[str]=None
+    company_id:Optional[str]=None
     login_time:Optional[time]
     logout_time:Optional[time]
     status:Optional[Status]
@@ -148,11 +149,11 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     # class Config:
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
-@router.post('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
+@router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
-    today_details=AttendanceRepo.get_today_details( employee.id, db, companyId)
+    today_details=AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
 
 @router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
