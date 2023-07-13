@@ -128,6 +128,9 @@ class AttendanceModel(Base):
     employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
+    def __init__(self, *args, **kwargs):
+        self.salary=0#self.employee.salary
+        super().__init__(*args, **kwargs)
     @property
     def is_approver(self):
         return self.employee.is_approver
@@ -139,8 +142,12 @@ class AttendanceModel(Base):
         return 4##calcTime(self.login_time+timedelta(hours=4))
     @property
     def salary(self):
-        return self.employee.salary/(30*8*60)
-    
+        print(self.employee)
+        return self.per_min_salary
+        # return self.employee.salary/(30*8*60)
+    @salary.setter
+    def salary(self,new):
+        self.per_min_salary=new/(30*8*60)
     @property
     def duty_time(self):
         # Convert the time values to datetime.datetime objects using a fixed date (e.g., today's date)
