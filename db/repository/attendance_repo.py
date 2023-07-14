@@ -85,7 +85,7 @@ class AttendanceRepo:
         # return json_data
     @staticmethod
     def updateEmployee(id,employee,db,compId):
-        return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
+        return db.query(AttendanceModel).filter(AttendanceModel.company_id==compId).all()
     @staticmethod
     def getAllAttendance(companyId,db):
         return db.query(AttendanceModel).filter(AttendanceModel.company_id==companyId).all()
@@ -152,7 +152,7 @@ class AttendanceRepo:
         invitation=db.query(EmployeeCompany).filter(EmployeeCompany.id==id).first()
 
         if invitation:
-            invitation.status=Status.ACCEPTED
+            invitation.status=Status.INIT
 
             db.commit()
             db.refresh(invitation)
@@ -293,17 +293,27 @@ class AttendanceRepo:
     @staticmethod
     def employeeWithDailyReport(companyId,db):
         now=datetime.now()
-        employees = db.query(EmployeeModel, AttendanceModel).outerjoin(AttendanceModel).filter( or_(
+        today = date.today()
+        # employeelist=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId)
+        employees =db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).outerjoin(AttendanceModel).filter(
+       
+            or_(
             AttendanceModel.attendance_date == date.today(),
             AttendanceModel.attendance_date.is_(None)
-        )) .order_by( (AttendanceModel.attendance_date)).all()#  | AttendanceModel.attendance_date.is_(None)
+        )
+        ).limit(100).all()
+        print(f"")
+        
         attendance_data = {}
         result=[]
         # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
-        for employee,attendance in employees:
+        for employee in employees:
+            print(f"{employee } {date.today()} {employee.is_active}")
             employee_id = employee.id
             if employee_id not in attendance_data:
+                
                 attendance_data[employee_id] = {
+                    "id":employee_id,
                     "name":employee.name,
                     "employee": employee.phone,
                     "login_time":employee.login_time,
@@ -314,16 +324,16 @@ class AttendanceRepo:
                     "attendance": []
                 }
             # print(attendance)
-            if attendance:
-                attendance_data[employee_id]["attendance"].append( 
-                    attendance  
-                # "attendance_id": attendance.id,
-                # "date": attendance.attendance_date,
-                # "status": attendance.status
-                ) 
+            # if employee.attendance:
+            #     attendance_data[employee_id]["attendance"].append( 
+            #         employee.attendance  
+            #     # "attendance_id": attendance.id,
+            #     # "date": attendance.attendance_date,
+            #     # "status": attendance.status
+            #     ) 
         for k,v in attendance_data.items():
             result.append(v)      
-        print(datetime.now()-now)
+        # print(datetime.now()-now)
         return  result
     @staticmethod
     def employeewithAttendanceWeeklyReport(companyId,db,):

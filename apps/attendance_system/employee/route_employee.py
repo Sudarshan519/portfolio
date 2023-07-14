@@ -216,11 +216,17 @@ async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(Non
     
     return current_user
     
-@router.get('/accept-invitations/{id}',response_model=Invitations,tags=['Employee Invitations'])
+@router.get('/accept-invitations/{id}',tags=['Employee Invitations'])#response_model=Invitations,
 async def accept_invitations(id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    invitation= AttendanceRepo.updateInvitation(id,db)
+    employee=AttendanceRepo.get_employee(current_user.phone,db,id)
+    employee.is_active=True
+    employee.status=Status.INIT
+    db.commit()
+    db.refresh(employee)
+    
+    # invitation= AttendanceRepo.updateInvitation(id,db)
 
-    return invitation
+    return employee#invitation
      
  
 
