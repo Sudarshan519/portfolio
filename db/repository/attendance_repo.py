@@ -18,6 +18,11 @@ import json
 # Base = declarative_base()
 # 9863450107
 # 0689
+
+
+# ['unique ids']
+# filter id by unidqe id 
+#  insert
 class AttendanceRepo:
 
     @staticmethod
