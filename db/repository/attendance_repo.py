@@ -2,7 +2,7 @@ import math
 from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
 from requests import Session
 from db.session import get_db
-from schemas.attendance import Company,Employee
+from schemas.attendance import AttendanceStatus, Company,Employee
 from fastapi import status,HTTPException
 from fastapi import Depends, HTTPException, Request
 from core.config import settings
@@ -24,7 +24,20 @@ import json
 # filter id by unidqe id 
 #  insert
 class AttendanceRepo:
-
+    @staticmethod
+    def employee_companies(phone,db):
+        all=db.query(Employee).filter(EmployeeModel.phone==phone).all()
+                # all=db.query(EmployeeModel,CompanyModel).filter(EmployeeModel.phone==phone).distinct(EmployeeModel.id).all()
+                # companies=[]
+                # for company,employee in all:
+                #     if employee in companies:
+                #         pass
+                #     else:  
+                #         # compdict=company.dict()
+                #         # compdict['status']=employee.status
+                #         companies.append(employee)
+                
+        return all
     @staticmethod
     def add_approver(empId,companyId,db):
         employee =db.get(EmployeeModel,empId)
@@ -122,12 +135,15 @@ class AttendanceRepo:
         else:
             raise HTTPException(status_code=404, detail="Hero not found")
     @staticmethod
-    def get_today_details(employeeId,db,companyId):
+    def get_today_details(employee:EmployeeModel,db,companyId):
         
-            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employeeId,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today().date()).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
+            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today() ).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
             
             if not today_attendance:
-                return AttendanceModel(attendance_date=datetime.now(),company_id=companyId,employee_id=employeeId,login_time=None,logout_time=None)
+                print(employee.salary)
+                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT)
+                # attendance.salary=employee.salary 
+                return attendance
             else:
                 return today_attendance
         
@@ -150,6 +166,7 @@ class AttendanceRepo:
         invitation_exist=db.query(EmployeeCompany).filter(EmployeeCompany.employee_id==empId,EmployeeCompany.company_id==compId).first()
         if not invitation_exist:
             invitation=EmployeeCompany(employee_id=empId,company_id=compId)
+            invitation.status=Status.INVITED
             db.add(invitation)
             db.commit()
             db.refresh(invitation)
@@ -161,10 +178,10 @@ class AttendanceRepo:
         otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
         print(otp.code)
         if otp is not None: 
-        
             if otp.code==code:# and otp.isvalid():
                 access_token=AttendanceRepo.create_token(phone,db)
-               
+                access_token['companies']= []
+                
                 return access_token
             else:
                 return HTTPException(status_code=401,detail=f"Otp does not match.")
@@ -287,7 +304,12 @@ class AttendanceRepo:
             employee_id = employee.id
             if employee_id not in attendance_data:
                 attendance_data[employee_id] = {
+                    "name":employee.name,
                     "employee": employee.phone,
+                    "login_time":employee.login_time,
+                    "logout_time":employee.logout_time,
+                    "status":employee.status,
+                    "is_active":employee.is_active,
                     "company_id":employee.company_id,
                     "attendance": []
                 }
@@ -350,6 +372,9 @@ class AttendanceRepo:
             if employee_id not in attendance_data:
                 attendance_data[employee_id] = {
                     "employee": employee.phone,
+                    "status":employee.status,
+                    "is_active":employee.is_active,
+                    "company_id":employee.company_id,
                     "attendance": []
                 }
             # print(attendance)

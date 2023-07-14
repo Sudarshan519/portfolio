@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
 from apps.attendance_system.schemas.attendance import AttendanceTodayDetailModel,Company,CompanyInvitation
 from db.models.attendance import Otp
@@ -17,7 +17,7 @@ import json
 import os
 # 9800000000
 # 1117
-router =APIRouter(include_in_schema=True,prefix='/api/v1/employee' )
+router =APIRouter(include_in_schema=True,prefix='/api/v1' )
 class Invitations(BaseModel):
     id:int
     company:Company 
@@ -112,17 +112,29 @@ async def login(phone:int, db: Session = Depends(get_db)):
  
 
 @router.post('/verify-otp',tags=['Employee Login/Verify'])
-async def verifyOtp(phone,otp:str,db: Session = Depends(get_db)):
+async def verifyOtp(phone=Body(...),otp:str=Body(...),db: Session = Depends(get_db)):
     
    return AttendanceRepo.verify_otp(otp,phone,db)
-@router.get('/companies'  ,response_model=list[Invitations],tags=['Employee Invitations'])
+
+class CompanyOut(BaseModel):
+    id:int
+    company_name:Optional[str]=None
+    company_id:Optional[str]=None
+    login_time:Optional[time]
+    logout_time:Optional[time]
+    status:Optional[Status]
+    duty_time:Optional[time]
+    class Config:
+        orm_mode=True
+
+@router.get('/companies',response_model=list[CompanyOut]  ,tags=['Employee Invitations'])#response_model=list[Invitations],
 async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     
     if current_user.is_employer:
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
-    employee=AttendanceRepo.get_employee(phone=int(current_user.phone),db=db)
-    allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
-    return allInvitations
+    # employee=AttendanceRepo.employee_companies( (current_user.phone) ,db)
+    # allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
+    return db.query(EmployeeModel).filter(EmployeeModel.phone==current_user.phone,).all()#EmployeeModel.status!=Status.INIT
 
 class InvitationsResponse(BaseModel):
     invitations:list[Invitations]
@@ -137,11 +149,11 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     # class Config:
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
-@router.post('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
+@router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
-    today_details=AttendanceRepo.get_today_details(employeeId=employee.id,db=db,companyId=companyId)
+    today_details=AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
 
 @router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
