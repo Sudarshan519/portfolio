@@ -7,6 +7,20 @@
     }
 }
 
+.zoom {
+
+    /* background-color: green; */
+    transition: transform .2s;
+    /* Animation */
+
+    margin: 0 auto;
+}
+
+.zoom:hover {
+    transform: scale(1.2);
+    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -40,6 +54,7 @@ nav ul li {
 
 }
 
+
 nav ul li :hover {
     padding: 12px;
     background-color: #45a049;
@@ -47,6 +62,20 @@ nav ul li :hover {
     /* background: red; */
 
 }
+
+#myBtn {
+    padding: 1px;
+    background-color: #45a049;
+    border-radius: 1px;
+}
+
+#myBtn:hover {
+    padding: 0px;
+    background-color: #45a049;
+    border-radius: 1px;
+}
+
+
 
 nav ul li img {
     border: 2px solid wheat;

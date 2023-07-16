@@ -3,7 +3,7 @@ from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
 from requests import Session
 from db.session import get_db
 from schemas.attendance import AttendanceStatus, Company,Employee
-from fastapi import status,HTTPException
+from fastapi import Query, status,HTTPException
 from fastapi import Depends, HTTPException, Request
 from core.config import settings
 from datetime import date, datetime, time, timedelta
@@ -24,6 +24,9 @@ import json
 # filter id by unidqe id 
 #  insert
 class AttendanceRepo:
+    @staticmethod
+    def missing_attendance(employeeId,attendance,db,):
+        pass
     @staticmethod
     def employee_companies(phone,db):
         all=db.query(Employee).filter(EmployeeModel.phone==phone).all()
@@ -134,18 +137,25 @@ class AttendanceRepo:
             return
         else:
             raise HTTPException(status_code=404, detail="Hero not found")
+ 
     @staticmethod
     def get_today_details(employee:EmployeeModel,db,companyId):
-        
-            today_attendance= attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.company_id==companyId,AttendanceModel.attendance_date==datetime.today() ).order_by(AttendanceModel.id).first()#.desc(),AttendanceModel.attendance_date==datetime.now().date
-            
-            if not today_attendance:
+            attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==date.today())
+            today=attendance.first()
+            print(attendance.count())
+            # for d in attendance.all():
+            #     if d.attendance_date==date.today():
+            #         print(d.__dict__)
+            # today_attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==datetime.today() ).all()#.desc(),AttendanceModel.attendance_date==datetime.now().date .order_by(AttendanceModel.id)
+
+            if not today:
                 print(employee.salary)
+                print("NOT TODAY")
                 attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT)
                 # attendance.salary=employee.salary 
                 return attendance
             else:
-                return today_attendance
+                return today
         
     @staticmethod 
     def updateInvitation(id,db):
@@ -291,24 +301,28 @@ class AttendanceRepo:
         return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
     
     @staticmethod
-    def employeeWithDailyReport(companyId,db):
+    def employeeWithDailyReport(companyId,db,offset: int = 0, total: int =10):
+        print(offset)
         now=datetime.now()
         today = date.today()
-        # employeelist=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId)
-        employees =db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).outerjoin(AttendanceModel).filter(
-       
-            or_(
-            AttendanceModel.attendance_date == date.today(),
-            AttendanceModel.attendance_date.is_(None)
-        )
-        ).limit(100).all()
-        print(f"")
+        # print(db.query(EmployeeModel).count())
+        query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
+        allemployees=query.order_by(EmployeeModel.id).offset(offset*total).limit(total).all()
+        print(datetime.now())
+        print(query.count())
+        
+            # or_(
+            # AttendanceModel.attendance_date == date.today(),
+            # AttendanceModel.attendance_date.is_(None)
+        #)#
+        #)
+     
         
         attendance_data = {}
         result=[]
         # candidates = db.query(EmployeeModel,AttendanceModel).join(AttendanceModel).filter(AttendanceModel.attendance_date==datetime.now().today().date()).all()#
-        for employee in employees:
-            print(f"{employee } {date.today()} {employee.is_active}")
+        for employee in allemployees:
+            # print(f"{employee.phone} {date.today()} {employee.is_active}")
             employee_id = employee.id
             if employee_id not in attendance_data:
                 
@@ -322,18 +336,18 @@ class AttendanceRepo:
                     "is_active":employee.is_active,
                     "company_id":employee.company_id,
                     "attendance": []
-                }
-            # print(attendance)
-            # if employee.attendance:
-            #     attendance_data[employee_id]["attendance"].append( 
-            #         employee.attendance  
-            #     # "attendance_id": attendance.id,
-            #     # "date": attendance.attendance_date,
-            #     # "status": attendance.status
-            #     ) 
+                } 
+            if employee.attendance:
+                
+                attendance_data[employee_id]["attendance"].extend( 
+                attendance
+                for attendance in employee.attendance
+                if attendance.attendance_date==today
+                )
+            
+       
         for k,v in attendance_data.items():
-            result.append(v)      
-        # print(datetime.now()-now)
+            result.append(v)       
         return  result
     @staticmethod
     def employeewithAttendanceWeeklyReport(companyId,db,):

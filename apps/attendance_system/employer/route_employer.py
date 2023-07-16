@@ -139,8 +139,8 @@ async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
  
     return weekdata
 @router.get("/today-report",tags=[ 'Employer Report'])
-async def attendance(companyId:int, db: Session = Depends(get_db)):
-        return AttendanceRepo.employeeWithDailyReport(companyId,db)
+async def attendance(companyId:int, db: Session = Depends(get_db),page:int=1,limit:int=10):
+        return AttendanceRepo.employeeWithDailyReport(companyId,db,page-1,limit)
         # return AttendanceRepo.reportToday(companyId,db)
 
         # allAttendances=AttendanceRepo.todayReport(companyId,db)
@@ -236,7 +236,7 @@ def update_employee_by_id(user:AttendanceUser,employee:Employee,employeeId:int,c
     db.commit()
     db.refresh(employee_update) 
     return employee_update 
-@router.get('get-employee-by-id',tags=['Companies'])
+@router.get('/get-employee-by-id',tags=['Companies'])
 async def getEmployeeById(id:int,db: Session = Depends(get_db)):
     return db.get(EmployeeModel,id)
 # def get_employee_by_id(user:AttendanceUser, employeeId:int,companyId:int,db):
@@ -300,7 +300,12 @@ posts=[]
 def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
-
+@router.get('/employee-by-id')
+async def getEmployee(employeeId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    try:
+        return db.get(EmployeeModel,id)
+    except Exception as e:
+        return HTTPException(status_code=404,detail='Employee not found')
 @router.post('/update-employee',tags=['Companies'])
 def update_employee(id:int,employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=update_employee_by_id(current_user,employee,id,companyId,db)
@@ -311,11 +316,12 @@ def add_approver(id:int,companyId:int, current_user:AttendanceUser=Depends(get_c
     return approver
 
 @router.post("/send-invitation",tags=[ 'Companies'])
-def sendIntitation(employeeId,companyId,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def sendInvitation(employeeId,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=db.get(EmployeeModel,employeeId)
     employee.status=Status.INVITED
     db.commit()
-    return db.refresh(employee)
+    db.refresh(employee)
+    return employee
     # invitation=AttendanceRepo.create_company_invitation(employeeId,companyId,db)
     # return invitation
 def allemployees(id,db):
