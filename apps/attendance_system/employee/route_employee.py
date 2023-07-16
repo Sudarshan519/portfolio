@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Body
 from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
 from apps.attendance_system.schemas.attendance import AttendanceTodayDetailModel,Company,CompanyInvitation
@@ -10,7 +11,7 @@ from db.repository.attendance_repo import AttendanceRepo
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from pydantic import BaseModel,root_validator
 from typing import Optional
-from schemas.attendance import Status
+from schemas.attendance import AttendanceStatus, Status, StatusOut
 from datetime import date, datetime, time, timedelta
 from upload_file import firebase_upload
 import json
@@ -61,7 +62,21 @@ class Employee(BaseModel):
     duty_time:Optional[time]
     class Config:
         orm_mode=True
-
+class MissingAttendance(BaseModel):
+    attendance_date=date
+    start_time:time
+    end_time:time
+    company_id:int
+    attendance_type: AttendanceStatus=Form(...)
+#     class Config():  #to convert non dict obj to json
+#         schema_extra = {
+#             "example":{
+#   "start_time": "string",
+#   "end_time": "string",
+#   "company_id": 0,
+#   "attendance_type": "LATE"
+# }
+#         }
 class CreateAttendance(BaseModel):
     id:int
     attendance_date:date
@@ -69,7 +84,7 @@ class CreateAttendance(BaseModel):
     company_id:Optional[int]
     login_time:time=None
     logout_time:time=None
-    breaks:list[Breaks]
+    breaks:list[Breaks]=[]
     # employee:Employee
     is_approver:bool=False
     salary:Optional[float]
@@ -153,9 +168,12 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
 def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
  
-    today_details=AttendanceRepo.get_today_details( employee, db, companyId)
+    today_details=  AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
-
+@router.post('/missing-attendance')
+async def add_missing_attendance(employeeId:int,attendance:MissingAttendance, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
+    attendance=AttendanceRepo.missingAttendance(employeeId,attendance)
+    return None
 @router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
 async def store_attendance(companyId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
@@ -217,10 +235,10 @@ async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(Non
     return current_user
     
 @router.get('/accept-invitations/{id}',tags=['Employee Invitations'])#response_model=Invitations,
-async def accept_invitations(id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    employee=AttendanceRepo.get_employee(current_user.phone,db,id)
+async def accept_invitations(id:int,status:Status, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    employee=db.get(EmployeeModel,id)#.get_employee(current_user.phone,db,id)
     employee.is_active=True
-    employee.status=Status.INIT
+    employee.status=status
     db.commit()
     db.refresh(employee)
     

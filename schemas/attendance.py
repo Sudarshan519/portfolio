@@ -7,9 +7,11 @@ class Status(Enum):
     INVITED="INVITED"
     ACCEPTED="ACCEPTED"
     REJECTED="REJECTED"
-
+class StatusOut(Enum):
+    ACCEPTED="ACCEPTED"
+    REJECTED="REJECTED"
     
-class AttendanceStatus(Enum):
+class AttendanceStatus(str,Enum):
     LATE="LATE"
     EARLY="EARLY"
     PRESENT="PRESENT"

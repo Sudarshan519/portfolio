@@ -133,7 +133,7 @@ class AttendanceModel(Base):
         super().__init__(*args, **kwargs)
     @property
     def is_approver(self):
-        return self.employee.is_approver
+        return self.employee.is_approver or False
 # GROUP BY, HAVING PLUS
     @property
     def hours_worked(self):
@@ -143,8 +143,9 @@ class AttendanceModel(Base):
     @property
     def salary(self):
         print(self.employee)
-        return self.per_min_salary
-        # return self.employee.salary/(30*8*60)
+        if not self.employee:
+            return self.per_min_salary
+        return self.employee.salary/(30*8*60)
     @salary.setter
     def salary(self,new):
         self.per_min_salary=new/(30*8*60)
