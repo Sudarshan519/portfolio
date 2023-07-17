@@ -125,6 +125,11 @@ class Employee(BaseModel):
         }
         orm_mode = True
 
+@router.get('/profile',tags=['Employer Details'])
+async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    return current_user
+
+
  
 @router.get('/monthly-report',tags=[ 'Employer Report'])
 async def getMonthlyReport(companyId,db:Session= Depends(get_db)):

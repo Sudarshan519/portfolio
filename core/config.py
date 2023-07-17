@@ -6,7 +6,7 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 class Settings:
-    SQLITE_URL: str="sqlite:///test.db"
+    SQLITE_URL: str="sqlite:///ntest.db"
     PROJECT_NAME:str = "Job Board"
     PROJECT_VERSION: str = "1.0.0"
     MONGODB_URI:   str = os.getenv("MONGODB_URI")
@@ -19,7 +19,11 @@ class Settings:
     MySQL_SERVER : str = os.getenv("MySQL_SERVER","localhost")
     MySQL_PORT : str = os.getenv("MySQL_PORT",3306) # default MySQL port is 5432
     MySQL_DB : str = os.getenv("MYSQL_DB")
+    # DATABASE_URL =SQLITE_URL# f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
+    # DATABASE_URL = f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
     DATABASE_URL =f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
+    # DATABASE_URL =POSTGRES_URL
+
     SECRET_KEY :str = os.getenv("SECRET_KEY")   #new
     ALGORITHM = "HS256"                         #new
     ACCESS_TOKEN_EXPIRE_MINUTES = 60*24  #in mins  #new

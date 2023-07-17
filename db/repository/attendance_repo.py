@@ -6,7 +6,7 @@ from schemas.attendance import AttendanceStatus, Company,Employee
 from fastapi import Query, status,HTTPException
 from fastapi import Depends, HTTPException, Request
 from core.config import settings
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from core.security import create_access_token
 from schemas.attendance import Status
 from sqlalchemy import and_, desc, func
@@ -23,6 +23,7 @@ import json
 # ['unique ids']
 # filter id by unidqe id 
 #  insert
+import time
 class AttendanceRepo:
     @staticmethod
     def missing_attendance(employeeId,attendance,db,):
@@ -58,10 +59,47 @@ class AttendanceRepo:
         data = {}
         for model in modelslist:
             db.query(model) .delete()
-            db.bulk_insert_mappings(
-            model,data_dict[model.__name__])
+            if model.__name__=='Otp':
+                data=[]
+                for a in data_dict[model.__name__]:
+                    a['created_at']=datetime.now()
+                    data.append(a)
+                db.bulk_insert_mappings(model,data)
+            elif model.__name__=='AttendanceUser':
+                for a in data_dict[model.__name__]:
+                    a['dob']=date.today() if  a['dob'] is None else datetime.strptime(str(a['dob']), '%Y-%m-%d')
+                db.bulk_insert_mappings(
+                model,data_dict[model.__name__])
+            elif model.__name__=='CompanyModel':
+                for a in data_dict[model.__name__]:
+                    a['established_date']=datetime.today() if  a['established_date'] is None else datetime.strptime(str(a['established_date'] or str(datetime.today())), '%Y-%m-%d')
+                    a['start_time']=datetime.strptime("10:10:00", '%H:%M:%S').time() if a['start_time'] is None else  datetime.strptime(str(a['start_time'] or "10:10"), '%H:%M:%S').time()
+                    a['end_time']=datetime.strptime("10:50:00", '%H:%M:%S').time() if a['end_time'] is None else  datetime.strptime(str(a['start_time'] or "10:40"), '%H:%M:%S').time()
+                    # a['duty_time']=datetime.time() if a['duty_time'] is None else  datetime.strptime(str(a['duty_time'] or "10:40:00"), '%H:%M').time()
+                db.bulk_insert_mappings(
+                model,data_dict[model.__name__])
+            elif model.__name__=='EmployeeModel':
+                for a in data_dict[model.__name__]:
+                    # a['established_date']=datetime.today() if  a['established_date'] is None else datetime.strptime(str(a['established_date'] or str(datetime.today())), '%Y-%m-%d')
+                    a['login_time']=datetime.strptime("10:10:00", '%H:%M:%S').time() if a['login_time'] is None else  datetime.strptime(str(a['login_time'] or "10:10"), '%H:%M:%S').time()
+                    a['logout_time']=datetime.strptime("10:50:00", '%H:%M:%S').time() if a['logout_time'] is None else  datetime.strptime(str(a['logout_time'] or "10:40"), '%H:%M:%S').time()
+                    a['duty_time']=datetime.strptime("10:50:00", '%H:%M:%S').time() if a['duty_time'] is None else  datetime.strptime(str(a['duty_time'] or "10:40"), '%H:%M:%S').time()
+                db.bulk_insert_mappings(
+                model,data_dict[model.__name__])
+            elif model.__name__=='AttendanceModel':
+                for a in data_dict[model.__name__]:
+                    a['attendance_date']=datetime.today() if  a['attendance_date'] is None else datetime.strptime(str(a['attendance_date'] or str(datetime.today())), '%Y-%m-%d')
+                    a['login_time']=datetime.strptime("10:10:00", '%H:%M:%S').time() if a['login_time'] is None else  datetime.strptime(str(a['login_time'] or "10:10"), '%H:%M:%S').time()
+                    a['logout_time']=datetime.strptime("10:50:00", '%H:%M:%S').time() if a['logout_time'] is None else  datetime.strptime(str(a['logout_time'] or "10:40"), '%H:%M:%S').time()
+                    # a['duty_time']=datetime.strptime("10:50:00", '%H:%M:%S').time() if a['duty_time'] is None else  datetime.strptime(str(a['duty_time'] or "10:40"), '%H:%M:%S').time()
+                db.bulk_insert_mappings(
+                model,data_dict[model.__name__])
+            else:
+
+                db.bulk_insert_mappings(model,data_dict[model.__name__])
 
             db.commit()
+            return data_dict
             # if model.__name__=='Otp':
                 # otps=[Otp() for otp in data_dict[model.__name__]]
                 # print(otps)
