@@ -2,6 +2,14 @@ from pydantic import BaseModel, Field
 from datetime import date, datetime, time, timedelta
 from typing import Optional
 from enum import Enum
+class LeaveDayType(str,Enum):
+    FULLDAY="FULLDAY"
+    HALFDAY="HALFDAY"
+class LeaveRequestType(str,Enum):
+    HOLIDAY="HOLIDAY"
+    FESTIVAL="FESTIVAL"
+    SICK="SICK"
+    OTHER="OTHER"
 class Status(Enum):
     INIT='INIT'
     INVITED="INVITED"
@@ -18,7 +26,12 @@ class AttendanceStatus(str,Enum):
     ABSENT="ABSENT"
     PENDING="PENDING"
     LEAVE="LEAVE"
-
+class LeaveRequest(BaseModel):
+    start_date:date
+    end_date:date
+    leaveType:LeaveRequestType
+    leaveDayType:LeaveDayType
+    remarks:str
 class BaseAttendanceUser(BaseModel):
     phone:str
     otp:str

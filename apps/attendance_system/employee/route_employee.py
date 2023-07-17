@@ -27,6 +27,8 @@ class Invitations(BaseModel):
     status:Status=None
     class Config:
         orm_mode=True
+
+        
 class EmployeeCompanies(BaseModel):
     invitations:list[Invitations]
     active:list[Invitations]
@@ -37,14 +39,16 @@ class EmployeeCompanies(BaseModel):
 class Profile(BaseModel):
     name:Optional[str] 
     email:Optional[str]
-    dob:date
+    dob:Optional[str]
     @classmethod
     def __get_validators__(cls) :
+        print(cls)
         yield cls.validate_to_json
 
     @classmethod
     def validate_to_json(cls,value): 
         if isinstance(value,str):
+            print(cls)
             return cls(**json.loads(value))
         return value   
     class Config:
@@ -67,7 +71,7 @@ class MissingAttendance(BaseModel):
     start_time:time
     end_time:time
     company_id:int
-    attendance_type: AttendanceStatus=Form(...)
+    attendance_type: AttendanceStatus
 #     class Config():  #to convert non dict obj to json
 #         schema_extra = {
 #             "example":{
@@ -110,9 +114,14 @@ class ResponseAttendance(BaseModel):
 @router.post('/fakeattendance',tags=['Faker'])
 async def fakeAttendance(db: Session = Depends(get_db)):
     return FakeAttendance.addAttendance(db)
+
 @router.post('/fakeemployee',tags=['Faker'])
 async def fakeEmployee(db: Session = Depends(get_db)):
     return FakeAttendance.addEmployee(db)
+
+@router.post('/apply-leave')
+async def applyleave(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    return None
 @router.post('/login',tags=['Employee Login/Verify'])
 async def login(phone:int, db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone,db)
@@ -232,7 +241,7 @@ async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(Non
     
     updatedUser=AttendanceRepo.update_user(current_user.id,db,profiledict)
     
-    return current_user
+    return updatedUser
     
 @router.get('/accept-invitations/{id}',tags=['Employee Invitations'])#response_model=Invitations,
 async def accept_invitations(id:int,status:Status, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
