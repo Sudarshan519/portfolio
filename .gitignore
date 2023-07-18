@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 railway.json
+config.json
+.gitignore
