@@ -1,5 +1,5 @@
 import math
-from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
+from db.models.attendance import  AttendanceUser, EmployeeModel, LeaveRequest,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
 from requests import Session
 from db.session import get_db
 from schemas.attendance import AttendanceStatus, Company,Employee
@@ -25,6 +25,9 @@ import json
 #  insert
 import time
 class AttendanceRepo:
+    @staticmethod
+    def applyLeave(employeeId,leaveRequest, db):
+        leave=LeaveRequest()
     @staticmethod
     def missing_attendance(employeeId,attendance,db,):
         pass

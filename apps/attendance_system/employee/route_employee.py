@@ -11,7 +11,7 @@ from db.repository.attendance_repo import AttendanceRepo
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from pydantic import BaseModel,root_validator
 from typing import Optional
-from schemas.attendance import AttendanceStatus, Status, StatusOut
+from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut
 from datetime import date, datetime, time, timedelta
 from upload_file import firebase_upload
 import json
@@ -120,8 +120,8 @@ async def fakeEmployee(db: Session = Depends(get_db)):
     return FakeAttendance.addEmployee(db)
 
 @router.post('/apply-leave')
-async def applyleave(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    return None
+async def applyleave(employeeId:int,leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),
+    return AttendanceRepo.applyLeave(leaveRequest,employeeId,db)
 @router.post('/login',tags=['Employee Login/Verify'])
 async def login(phone:int, db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone,db)
@@ -203,7 +203,7 @@ async def break_store( attendanceId:int, current_user:AttendanceUser=Depends(get
 async def break_stop( break_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     break_stop_detail=AttendanceRepo.store_break_stop(break_id,db)
     return break_stop_detail
-@router.get('all-attendances',tags=['Employee Details'])
+@router.get('/all-attendances',tags=['Employee Details'])
 def get_all_attendance(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db)
     return AttendanceRepo.get_all_attendance(companyId,employee.id,db)

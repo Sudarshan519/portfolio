@@ -6,7 +6,7 @@ from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from schemas.attendance import Status,AttendanceStatus
+from schemas.attendance import LeaveDayType, LeaveRequestType, Status,AttendanceStatus
 from fastapi import Depends
 from requests import Session
 from db.session import get_db
@@ -60,6 +60,8 @@ class CompanyModel(Base):
     is_active=Column(Boolean,default=True)
     user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
     employee=relationship("EmployeeModel",back_populates="company")
+    total_casual_leave_in_year=Column(Integer,default=18)
+    total_sick_leave_in_year=Column(Integer,default=6)
     @property
     def employee_count(self):
         return len(self.attendance)
@@ -86,11 +88,19 @@ class EmployeeModel(Base):
     company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
     attendance = relationship("AttendanceModel", back_populates="employee")
     is_approver=Column(Boolean,default=False)
+
     # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
     # status=Column(Enum(Status),default=False)
     status=Column(Enum(Status),default=Status.INIT,nullable=True)
     company=relationship("CompanyModel",back_populates="employee")
-
+    total_sick_leave_taken=Column(Integer,default=0)
+    total_casual_leave_taken=Column(Integer,default=0)
+    @property
+    def available_sick_leave(self):
+        return self.company.total_sick_leave_in_year- self.total_sick_leave_taken
+    @property
+    def available_total_casual_leave(self):
+        return self.company.total_casual_leave_in_year-self.total_casual_leave_taken
     @property
     def company_name(self):
         return self.company.name
@@ -202,3 +212,19 @@ class EmployeeCompany(Base):
 #     employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
 #     employee=relationship("EmployeeModel",back_populates='monthly_report')
 #     salary=Column(Float,default=0)
+class LeaveRequest(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
+    start_date=Column(Date)
+    end_tate=Column(Date,nullable=True)
+    leave_type=Column(Enum(LeaveRequestType),nullable=True)
+    leave_day_type=Column(Enum(LeaveDayType),nullable=True)
+    document=Column(String(256),nullable=True)
+    employee=relationship("EmployeeModel",back_populates='monthly_report')
+
+    # start_date:date
+    # end_date:date
+    # leaveType:LeaveRequestType
+    # leaveDayType:LeaveDayType
+    # doc:str
+    # remarks:str

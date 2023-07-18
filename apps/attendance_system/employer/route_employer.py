@@ -316,12 +316,12 @@ def update_employee(id:int,employee:Employee,companyId:int, current_user:Attenda
     employee=update_employee_by_id(current_user,employee,id,companyId,db)
     return employee  
 @router.post('/add-approver',tags=['Companies'])
-def add_approver(id:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def add_approver(id:int, db: Session = Depends(get_db)):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     approver=AttendanceRepo.add_approver(id,db)
     return approver
 
 @router.get("/approvers")
-async def allApprovers(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+async def allApprovers(companyId:int, db: Session = Depends(get_db)):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     approver=AttendanceRepo.allApprovers(companyId,db)
     return approver
 
