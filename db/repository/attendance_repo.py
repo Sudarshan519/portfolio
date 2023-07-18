@@ -43,12 +43,15 @@ class AttendanceRepo:
                 
         return all
     @staticmethod
-    def add_approver(empId,companyId,db):
+    def add_approver(empId,db):
         employee =db.get(EmployeeModel,empId)
         employee.is_approver=True
         db.commit()
         return db.refresh(employee)
-        
+    @staticmethod
+    def allApprovers(companyId,db):
+        employee =db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId,EmployeeModel.is_approver==True).all()
+        return employee
     @staticmethod
     def serialize_instance(obj):
         return obj.to_dict()
