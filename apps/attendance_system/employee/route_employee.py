@@ -120,7 +120,7 @@ async def fakeEmployee(db: Session = Depends(get_db)):
     return FakeAttendance.addEmployee(db)
 
 @router.post('/apply-leave')
-async def applyleave(employeeId:int,leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),
+async def applyleave(employeeId:int ,leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     return AttendanceRepo.applyLeave(leaveRequest,employeeId,db)
 @router.post('/login',tags=['Employee Login/Verify'])
 async def login(phone:int, db: Session = Depends(get_db)):
