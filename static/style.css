@@ -21,6 +21,10 @@
     /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
+.slideshow-container {
+    overflow: hidden;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -212,7 +216,8 @@ footer {
 
 .mySlides1,
 .mySlides2 {
-    display: none
+    display: none;
+    overflow: hidden;
 }
 
 img {

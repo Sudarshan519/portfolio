@@ -25,15 +25,21 @@ import json
 #  insert
 import time
 class AttendanceRepo:
+    # @staticmethod
+    # def allLeave(id,db):
+    #     employee=db.get(EmployeeModel,id)
+    #     return employee
     @staticmethod
-    def applyLeave(employeeId,leaveRequest, db):
-        leave=LeaveRequest()
+    def applyLeave(leaveRequest, db):
+        leave=LeaveRequest(**leaveRequest.dict())#employeeId
+        return leave
     @staticmethod
     def missing_attendance(employeeId,attendance,db,):
         pass
     @staticmethod
     def employee_companies(phone,db):
         all=db.query(Employee).filter(EmployeeModel.phone==phone).all()
+         
                 # all=db.query(EmployeeModel,CompanyModel).filter(EmployeeModel.phone==phone).distinct(EmployeeModel.id).all()
                 # companies=[]
                 # for company,employee in all:
@@ -177,6 +183,7 @@ class AttendanceRepo:
     @staticmethod
     def get_employee(phone,db,companyId):
         employee=db.query(EmployeeModel).filter(EmployeeModel.phone==phone,EmployeeModel.company_id==companyId).first()
+        print(employee.total_sick_leave_taken)
         if employee: 
             return
         else:
