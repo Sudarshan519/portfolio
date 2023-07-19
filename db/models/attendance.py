@@ -97,10 +97,10 @@ class EmployeeModel(Base):
     total_casual_leave_taken=Column(Integer,default=0)
     @property
     def available_sick_leave(self):
-        return self.company.total_sick_leave_in_year- self.total_sick_leave_taken
+        return self.company.total_sick_leave_in_year- self.total_sick_leave_taken or 0
     @property
-    def available_total_casual_leave(self):
-        return self.company.total_casual_leave_in_year-self.total_casual_leave_taken
+    def available_casual_leave(self):
+        return self.company.total_casual_leave_in_year-self.total_casual_leave_taken or 0
     @property
     def company_name(self):
         return self.company.name
@@ -216,10 +216,11 @@ class LeaveRequest(Base):
     id = Column(Integer,primary_key=True,index=True)
     employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
     start_date=Column(Date)
-    end_tate=Column(Date,nullable=True)
+    end_date=Column(Date,nullable=True)
     leave_type=Column(Enum(LeaveRequestType),nullable=True)
     leave_day_type=Column(Enum(LeaveDayType),nullable=True)
     document=Column(String(256),nullable=True)
+    remarks=Column(String(256),nullable=True)
     # employee=relationship("EmployeeModel",back_populates='leave_report')
 
     # start_date:date

@@ -1,3 +1,4 @@
+from ast import List
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, Field
 from datetime import date, datetime, time, timedelta
@@ -20,7 +21,7 @@ def as_form(cls: Type[BaseModel]):
              inspect.Parameter(
                  model_field.alias,
                  inspect.Parameter.POSITIONAL_ONLY,
-                 default=Form(...,description= model_field.field_info.description if model_field.field_info else "") if model_field.required else Form(model_field.default),
+                 default=Form(..., description= model_field.field_info.description if model_field.field_info else "") if model_field.required else Form(model_field.default),
                  annotation=model_field.outer_type_,
              )
          )
@@ -33,20 +34,22 @@ def as_form(cls: Type[BaseModel]):
     as_form_func.__signature__ = sig  # type: ignore
     setattr(cls, 'as_form', as_form_func)
     return cls
+
+ 
 class LeaveDayType(str,Enum):
     FULLDAY="FULLDAY"
     HALFDAY="HALFDAY"
 class LeaveRequestType(str,Enum):
-    HOLIDAY="HOLIDAY"
+    # HOLIDAY="HOLIDAY"
     FESTIVAL="FESTIVAL"
     SICK="SICK"
     OTHER="OTHER"
-class Status(Enum):
+class Status(str,Enum):
     INIT='INIT'
     INVITED="INVITED"
     ACCEPTED="ACCEPTED"
     REJECTED="REJECTED"
-class StatusOut(Enum):
+class StatusOut(str,Enum):
     ACCEPTED="ACCEPTED"
     REJECTED="REJECTED"
     
@@ -60,12 +63,17 @@ class AttendanceStatus(str,Enum):
 
 @as_form
 class LeaveRequestIn(BaseModel):
+    employee_id:int=Field(title='Employee ID')
     start_date:date=Field( description="eg.2022-02-22")
     end_date:date=Field( description="eg.2022-02-22")
-    leaveType:LeaveRequestType
-    leaveDayType:LeaveDayType
-    doc:UploadFile=None
+    leave_type:LeaveRequestType
+    leave_day_type:LeaveDayType
+    document:UploadFile=None
     remarks:str=None
+
+@as_form
+class LeaveRequestList(BaseModel):
+    data:LeaveRequestIn=[]
     # model_config = {
     #     "json_schema_extra": {
     #         "examples": 
@@ -102,6 +110,8 @@ class Company(BaseModel):
     start_time:Optional[time]
     end_time:Optional[time]
     established_date:Optional[date] 
+    user_id:int
+    
     class Config():  #to convert non dict obj to json
         schema_extra = {
             "example": { 

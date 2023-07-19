@@ -9,7 +9,9 @@
 </head>
 
 <body>
-    <div class="zoom"></div><div class="zoom"></div><div class="zoom"></div>
+    <div class="zoom"></div>
+    <div class="zoom"></div>
+    <div class="zoom"></div>
     <header>
         <nav>
             <ul>
@@ -18,14 +20,15 @@
                 <li><a href="#portfolio">Portfolio</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="/docs">API Docs</a></li>
-                <a href="#" >
+                <a href="#">
                     <li>
 
 
                         <!-- Open Dialog -->
 
-                        <img id="myBtn" src="https://yt3.ggpht.com/yti/AHyvSCClsLzfFqnt4Z9_hZHEJ-9x6m5wGsdmvFQaJPjsaw=s88-c-k-c0x00ffffff-no-rj-mo" class="zoom"
-                            alt="" height="40px" width="40px" srcset="">
+                        <img id="myBtn"
+                            src="https://yt3.ggpht.com/yti/AHyvSCClsLzfFqnt4Z9_hZHEJ-9x6m5wGsdmvFQaJPjsaw=s88-c-k-c0x00ffffff-no-rj-mo"
+                            class="zoom" alt="" height="40px" width="40px" srcset="">
 
                     </li>
                 </a>
@@ -49,8 +52,10 @@
         <!-- Full-width images with number and caption text -->
         <div class="mySlides fade">
             <!-- <div class="numbertext">1 / 3</div> -->
-            <img src="https://nirmanschedule.com/storage/upload/23/02/1677420302home%20banner%20---%20.png" class="zoom"
-                style="background-size: cover;background-position: center;object-fit:contain; width: 100%;max-height:500px;">
+            <img src="{{   url_for('static',path='nirmanschedule.png') }} " class="zoom"
+                style="background-size: cover;background-position: center;object-fit:contain; width: 100%;max-height:500px;" />
+            <!--    <img src="https://nirmanschedule.com/storage/upload/23/02/1677420302home%20banner%20---%20.png" class="zoom"
+                style="background-size: cover;background-position: center;object-fit:contain; width: 100%;max-height:500px;"> -->
             <!-- <div class="text">Caption Text</div> -->
         </div>
 
@@ -59,20 +64,23 @@
         <div class="mySlides fade">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://storage.googleapis.com/download.tensorflow.org/tflite/examples/obj_detection_cat.gif"
-                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;scale:1;z-index:-1" class="zoom">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;scale:1;z-index:-1"
+                class="zoom">
             <!-- <div class="text">Caption Three</div> -->
         </div>
         <div class="mySlides fade">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
-                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;" class="zoom">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;"
+                class="zoom">
             <!-- <div class="text">Caption Three</div> -->
         </div>
 
         <div class="mySlides">
             <!-- <div class="numbertext">3 / 3</div> -->
             <img src="https://kipuwex.com/wp-content/uploads/2021/02/Kipuwex-hero-image-768x555.png"
-                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;" class="zoom">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;"
+                class="zoom">
             <!-- <div class="text">Caption Three</div> -->
             <!-- https://kipuwex.com/wp-content/uploads/2021/02/Kipuwex-hero-image-768x555.png -->
         </div>
@@ -80,7 +88,8 @@
         <div class="mySlides">
             <div class="numbertext">3 / 3</div>
             <img src="{{   url_for('static',path='1687550508268.jpg') }}"
-                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;" class="zoom">
+                style="background-size: cover;background-position: center;object-fit:contain;width:100%;max-height:500px;"
+                class="zoom">
 
             <!-- <h3>Project 1</h3> -->
             <!-- <p>Description of Project 1</p> -->
@@ -88,7 +97,8 @@
         <div class="mySlides fade">
             <!-- <div class="numbertext">2 / 3</div> -->
             <img src="https://egpnepal.com/storage/upload/22/03/1647596475ezgif.com-gif-maker.gif"
-                style="background-size: cover;background-position: center;object-fit:contain;max-height:500px;width: 100%;" class="zoom">
+                style="background-size: cover;background-position: center;object-fit:contain;max-height:500px;width: 100%;"
+                class="zoom">
             <!-- <div class="text">Caption Two</div> -->
         </div>
         <!-- " https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
@@ -145,7 +155,7 @@
             github.com/sudarshan519
         </div>
 
-        <h4 >SUMMARY</h4>
+        <h4>SUMMARY</h4>
         <div class="line"></div>
         A positive, innovative, result driven Mobile Application Developer with 2+
         years of experience and takes pride in ability to effectively combine work
@@ -185,7 +195,7 @@
         <div class="card-container">
 
             <div class="card zoom"><img
-                    src="https://storage.googleapis.com/download.tensorflow.org/tflite/examples/obj_detection_cat.gif" 
+                    src="https://storage.googleapis.com/download.tensorflow.org/tflite/examples/obj_detection_cat.gif"
                     alt="Project 1" height="60px" width="60px" style="">
                 <div class="line"></div>
                 <h3>Residence Card Model Training and Detection </h3>
@@ -194,7 +204,7 @@
 
             </div>
             <div class="card zoom">
-                <img src="https://play-lh.googleusercontent.com/jYasQhHVUfPYmBCNsZ_fNaWN9y7_odB-3xNBB9dAZ4dxRNg-ejEhvz9bqYRvag5AdaY=w526-h296-rw"  
+                <img src="https://play-lh.googleusercontent.com/jYasQhHVUfPYmBCNsZ_fNaWN9y7_odB-3xNBB9dAZ4dxRNg-ejEhvz9bqYRvag5AdaY=w526-h296-rw"
                     style="object-fit: contain;" alt="Project 2" height="100px" width="100px">
                 <div class="line"></div>
                 <h3>Nepal Valuers</h3>
@@ -209,7 +219,7 @@
 
 
             <div class="card zoom">
-                <img src="https://bnpj.jp/en/wp-content/uploads/2022/12/hand-768x1017.png" class="showcaseimg" alt=""  
+                <img src="https://bnpj.jp/en/wp-content/uploads/2022/12/hand-768x1017.png" class="showcaseimg" alt=""
                     srcset="">
                 <div class="line"></div>
                 <h3>BNPJ Credit</h3>
@@ -217,14 +227,14 @@
                 <p>Credit/Wallet application send money in JAPAN.</p>
             </div>
             <div class="card zoom"><img
-                    src="https://play-lh.googleusercontent.com/NXDP98ebzUbHfR0khUyzX9PiszRCiWryapWqsdxzoNnEowdy5A3AjXtlMAFpon4ZKGNS=w526-h296"  
+                    src="https://play-lh.googleusercontent.com/NXDP98ebzUbHfR0khUyzX9PiszRCiWryapWqsdxzoNnEowdy5A3AjXtlMAFpon4ZKGNS=w526-h296"
                     style="object-fit: contain;" alt="" srcset="">
                 <div class="line"></div>
                 <h3>BNPJ Credit</h3>
                 <p></p>
             </div>
             <div class="card zoom">
-                <img src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"  
+                <img src="https://play-lh.googleusercontent.com/VjsT5xNHU1GBvMqbucnPtWygBCnDVvRggFR4-j2r8a_nmfQPSMj7ZGC63Jr_p-8glBtP=w526-h296"
                     style="object-fit: contain;">
                 <div class="line"></div>
                 <h3>Nepal Student Union (Android Application,Flutter Application)</h3>
@@ -235,7 +245,7 @@
 
             <div class="card zoom">
                 <img src="{{   url_for('static',path='1687550508268.jpg') }}" style="object-fit: contain;"
-                    class="showcaseimg" style=" height: 700px;width:380px"  >
+                    class="showcaseimg" style=" height: 700px;width:380px">
                 <div class=" line">
                 </div>
                 <h3>RPS Remitance (Flutter Application,Android,IOS) </h3>
@@ -246,8 +256,8 @@
             </div>
 
             <div class="card zoom"><a href="https://nirmanschedule.com">
-                    <img src="https://nirmanschedule.com/storage/upload/23/02/1677420302home%20banner%20---%20.png"
-                        style="object-fit: contain;" class="showcaseimg" alt="" srcset=""  >
+                    <img src="{{   url_for('static',path='nirmanschedule.png') }} " style="object-fit: contain;"
+                        class="showcaseimg" alt="" srcset="">
                     <div class="line"></div>
                     <!-- <img src="https://nirmanschedule.com/storage/upload/22/03/16471720421644908648mainlogo.png"> -->
                     <h3>Nirman Schedule(Android,IOS)</h3>
@@ -326,7 +336,7 @@
         <div class="line"></div>
         <div>
             <div style="margin-bottom:10px;">Phone: <i class="material-icons" style="font-size: 14px;">phone</i>
-                9863450107
+                <a href="tel:9863450107"> 9863450107</a>
             </div>
             <div style="margin-bottom:10px;">
                 Mail :
@@ -428,7 +438,7 @@
         // Next/previous controls
         function plusSlides(n) {
             running = true
-            console.log(n)
+            //  console.log(n)
             showSlides(slideIndex += n);
             running = false
         }
