@@ -220,7 +220,7 @@ class LeaveRequest(Base):
     leave_type=Column(Enum(LeaveRequestType),nullable=True)
     leave_day_type=Column(Enum(LeaveDayType),nullable=True)
     document=Column(String(256),nullable=True)
-    employee=relationship("EmployeeModel",back_populates='monthly_report')
+    # employee=relationship("EmployeeModel",back_populates='leave_report')
 
     # start_date:date
     # end_date:date

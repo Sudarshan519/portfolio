@@ -13,13 +13,14 @@ def as_form(cls: Type[BaseModel]):
     new_parameters = []
 
     for field_name, model_field in cls.__fields__.items():
+        print(model_field.field_info)
         model_field: ModelField  # type: ignore
 
         new_parameters.append(
              inspect.Parameter(
                  model_field.alias,
                  inspect.Parameter.POSITIONAL_ONLY,
-                 default=Form(...) if model_field.required else Form(model_field.default),
+                 default=Form(...,description= model_field.field_info.description if model_field.field_info else "") if model_field.required else Form(model_field.default),
                  annotation=model_field.outer_type_,
              )
          )
@@ -59,8 +60,8 @@ class AttendanceStatus(str,Enum):
 
 @as_form
 class LeaveRequestIn(BaseModel):
-    start_date:date
-    end_date:date=None
+    start_date:date=Field( description="eg.2022-02-22")
+    end_date:date=Field( description="eg.2022-02-22")
     leaveType:LeaveRequestType
     leaveDayType:LeaveDayType
     doc:UploadFile=None
