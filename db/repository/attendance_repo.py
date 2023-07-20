@@ -352,7 +352,7 @@ class AttendanceRepo:
         return db.query(EmployeeModel).filter(EmployeeModel.company_id==id).all()
     
     @staticmethod
-    def employeeWithDailyReport(companyId,db,offset: int = 0, total: int =10):
+    def employeeWithDailyReport(companyId,db,offset: int = 0, total: int =20):
         print(offset)
         now=datetime.now()
         today = date.today()
