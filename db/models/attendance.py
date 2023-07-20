@@ -140,10 +140,17 @@ class AttendanceModel(Base):
     employee = relationship("EmployeeModel", back_populates="attendance")
     def __init__(self, *args, **kwargs):
         self.salary=0#self.employee.salary
+        self.approver=False
         super().__init__(*args, **kwargs)
     @property
     def is_approver(self):
-        return self.employee.is_approver or False
+        if self.employee:
+            return self.employee.is_approver or False
+        else:
+            return self.approver
+    @is_approver.setter
+    def is_approver(self,new):
+        approver=new
 # GROUP BY, HAVING PLUS
     @property
     def hours_worked(self):
@@ -152,7 +159,7 @@ class AttendanceModel(Base):
         return 4##calcTime(self.login_time+timedelta(hours=4))
     @property
     def salary(self):
-        print(self.employee)
+        # print(self.employee)
         if not self.employee:
             return self.per_min_salary
         return self.employee.salary/(30*8*60)

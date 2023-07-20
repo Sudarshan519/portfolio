@@ -37,9 +37,10 @@ class EmployeeCompanies(BaseModel):
         orm_mode=True   
 
 class Profile(BaseModel):
-    name:Optional[str] 
-    email:Optional[str]
+    name:Optional[str] =None
+    email:Optional[str]=None
     dob:Optional[str]
+    
     @classmethod
     def __get_validators__(cls) :
         print(cls)
@@ -228,7 +229,7 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
 
 @router.post('/update-profile',tags=['Employee Details'])
 async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(None),current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    profiledict=profile.__dict__
+    profiledict=profile.dict()
     if photo:
         url=None 
         
@@ -242,14 +243,14 @@ async def updateProfile(profile:Profile=Form(...),photo:UploadFile(...)=File(Non
             print(url)
         except Exception as e:
             print(e)
-            return e
+            # return e
         photoUrl=None
         
         if url:
             profiledict['photoUrl']=url
 
     
-    updatedUser=AttendanceRepo.update_user(current_user.id,db,profiledict)
+    updatedUser=AttendanceRepo.update_user(current_user,db,profiledict)
     
     return updatedUser
     

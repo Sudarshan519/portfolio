@@ -211,6 +211,21 @@ def create_company(user:AttendanceUser,db:Session,company:Company):
     except Exception as e:
         return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Company Name Already Registered.")
 
+def update_company(id,user:AttendanceUser,db:Session,company:Company):
+    try:
+        new_company=db.get(CompanyModel,id)
+        # name=company.name,address=company.address,start_time=company.start_time,end_time=company.end_time,established_date=company.established_date
+        # new_company=CompanyModel(**company.dict(), user_id=user.id,is_active=True)
+        for key,value in company.dict().items():
+            setattr(new_company,key,value)
+        # db.add(new_company)
+        db.commit()
+        db.refresh(new_company)
+ 
+        return new_company
+    except Exception as e:
+        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail="Company Name Already Registered.")
+
 def companies_list(user:AttendanceUser,db:Session):
 
     try: 
@@ -221,17 +236,20 @@ def companies_list(user:AttendanceUser,db:Session):
 
 def create_employee(user:AttendanceUser,db:Session,employee:Employee,companyId:int):
     try:
-         
+        print(employee.dict())
         new_employee=EmployeeModel(**employee.dict(), user_id=user.id,company_id=companyId)
         db.add(new_employee)
         db.commit()
         db.refresh(new_employee) 
+        print(new_employee)
         return new_employee
 
     except Exception as e:
-        return HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Employee is already registered.{e}")
+        
+        print(e)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail=f"Employee is already registered.{e}")
 
-def update_employee_by_id(user:AttendanceUser,employee:Employee,employeeId:int,companyId:int,db):
+def update_employee_by_id(user:AttendanceUser,employee:Employee,employeeId:int, db):
     employee_update=db.get(EmployeeModel,employeeId)
     # Update the employee record with the new values from the dictionary
     for key, value in employee.dict().items():
@@ -291,6 +309,12 @@ def verify(otp:str=Body(...),phone:str=Body(...),db: Session = Depends(get_db),)
 def add_company(company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     company=create_company(current_user,db,company)
     return company
+@router.post('/update-company',tags=['Companies'])#response_model=Company
+def update_company(id:int,company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    company=update_company(id,current_user,db,company)
+    return company
+
+
 
 @router.post('/get-companies',tags=['Companies'])
 def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
@@ -303,6 +327,7 @@ posts=[]
 
 @router.post('/add-employee',tags=['Companies'])
 def add_employee(employee:Employee,companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    print(employee)
     employee=create_employee(current_user,db,employee,companyId)
     return employee  
 @router.get('/employee-by-id')
