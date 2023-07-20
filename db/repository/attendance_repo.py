@@ -56,7 +56,8 @@ class AttendanceRepo:
         employee =db.get(EmployeeModel,empId)
         employee.is_approver=True
         db.commit()
-        return db.refresh(employee)
+        db.refresh(employee)
+        return employee
     @staticmethod
     def allApprovers(companyId,db):
         employee =db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId,EmployeeModel.is_approver==True).all()
@@ -191,7 +192,7 @@ class AttendanceRepo:
  
     @staticmethod
     def get_today_details(employee:EmployeeModel,db,companyId):
-            attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==date.today())
+            attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==(date.today()-timedelta(days =1)))
             today=attendance.first()
             print(attendance.count())
             # for d in attendance.all():
@@ -202,7 +203,7 @@ class AttendanceRepo:
             if not today:
                 print(employee.salary)
                 print("NOT TODAY")
-                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT)
+                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=employee.is_approver)
                 # attendance.salary=employee.salary 
                 return attendance
             else:
@@ -292,20 +293,24 @@ class AttendanceRepo:
             return None
         return user
     @staticmethod
-    def update_user(id:int,db,userupdate):
+    def update_user(user:AttendanceUser,db:Session,userupdate):
         try:
-            user=db.get(AttendanceUser,id)
-            print(userupdate)
+            # user=db.get(AttendanceUser,id)
             if not user:
                 raise HTTPException(status_code=404, detail="Hero not found")
             for key, value in userupdate.items():
-                setattr(user, key, value)
+                # print(key)
+                # print(value)
+                if key=='dob':
+                    setattr(user,key,datetime.strptime(value,'%Y-%m-%d'))
+                else:
+                    setattr(user, key, value)
             db.add(user)
             db.commit()
             db.refresh(user)
             return user
-        except:
-            print
+        except Exception as e:
+            raise HTTPException(status_code=401,detail=str(e))
     @staticmethod
     def create_company(user:AttendanceUser,db:Session,company:Company):
         try:
