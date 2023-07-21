@@ -23,12 +23,12 @@ url = "https://rps.digital-remittance.com/api/Send.svc"
 # """
 username="testRps"
 password="testRps"
-type_data="IncomeSource"
+type_data="ReasonOfTransfer"
 payload=f"""<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
  
     <Body>
         <GetStaticData xmlns="http://tempuri.org/">
-            <!-- Optional -->
+           
             <GetStaticDataRequest>
                 <UserName xmlns="http://schemas.datacontract.org/2004/07/Remit.API">{username}</UserName>
                 <Password xmlns="http://schemas.datacontract.org/2004/07/Remit.API">{password}</Password>
@@ -64,6 +64,8 @@ import json
 # POST request
 response = requests.request("POST", url, headers=headers, data=payload,)
 # print(response.text)
+
+
 my_dict = xmltodict.parse(response.text, process_namespaces=True, postprocessor=postprocess_dict) 
 print(json.dumps(my_dict,indent=2),)
 # for k,v in my_dict.items():
