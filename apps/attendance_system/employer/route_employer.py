@@ -132,14 +132,14 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
 
  
 @router.get('/monthly-report',tags=[ 'Employer Report'])
-async def getMonthlyReport(companyId,db:Session= Depends(get_db)):
-    return AttendanceRepo.employeeWithAttendanceMonthlyReport(companyId,db)
+async def getMonthlyReport(companyId ,employeeId:int=None, db:Session= Depends(get_db),page:int=1,limit=100):
+    return AttendanceRepo.employeeWithAttendanceMonthlyReport(companyId,db,employeeId,page,limit)
 
 
 @router.get("/weekly-report",tags=[ 'Employer Report'])
-async def weeklyreport(companyId:int, db: Session = Depends(get_db)):
+async def weeklyreport(companyId:int,employeeId:int=None, db: Session = Depends(get_db)):
     dates= getWeekDate()
-    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db)
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db,employeeId)
     # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
  
     return weekdata

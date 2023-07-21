@@ -192,7 +192,7 @@ class AttendanceRepo:
  
     @staticmethod
     def get_today_details(employee:EmployeeModel,db,companyId):
-            attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==(date.today()-timedelta(days =1)))
+            attendance=db.query(AttendanceModel).filter(AttendanceModel.employee_id==employee.id,AttendanceModel.attendance_date==(date.today()))#-timedelta(days =0)
             today=attendance.first()
             print(attendance.count())
             # for d in attendance.all():
@@ -406,7 +406,7 @@ class AttendanceRepo:
             result.append(v)       
         return  result
     @staticmethod
-    def employeewithAttendanceWeeklyReport(companyId,db,):
+    def employeewithAttendanceWeeklyReport(companyId,db,employeeId:int=None):
         dates= getWeekDate()
         now=datetime.now()
         # dates= getMonthRange(2023,6)
@@ -484,12 +484,16 @@ class AttendanceRepo:
         # return attendance_data
     
     @staticmethod
-    def employeeWithAttendanceMonthlyReport(companyId,db):
+    def employeeWithAttendanceMonthlyReport(companyId,db,empId:int=None,page:int=1,limit=2):
+        offset_page = page - 1
         now=datetime.now()
         # print(now)
         dates= getMonthRange(now.year,now.month)
         # print(dates)
-        employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).order_by((AttendanceModel.attendance_date)).all()
+        if empId:
+            employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).filter(EmployeeModel.id==empId).order_by((AttendanceModel.attendance_date)).offset( offset_page).limit(limit).all()#.offset((page-1)*limit).limit(limit)
+        else:
+            employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).order_by((AttendanceModel.attendance_date)).all()
         attendance_data = {}
         employee_count=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).count()
         present_count=0
