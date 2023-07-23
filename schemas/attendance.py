@@ -52,7 +52,14 @@ class Status(str,Enum):
 class StatusOut(str,Enum):
     ACCEPTED="ACCEPTED"
     REJECTED="REJECTED"
-    
+
+class LeaveRequestStatus(str,Enum):
+    INIT='INIT' 
+    ACCEPTED="ACCEPTED"
+    REJECTED="REJECTED" 
+class LeaveRequestStatusOut(str,Enum): 
+    ACCEPTED="ACCEPTED"
+    REJECTED="REJECTED"  
 class AttendanceStatus(str,Enum):
     LATE="LATE"
     EARLY="EARLY"

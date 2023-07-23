@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Notification Example</title>
+</head>
+<body>
+    <h1>WebSocket Notification Example</h1>
+    <div id="notification-container"></div>
+    <script>
+        const ws = new WebSocket("ws://" + window.location.host + "/ws/channel1");
+
+        ws.onmessage = function(event) {
+            console.log(event.data)
+            const data = JSON.parse(event.data);
+            const message = data.message;
+            const notificationContainer = document.getElementById("notification-container");
+            const notificationItem = document.createElement("div");
+            notificationItem.innerText = message;
+            notificationContainer.appendChild(notificationItem);
+        };
+    </script>
+</body>
+</html>

@@ -6,7 +6,7 @@ from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from schemas.attendance import LeaveDayType, LeaveRequestType, Status,AttendanceStatus
+from schemas.attendance import LeaveDayType, LeaveRequestStatus, LeaveRequestType, Status,AttendanceStatus
 from fastapi import Depends
 from requests import Session
 from db.session import get_db
@@ -97,10 +97,10 @@ class EmployeeModel(Base):
     total_casual_leave_taken=Column(Integer,default=0)
     @property
     def available_sick_leave(self):
-        return self.company.total_sick_leave_in_year- self.total_sick_leave_taken or 0
+        return self.company.total_sick_leave_in_year or 0- self.total_sick_leave_taken or 0
     @property
     def available_casual_leave(self):
-        return self.company.total_casual_leave_in_year-self.total_casual_leave_taken or 0
+        return self.company.total_casual_leave_in_year or 0-self.total_casual_leave_taken or 0
     @property
     def company_name(self):
         return self.company.name
@@ -145,12 +145,13 @@ class AttendanceModel(Base):
     @property
     def is_approver(self):
         if self.employee:
-            return self.employee.is_approver or False
+            return self.employee.is_approver or self.approver
         else:
+            print("APPROVER")
             return self.approver
     @is_approver.setter
     def is_approver(self,new):
-        approver=new
+        self.approver=new
 # GROUP BY, HAVING PLUS
     @property
     def hours_worked(self):
@@ -222,12 +223,14 @@ class EmployeeCompany(Base):
 class LeaveRequest(Base):
     id = Column(Integer,primary_key=True,index=True)
     employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
+    company_id=Column(Integer,ForeignKey('companymodel.id',ondelete='CASCADE'),default=1)
     start_date=Column(Date)
     end_date=Column(Date,nullable=True)
     leave_type=Column(Enum(LeaveRequestType),nullable=True)
     leave_day_type=Column(Enum(LeaveDayType),nullable=True)
     document=Column(String(256),nullable=True)
-    remarks=Column(String(256),nullable=True)
+    remarks=Column(String(256),nullable=True) 
+    status=Column(Enum(LeaveRequestStatus),nullable=True,default=LeaveRequestStatus.INIT)
     # employee=relationship("EmployeeModel",back_populates='leave_report')
 
     # start_date:date
