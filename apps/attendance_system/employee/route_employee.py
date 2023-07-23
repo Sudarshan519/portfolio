@@ -67,21 +67,25 @@ class Employee(BaseModel):
     duty_time:Optional[time]
     class Config:
         orm_mode=True
+        
 class MissingAttendance(BaseModel):
-    attendance_date=date
-    start_time:time
-    end_time:time
+    attendance_date:date
+    login_time:time
+    logout_time:time
+    employee_id:int
     company_id:int
-    attendance_type: AttendanceStatus
-#     class Config():  #to convert non dict obj to json
-#         schema_extra = {
-#             "example":{
-#   "start_time": "string",
-#   "end_time": "string",
-#   "company_id": 0,
-#   "attendance_type": "LATE"
-# }
-#         }
+    status: AttendanceStatus
+    class Config():  #to convert non dict obj to json
+        schema_extra = {
+            "example":{
+                "attendance_date":"2023-05-11",
+            "login_time": "10:10:00",
+            "logout_time": "04:00",
+            "company_id": 1,
+            "employee_id":1,
+            "status": "LATE"
+            }
+        }
 class CreateAttendance(BaseModel):
     id:int
     attendance_date:date
@@ -130,9 +134,15 @@ async def allleave(company_id:int,current_user:AttendanceUser=Depends(get_curren
     return AttendanceRepo.get_employee(current_user.phone,db,company_id)
 async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     return AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
+
+
 @router.post('/apply-leave',response_model=LeaveRequestIn)
 async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
-    return AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
+    print(leaveRequest.dict())
+    leave= AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
+    return leaveRequest
+    # 
+
 @router.post('/login',tags=['Employee Login/Verify'])
 async def login(phone:int, db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(phone,db)
@@ -159,6 +169,8 @@ class CompanyOut(BaseModel):
     logout_time:Optional[time]
     status:Optional[Status]
     duty_time:Optional[time]
+    available_sick_leave:Optional[int]
+    available_casual_leave:Optional[int]
     class Config:
         orm_mode=True
 
@@ -190,10 +202,7 @@ def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_curr
  
     today_details=  AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
-@router.post('/missing-attendance')
-async def add_missing_attendance(employeeId:int,attendance:MissingAttendance, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
-    attendance=AttendanceRepo.missingAttendance(employeeId,attendance)
-    return None
+
 @router.post('/attendance-store',response_model=CreateAttendance,tags=['Employee Details'])
 async def store_attendance(companyId:int, db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
@@ -205,12 +214,12 @@ async def store_attendance(attendanceId:int, db: Session = Depends(get_db),curre
     attendance=AttendanceRepo.store_logout(attendanceId=attendanceId,db=db,logoutTime=datetime.now().time() )
 
     return attendance
-@router.post('/break-store',tags=['Employee Details'])
+@router.post('/break-store',response_model=CreateAttendance,tags=['Employee Details'])
 async def break_store( attendanceId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     break_start=AttendanceRepo.store_break_start(attendanceId,db)
     return break_start
 
-@router.post('/break-stop-store',tags=['Employee Details'])
+@router.post('/break-stop-store',response_model=CreateAttendance,tags=['Employee Details'])
 async def break_stop( break_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     break_stop_detail=AttendanceRepo.store_break_stop(break_id,db)
     return break_stop_detail

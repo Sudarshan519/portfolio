@@ -30,12 +30,31 @@ class AttendanceRepo:
     #     employee=db.get(EmployeeModel,id)
     #     return employee
     @staticmethod
-    def applyLeave(leaveRequest, db):
-        leave=LeaveRequest(**leaveRequest.dict())#employeeId
-        return leave
+    def updateRequests(status,requestId,db):
+        leaveRequest=db.get(LeaveRequest,requestId)
+        leaveRequest.status=status
+        db.commit()
+        return leaveRequest
     @staticmethod
-    def missing_attendance(employeeId,attendance,db,):
-        pass
+    def applyLeave(leaveRequest, db):
+        try:
+            
+            leave=LeaveRequest(**leaveRequest.dict())#employeeId
+            return leave
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=400,detail=str(e))
+    @staticmethod
+    def leaveRequests(companyId:int,db):
+        return db.query(LeaveRequest).filter(LeaveRequest.company_id==companyId).all()
+    @staticmethod
+    def missing_attendance(attendance,db,):
+        print(attendance.dict())
+        attendance=AttendanceModel(**attendance.dict())
+        db.add(attendance)
+        db.commit()
+        db.refresh(attendance)
+        return attendance
     @staticmethod
     def employee_companies(phone,db):
         all=db.query(Employee).filter(EmployeeModel.phone==phone).all()
@@ -151,15 +170,17 @@ class AttendanceRepo:
         new_break=BreakModel(attendance_id=attendanceId,break_start=datetime.now().time())
         db.add(new_break)
         db.commit()
-        db.refresh(new_break)
-        return new_break
+        # db.refresh(new_break)
+        attendance=db.get(AttendanceModel,attendanceId)
+        return attendance
     @staticmethod 
     def store_break_stop(breakId:int,db):
         break_to_update=db.get(BreakModel,breakId)
         break_to_update.break_end=datetime.now().time()
         db.commit()
-        db.refresh(break_to_update)
-        return break_to_update
+        # db.refresh(break_to_update)
+        attendance=db.get(AttendanceModel,break_to_update.attendance_id)
+        return attendance
     @staticmethod
     def get_all_attendance(compId,empId,db,):
         attendancelist=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date==datetime.today().date()).order_by(AttendanceModel.id).all()#.desc(),AttendanceModel.attendance_date==datetime.now().date
@@ -203,7 +224,8 @@ class AttendanceRepo:
             if not today:
                 print(employee.salary)
                 print("NOT TODAY")
-                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=employee.is_approver)
+                approver=(employee.is_approver)
+                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=approver)
                 # attendance.salary=employee.salary 
                 return attendance
             else:
@@ -484,14 +506,15 @@ class AttendanceRepo:
         # return attendance_data
     
     @staticmethod
-    def employeeWithAttendanceMonthlyReport(companyId,db,empId:int=None,page:int=1,limit=2):
+    def employeeWithAttendanceMonthlyReport(db:Session,companyId:int=None,empId:int=None,page:int=1,limit=2):
         offset_page = page - 1
         now=datetime.now()
         # print(now)
         dates= getMonthRange(now.year,now.month)
         # print(dates)
         if empId:
-            employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).filter(EmployeeModel.id==empId).order_by((AttendanceModel.attendance_date)).offset( offset_page).limit(limit).all()#.offset((page-1)*limit).limit(limit)
+            
+            employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None)).filter(EmployeeModel.id==empId).order_by((AttendanceModel.attendance_date)).offset( offset_page).limit(limit).all()#.offset((page-1)*limit).limit(limit)
         else:
             employees=db.query(EmployeeModel,AttendanceModel).outerjoin(AttendanceModel).filter(AttendanceModel.attendance_date.between(dates[0], dates[1]) | AttendanceModel.attendance_date.is_(None),AttendanceModel.company_id==companyId).order_by((AttendanceModel.attendance_date)).all()
         attendance_data = {}
