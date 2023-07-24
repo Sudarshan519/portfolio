@@ -13,7 +13,7 @@ from pydantic import BaseModel,root_validator
 from typing import Optional
 from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut
 from datetime import date, datetime, time, timedelta
-from upload_file import firebase_upload
+from other_apps.upload_file import firebase_upload
 import json
 import os
 # 9800000000

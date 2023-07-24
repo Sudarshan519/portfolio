@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>WebSocket Notification Example</title>
 </head>
+
 <body>
     <h1>WebSocket Notification Example</h1>
     <div id="notification-container"></div>
     <script>
-        const ws = new WebSocket("ws://" + window.location.host + "/ws/channel1");
+        url = "ws://127.0.0.1:8000/ws/" + "3"
+        console.log(window.location.href)
+        //this will work
+        function myFunction() {
+            var ws = new WebSocket(url);
+            alert('doing something!')
+            connect()
+        };
 
-        ws.onmessage = function(event) {
+        now = Math.floor(Date.now() / 1000)
+
+        var ws = new WebSocket("ws://127.0.0.1:8000/ws/" + str(now));
+        function connect() {
+            var ws = new WebSocket(url);
+        }
+        //`ws://127.0.0.1:8000/ws/" + "${now}`
+        //const ws = new WebSocket("ws://" + window.location.host + "/ws/1");
+
+        ws.onmessage = function (event) {
             console.log(event.data)
             const data = JSON.parse(event.data);
-            const message = data.message;
+            const message = data.server;
             const notificationContainer = document.getElementById("notification-container");
             const notificationItem = document.createElement("div");
             notificationItem.innerText = message;
@@ -20,4 +38,5 @@
         };
     </script>
 </body>
+
 </html>

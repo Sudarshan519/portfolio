@@ -121,7 +121,9 @@
     </div>
     <div class="line-gray"></div>
     <section id="about">
-        <h2>About Me</h2>
+        <div class="container">
+            <h2>About Me</h2>
+        </div>
         <div class="line"></div>
         <div class="info" style="display: flex;">
             <img src="https://yt3.ggpht.com/yti/AHyvSCClsLzfFqnt4Z9_hZHEJ-9x6m5wGsdmvFQaJPjsaw=s88-c-k-c0x00ffffff-no-rj-mo"
@@ -154,8 +156,10 @@
         <div>
             github.com/sudarshan519
         </div>
-
-        <h4>SUMMARY</h4>
+        <br>
+        <div class="container">
+            <h4>SUMMARY</h4>
+        </div>
         <div class="line"></div>
         A positive, innovative, result driven Mobile Application Developer with 2+
         years of experience and takes pride in ability to effectively combine work
@@ -190,7 +194,9 @@
     </section>
     <div class="line-gray"></div>
     <section id="portfolio">
-        <h2>Portfolio</h2>
+        <div class="container">
+            <h2>Portfolio</h2>
+        </div>
         <div class="line"></div>
         <div class="card-container">
 
@@ -402,7 +408,7 @@
 
         <!-- Modal content -->
         <div class="modal-content">
-            <span class="close" id="closeId">&times;</span>
+            <span class="close" id="closeId1">&times;</span>
             <p id="messageTag">Come back later...Updating..</p>
         </div>
 
@@ -419,10 +425,32 @@
 
     </div>
     <script>
+        now = Math.floor(Date.now() / 1000)
+        console.log(window.location.host)
+        var ws = new WebSocket(`ws://${window.location.host}/ws/` + now);
+        ws.onmessage = function (event) {
+            console.log(event)
+            ///     var messages = document.getElementById('messages')
+            ///     var message = document.createElement('li')
+            ///    var content = document.createTextNode(event.data)
+            ///     message.appendChild(content)
+            ///    messages.appendChild(message)
+        };
+
+        //        const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/1");
+        //       ws.onmessage = function (event) {
+        //         console.log(event.data)
+        //   }
         // Get the button that opens the modal
         var btn = document.getElementById("myBtn");
 
-
+        // Get the <span> element that closes the modal
+        //        <!-- var span = document.getElementsByClassName("close")[0]; -->
+        span = document.getElementById("closeId")
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
         let slideIndex = 1;
         let running = false;
         showSlides(slideIndex);
@@ -465,7 +493,7 @@
             if (running == false)
                 setTimeout(() => {
                     console.log(slideIndex)
-                    showSlides(), slideIndex++
+                    //   showSlides(), slideIndex++
                 }, 10000); // Change image every 2 seconds
         }
 
@@ -512,13 +540,7 @@
             modal.style.display = "block";
         }
 
-        // Get the <span> element that closes the modal
-        //        <!-- var span = document.getElementsByClassName("close")[0]; -->
-        span = document.getElementById("closeId")
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-            modal.style.display = "none";
-        }
+
 
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function (event) {

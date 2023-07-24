@@ -104,11 +104,13 @@ class EmployeeModel(Base):
     @property
     def company_name(self):
         return self.company.name
+    # def as_dict(self):
+    #    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
     __table_args__ = (
         UniqueConstraint('company_id','phone', name='uq_company_employee'),
     )
     
-
 class BreakModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     break_start=Column(Time)
