@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import json
 from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
@@ -31,7 +32,9 @@ async def websocket_endpoint(websocket: WebSocket,user_id:str, db: Session = Dep
     await websocket.accept()
     # print(TActiveConnections)
     await ws_manager.connect(user_id, websocket)
-    await ws_manager.send_message(user_id,({"server":"Hello from server","employee":jsonable_encoder(list)}))
+    await ws_manager.send_message(user_id,({
+        
+        "server":"Hello from server","employee":jsonable_encoder(list)}))
     try:
         while True:
             # await asyncio.sleep(0.1)
@@ -46,6 +49,8 @@ async def send_message( db: Session = Depends(get_db)):
     for k,v in ws_manager.connections().items():
         employee=db.query(EmployeeModel).limit(5).all()
         print(k)
-        await ws_manager.send_message(k,{"server":"Hello from server","employee":jsonable_encoder(employee)})
+        await ws_manager.send_message(k,{
+            "time":str(datetime.datetime.now()),
+            "server":"Hello from server","employee":jsonable_encoder(employee)})
         return 'success'
     
