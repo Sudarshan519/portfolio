@@ -11,7 +11,7 @@ from core.security import create_access_token
 from schemas.attendance import Status
 from sqlalchemy import and_, desc, func
 from sqlalchemy import or_, and_
-from week_util import getMonthRange, getWeekDate
+from other_apps.week_util import getMonthRange, getWeekDate
 from sqlalchemy.orm import joinedload,declarative_base
 from db.models.attendance import Base
 import json

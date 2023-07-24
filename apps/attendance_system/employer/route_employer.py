@@ -13,7 +13,7 @@ from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
 from schemas.attendance import Status
-from week_util import getWeekDate
+from other_apps.week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 # 9863450107

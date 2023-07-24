@@ -44,7 +44,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,
 from core.hashing import Hasher
 from db.base import Base
 from db.models.user import User
-from get_rates import get_rates
+from other_apps.get_rates import get_rates
 
 from schemas.schema import Book as SchemaBook
 from schemas.schema import Author as SchemaAuthor
@@ -60,9 +60,10 @@ from dotenv import load_dotenv
 # import motor.motor_asyncio
 from schemas.users import UserCreate
 from core.config import settings
-from upload_file import firebase_upload
+from other_apps.upload_file import firebase_upload
 from webapps.base import webapp_router
 from apps.attendance_system.route_attendance import attendance_router
+from websocket_manager.websocket_api  import notificationRoute
 from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
@@ -79,6 +80,7 @@ app = FastAPI()
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 app.include_router(attendance_router,tags=[ ])
+app.include_router(notificationRoute,tags=[ ])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
