@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import FastAPI, HTTPException, Header, Request, Response
 from fastapi_sqlalchemy import db
 from jose import JWTError
-from pydantic import EmailStr
+# from pydantic import EmailStr
 from core.config import jwtSettings, settings
 from core.hashing import Hasher
 from core.security import create_access_token
@@ -19,6 +19,7 @@ from db.models.user import User
 from schemas.users import UserBaseSchema, UserCreate, UserResponse
 from apps.rps_remit.dashboard import router
 remit_app = FastAPI()
+import jwt
 app=remit_app
 ACCESS_TOKEN_EXPIRES_IN = jwtSettings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = jwtSettings.REFRESH_TOKEN_EXPIRES_IN
@@ -58,7 +59,7 @@ async def get_exchanges_rates():
 async def register(payload:UserCreate,db: Session = Depends(get_db)):
     # Check if user already exist
     user = db.query(User).filter(
-        User.email == EmailStr(payload.email.lower())).first()
+        User.email == str(payload.email.lower())).first()
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail='Account already exist')
@@ -71,7 +72,7 @@ async def register(payload:UserCreate,db: Session = Depends(get_db)):
    #  del payload.passwordConfirm
    #  payload.role = 'user'
    #  payload.verified = True
-    payload.email = EmailStr(payload.email.lower())
+    payload.email = str(payload.email.lower())
     payload_dict=payload.dict()
     del payload_dict['password']
     new_user = User(hashed_password=hashed_password,**payload_dict)
@@ -84,7 +85,7 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
                 #Authorize: AuthJWT = Depends()):
     # Check if the user exist
     user = db.query(User).filter(
-        User.email == EmailStr(payload.email.lower())).first()
+        User.email == (payload.email.lower())).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Incorrect Email or Password')
