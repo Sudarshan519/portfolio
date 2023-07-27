@@ -68,7 +68,7 @@ from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
 # from db.mongo_db import db_mongo as mongo_db
-
+from apps.rps_remit.main import remit_app
 def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
@@ -82,6 +82,7 @@ app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 app.include_router(attendance_router,tags=[ ])
 app.include_router(notificationRoute,tags=[ ])
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount('/remit_app',remit_app)
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(

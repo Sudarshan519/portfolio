@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from fastapi_jwt_auth import AuthJWT
 
 from pathlib import Path
 env_path = Path('.') / '.env'
@@ -27,8 +28,43 @@ class Settings:
     SECRET_KEY :str = os.getenv("SECRET_KEY")   #new
     ALGORITHM = "HS256"                         #new
     ACCESS_TOKEN_EXPIRE_MINUTES = 60*24  #in mins  #new
+    REFRESH_TOKEN_EXPIRES_IN=60*24*2
     TEST_USER_EMAIL = "test@example.com"  #new
     CELERY_BROKER_URL: str = os.environ.get("CELERY_BROKER_URL","redis://127.0.0.1:6379/0")
     CELERY_RESULT_BACKEND: str = os.environ.get("CELERY_RESULT_BACKEND","redis://127.0.0.1:6379/0")
 
-settings = Settings()
+# @AuthJWT.load_config
+# def get_config():
+#     return Settings()
+settings=Settings()
+
+from pydantic import BaseSettings
+
+class JWTSettings(BaseSettings):
+    DATABASE_PORT: int
+    POSTGRES_PASSWORD: str
+    POSTGRES_USER: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_HOSTNAME: str
+
+    JWT_PUBLIC_KEY: str
+    JWT_PRIVATE_KEY: str
+    REFRESH_TOKEN_EXPIRES_IN: int
+    ACCESS_TOKEN_EXPIRES_IN: int
+    JWT_ALGORITHM: str
+
+    CLIENT_ORIGIN: str
+
+    class Config:
+        env_file = './.env'
+
+
+jwtSettings = JWTSettings()
+
+class NotVerified(Exception):
+    pass
+
+
+class UserNotFound(Exception):
+    pass
