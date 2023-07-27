@@ -11,11 +11,11 @@ websocket_clients = {}
 subscriptions = {}
 
 templates = Jinja2Templates(directory="templates")
-async def get_redis_pool():
-    global redis_pool
-    if redis_pool is None:
-        redis_pool = await redis.create_redis_pool("redis://127.0.0.1:6379")
-    return redis_pool
+# async def get_redis_pool():
+#     global redis_pool
+#     if redis_pool is None:
+#         redis_pool = await redis.create_redis_pool("redis://127.0.0.1:6379")
+#     return redis_pool
 @app.websocket("/ws/{channel}")
 async def websocket_endpoint(websocket: WebSocket, channel: str):
     await websocket.accept()
