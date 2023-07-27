@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi_jwt_auth import AuthJWT
+# from fastapi_jwt_auth import AuthJWT
 
 from pathlib import Path
 env_path = Path('.') / '.env'

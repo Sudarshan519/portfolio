@@ -12,7 +12,7 @@ from core.security import create_access_token
 from db.session import get_db
 from requests import Session
 from other_apps.get_rates import get_rates
-from fastapi_jwt_auth import AuthJWT
+# from fastapi_jwt_auth import AuthJWT
 from fastapi import Depends,status
 from core import oauth2
 from db.models.user import User
@@ -80,7 +80,8 @@ async def register(payload:UserCreate,db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 @app.post('/login',tags=['Login'])
-async def login(payload: UserCreate,response: Response, db: Session = Depends(get_db),Authorize: AuthJWT = Depends()):
+async def login(payload: UserCreate,response: Response, db: Session = Depends(get_db),):
+                #Authorize: AuthJWT = Depends()):
     # Check if the user exist
     user = db.query(User).filter(
         User.email == EmailStr(payload.email.lower())).first()
@@ -108,8 +109,8 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
    #      subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
 
     # Create refresh token
-    refresh_token = Authorize.create_refresh_token(
-        subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
+   #  refresh_token = Authorize.create_refresh_token(
+   #      subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
     # Store refresh and access tokens in cookie
    #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
@@ -120,57 +121,58 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    return {'status': 'success', 'access_token': access_token,'refresh_token':refresh_token}
-import jwt
-# Refresh access token
-@app.get('/refresh',tags=['Refresh Token'])
-def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db),Authorize: AuthJWT = Depends()):
-    try:
-        key=base64.b64decode(
-        jwtSettings.JWT_PUBLIC_KEY).decode('utf-8')
-        decoded=jwt.decode(refresh_token, key , algorithms=["RS256"])#(refresh_token)
-        print(decoded)
-        start=datetime.datetime.fromtimestamp(decoded['exp'])
-        stop = datetime.datetime.now()
+    return {'status': 'success', 'access_token': access_token,#'refresh_token':refresh_token
+            }
+# import jwt
+# # Refresh access token
+# @app.get('/refresh',tags=['Refresh Token'])
+# def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db),Authorize: AuthJWT = Depends()):
+#     try:
+#         key=base64.b64decode(
+#         jwtSettings.JWT_PUBLIC_KEY).decode('utf-8')
+#         decoded=jwt.decode(refresh_token, key , algorithms=["RS256"])#(refresh_token)
+#         print(decoded)
+#         start=datetime.datetime.fromtimestamp(decoded['exp'])
+#         stop = datetime.datetime.now()
 
-        elapsed =start-stop 
-        print(elapsed.total_seconds() )
-        if elapsed.total_seconds()>0:
-         user_id = decoded['sub']
-         if not user_id:
-               raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                 detail='Could not refresh access token')
-         user = db.query(User).filter(User.id == user_id).first()
-         if not user:
-               raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                 detail='The user belonging to this token no logger exist')
-         access_token = Authorize.create_access_token(
-               subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
-        else:
-            raise HTTPException(status_code=401,detail='Token invalid/expired.')
-    except Exception as e:
+#         elapsed =start-stop 
+#         print(elapsed.total_seconds() )
+#         if elapsed.total_seconds()>0:
+#          user_id = decoded['sub']
+#          if not user_id:
+#                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+#                                  detail='Could not refresh access token')
+#          user = db.query(User).filter(User.id == user_id).first()
+#          if not user:
+#                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+#                                  detail='The user belonging to this token no logger exist')
+#          access_token = Authorize.create_access_token(
+#                subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
+#         else:
+#             raise HTTPException(status_code=401,detail='Token invalid/expired.')
+#     except Exception as e:
         
-        print(e)
-        error = e.__class__.__name__
-        if error == 'MissingTokenError':
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail='Please provide refresh token')
-        raise HTTPException(status_code=401,detail='Token invalid/expired.')
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+#         print(e)
+#         error = e.__class__.__name__
+#         if error == 'MissingTokenError':
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST, detail='Please provide refresh token')
+#         raise HTTPException(status_code=401,detail='Token invalid/expired.')
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST, detail=error)
 
-   #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
-   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
-   #  response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
-   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
-    return {'access_token': access_token}
+#    #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
+#    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
+#    #  response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
+#    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
+#     return {'access_token': access_token}
 
-@app.get('/logout', status_code=status.HTTP_200_OK,tags=['Logout'])
-def logout(response: Response, Authorize: AuthJWT = Depends(), user_id: str = Depends(oauth2.require_user)):
-    Authorize.unset_jwt_cookies()
-    response.set_cookie('logged_in', '', -1)
+# @app.get('/logout', status_code=status.HTTP_200_OK,tags=['Logout'])
+# def logout(response: Response, user_id: str = Depends(oauth2.require_user)):#Authorize: AuthJWT = Depends(), 
+#    #  Authorize.unset_jwt_cookies()
+#    #  response.set_cookie('logged_in', '', -1)
 
-    return {'status': 'success'}
+#     return {'status': 'success'}
 
 
 @app.post('/verify-otp',tags=['VerifyOtp'])
