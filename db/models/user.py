@@ -10,5 +10,6 @@ class User(Base):
     email = Column(String(60),nullable=False,unique=True,index=True)
     hashed_password = Column(String(256),nullable=False)
     is_active = Column(Boolean(),default=True)
+    verified=Column(Boolean,default=True)
     is_superuser = Column(Boolean(),default=False)
 

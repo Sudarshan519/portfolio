@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, Response,status
 from requests import Session    #new
 from apps.utils import OAuth2PasswordBearerWithCookie
 from core.config import settings
+from db.models.user import User
 from db.session import get_db    #new
 from db.models.attendance import AttendanceUser
 oauth2_scheme = oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -60,3 +61,23 @@ def get_current_user_from_token(
     if user is None:
         raise credentials_exception
     return user
+
+from core.jwt_bearer import JWTBearer
+def get_current_user( jwtb: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+    )
+    try:
+        payload = jwt.decode(
+            jwtb, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        ) 
+ 
+        
+        id: str = payload.get("sub")
+        user = db.query(User).filter(User.id == id).first()
+        return user
+ 
+    except JWTError as e:
+        return credentials_exception
+

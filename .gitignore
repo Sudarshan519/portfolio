@@ -162,3 +162,5 @@ cython_debug/
 railway.json
 config.json
 .gitignore
+jwtenv.example
+.jwtenv

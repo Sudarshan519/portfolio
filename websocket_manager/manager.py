@@ -27,8 +27,9 @@ class WSManager:
          return self.active_connections
     async def disconnect(self, poll_id: str, ws: WebSocket):
             print(poll_id)
-        # if self.active_connections.get(poll_id):
-            self.active_connections[poll_id].remove(ws)
+            if self.active_connections.get(poll_id):
+                del self.active_connections[poll_id]
+                # self.active_connections[poll_id].remove(ws)
 
     async def send_message(self, poll_id: str, message: TMessagePayload):
         # print(self.active_connections)#.get(poll_id, []))

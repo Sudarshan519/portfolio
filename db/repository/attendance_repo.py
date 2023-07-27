@@ -25,10 +25,10 @@ import json
 #  insert
 import time
 class AttendanceRepo:
-    # @staticmethod
-    # def allLeave(id,db):
-    #     employee=db.get(EmployeeModel,id)
-    #     return employee
+    @staticmethod
+    def allLeave(id,db):
+        employee=db.get(EmployeeModel,id)
+        return employee
     @staticmethod
     def updateRequests(status,requestId,db):
         leaveRequest=db.get(LeaveRequest,requestId)
@@ -204,10 +204,11 @@ class AttendanceRepo:
         return attendance
     @staticmethod
     def get_employee(phone,db,companyId):
+        print(phone)
         employee=db.query(EmployeeModel).filter(EmployeeModel.phone==phone,EmployeeModel.company_id==companyId).first()
-        print(employee.total_sick_leave_taken)
+        print(employee)
         if employee: 
-            return
+            return employee
         else:
             raise HTTPException(status_code=404, detail="Hero not found")
  

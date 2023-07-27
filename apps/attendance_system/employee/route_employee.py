@@ -129,9 +129,11 @@ class AllLeave(BaseModel):
     available_casual_leave:Optional[int]
     class Config:
         orm_mode=True
-@router.post('/all-leave',response_model=AllLeave)
+@router.post('/all-leave')#,response_model=AllLeave)
 async def allleave(company_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+    print(current_user)
     return AttendanceRepo.get_employee(current_user.phone,db,company_id)
+    
 async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     return AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
 

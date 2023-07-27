@@ -436,7 +436,7 @@
             ///     message.appendChild(content)
             ///    messages.appendChild(message)
         };
-
+ 
         //        const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/1");
         //       ws.onmessage = function (event) {
         //         console.log(event.data)
@@ -548,6 +548,14 @@
                 modal.style.display = "none";
             }
         }
+
+        // Handle page refresh or tab close
+window.addEventListener('beforeunload', () => {
+    // Close the WebSocket connection before the page is unloaded
+    if (socket) {
+      socket.close();
+    }
+  });
     </script>
 </body>
 
