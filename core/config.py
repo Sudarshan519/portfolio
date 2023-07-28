@@ -38,33 +38,33 @@ class Settings:
 #     return Settings()
 settings=Settings()
 
-from pydantic import BaseSettings
+# from pydantic import BaseSettings
 
-class JWTSettings(BaseSettings):
-    DATABASE_PORT: int
-    POSTGRES_PASSWORD: str
-    POSTGRES_USER: str
-    POSTGRES_DB: str
-    POSTGRES_HOST: str
-    POSTGRES_HOSTNAME: str
+# class JWTSettings(BaseSettings):
+#     DATABASE_PORT: int
+#     POSTGRES_PASSWORD: str
+#     POSTGRES_USER: str
+#     POSTGRES_DB: str
+#     POSTGRES_HOST: str
+#     POSTGRES_HOSTNAME: str
 
-    JWT_PUBLIC_KEY: str
-    JWT_PRIVATE_KEY: str
-    REFRESH_TOKEN_EXPIRES_IN: int
-    ACCESS_TOKEN_EXPIRES_IN: int
-    JWT_ALGORITHM: str
+#     JWT_PUBLIC_KEY: str
+#     JWT_PRIVATE_KEY: str
+#     REFRESH_TOKEN_EXPIRES_IN: int
+#     ACCESS_TOKEN_EXPIRES_IN: int
+#     JWT_ALGORITHM: str
 
-    CLIENT_ORIGIN: str
+#     CLIENT_ORIGIN: str
 
-    class Config:
-        env_file = './.env'
-
-
-jwtSettings = JWTSettings()
-
-class NotVerified(Exception):
-    pass
+#     class Config:
+#         env_file = './.env'
 
 
-class UserNotFound(Exception):
-    pass
+# jwtSettings = JWTSettings()
+
+# class NotVerified(Exception):
+#     pass
+
+
+# class UserNotFound(Exception):
+#     pass
