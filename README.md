@@ -30,3 +30,4 @@ This example starts up a [FastAPI](https://fastapi.tiangolo.com/) server.
 
 
 source venv/bin/activate
+ locust -f api_test_user
