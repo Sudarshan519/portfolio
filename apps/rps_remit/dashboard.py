@@ -3,7 +3,7 @@ from fastapi import APIRouter,Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from db.models.user import User
+from db.models.user import Users
 from db.session import get_db
 
 
@@ -22,4 +22,4 @@ class UserSchema(BaseModel):
       orm_mode=True
 @router.get('/users',response_model=list[UserSchema])
 def all_users(db:Session=Depends(get_db)):
-   return db.query(User).filter(User.is_superuser==False).all()
+   return db.query(Users).filter(Users.is_superuser==False).all()

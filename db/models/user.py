@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from db.base import Base
 from pydantic import BaseModel
 
-class User(Base):
+class Users(Base):
     id = Column(Integer,primary_key=True,index=True)
     # username = Column(String(60),unique=True,nullable=False)
     email = Column(String(60),nullable=False,unique=True,index=True)
