@@ -14,7 +14,7 @@ def as_form(cls: Type[BaseModel]):
     new_parameters = []
 
     for field_name, model_field in cls.__fields__.items():
-        print(model_field.field_info)
+        # print(model_field.field_info)
         model_field: ModelField  # type: ignore
 
         new_parameters.append(

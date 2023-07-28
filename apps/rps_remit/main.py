@@ -15,7 +15,7 @@ from other_apps.get_rates import get_rates
 # from fastapi_jwt_auth import AuthJWT
 from fastapi import Depends,status
 from core import oauth2
-from db.models.user import User
+from db.models.user import Users as User
 from schemas.users import UserBaseSchema, UserCreate, UserResponse
 from apps.rps_remit.dashboard import router
 remit_app = FastAPI()

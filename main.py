@@ -43,7 +43,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,
 # from fastapi_sqlalchemy import DBSessionMiddleware, db
 from core.hashing import Hasher
 from db.base import Base
-from db.models.user import User
+from db.models.user import Users as User
 from other_apps.get_rates import get_rates
 
 from schemas.schema import Book as SchemaBook
