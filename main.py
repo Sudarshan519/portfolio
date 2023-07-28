@@ -82,7 +82,7 @@ app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 app.include_router(attendance_router,tags=[ ])
 app.include_router(notificationRoute,tags=[ ])
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount('/remit_app',remit_app)
+# app.mount('/remit_app',remit_app)
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(
