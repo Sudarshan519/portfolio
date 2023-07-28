@@ -68,7 +68,7 @@ from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
 # from db.mongo_db import db_mongo as mongo_db
-from apps.rps_remit.main import remit_app
+# from apps.rps_remit.main import remit_app
 def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
