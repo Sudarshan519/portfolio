@@ -425,18 +425,18 @@
 
     </div>
     <script>
-        now = Math.floor(Date.now() / 1000)
-        console.log(window.location.host)
-        var ws = new WebSocket(`ws://${window.location.host}/ws/` + now);
-        ws.onmessage = function (event) {
-            console.log(event)
-            ///     var messages = document.getElementById('messages')
-            ///     var message = document.createElement('li')
-            ///    var content = document.createTextNode(event.data)
-            ///     message.appendChild(content)
-            ///    messages.appendChild(message)
-        };
- 
+        // now = Math.floor(Date.now() / 1000)
+        // console.log(window.location.host)
+        // var ws = new WebSocket(`ws://${window.location.host}/ws/` + now);
+        // ws.onmessage = function (event) {
+        //     console.log(event)
+        //     ///     var messages = document.getElementById('messages')
+        //     ///     var message = document.createElement('li')
+        //     ///    var content = document.createTextNode(event.data)
+        //     ///     message.appendChild(content)
+        //     ///    messages.appendChild(message)
+        // };
+
         //        const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/1");
         //       ws.onmessage = function (event) {
         //         console.log(event.data)
@@ -550,12 +550,12 @@
         }
 
         // Handle page refresh or tab close
-window.addEventListener('beforeunload', () => {
+//window.addEventListener('beforeunload', () => {
     // Close the WebSocket connection before the page is unloaded
-    if (socket) {
-      socket.close();
-    }
-  });
+ //   if (socket) {
+ //     socket.close();
+ //   }
+ // });
     </script>
 </body>
 
