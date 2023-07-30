@@ -23,6 +23,10 @@ class UserSchema(BaseModel):
 
    class Config:
       orm_mode=True
+
+@router.post('/login')
+async def login(username:str,password:str):
+   pass
 @router.get('/users',response_model=list[UserSchema])
 def all_users(db:Session=Depends(get_db)):
    return db.query(Users).filter(Users.is_superuser==False).all()
@@ -31,6 +35,7 @@ class BannerSchema(BaseModel):
    image:str 
    class Config:
       orm_mode=True
+
 @router.post("/banners")
 async def add_banner(url:str=Body( ),image:UploadFile =File(...),db:Session=Depends(get_db)):
    file_content=await image.read()

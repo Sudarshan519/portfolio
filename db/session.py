@@ -18,6 +18,9 @@ def get_db() -> Generator:   #new
     try:
         db = SessionLocal()
         yield db
+        
+    except:
+        pass
     finally:
         db.close()
 
