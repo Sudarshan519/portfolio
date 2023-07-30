@@ -10,6 +10,17 @@ from fastapi import Form
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 
+class RecivingMethod(str,Enum):
+    BANK="Bank"
+    CASH="CASH"
+    WALLET="WALLET"
+
+class UserStatus(str,Enum):
+    UNVERIFIED="UNVERIFIED"
+    TEMPORARY="TEMPORARY"
+    VERIFIED="VERIFIED"
+    DOCUMENTEXPIRED="DOCUMENTEXPIRED"
+    PREMIUM="PREMIUM"
 def as_form(cls: Type[BaseModel]):
     new_parameters = []
 
