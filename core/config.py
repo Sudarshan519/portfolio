@@ -24,15 +24,18 @@ class Settings:
     # DATABASE_URL = f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
     # DATABASE_URL =f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
     # DATABASE_URL =POSTGRES_URL
-
+    ACCESS_TOKEN_EXPIRES_IN=os.getenv("ACCESS_TOKEN_EXPIRES_IN")
+    REFRESH_TOKEN_EXPIRES_IN=os.getenv("REFRESH_TOKEN_EXPIRES_IN") 
     SECRET_KEY :str = os.getenv("SECRET_KEY")   #new
-    ALGORITHM = "HS256"                         #new
+    ALGORITHM = "HS256"   
+    ALGO2='RS256'                      #new
     ACCESS_TOKEN_EXPIRE_MINUTES = 60*24  #in mins  #new
     REFRESH_TOKEN_EXPIRES_IN=60*24*2
     TEST_USER_EMAIL = "test@example.com"  #new
     CELERY_BROKER_URL: str = os.environ.get("CELERY_BROKER_URL","redis://127.0.0.1:6379/0")
     CELERY_RESULT_BACKEND: str = os.environ.get("CELERY_RESULT_BACKEND","redis://127.0.0.1:6379/0")
 
+    JWT_PUBLIC_KEY:str=os.environ.get("JWT_PUBLIC_KEY")
 # @AuthJWT.load_config
 # def get_config():
 #     return Settings()
