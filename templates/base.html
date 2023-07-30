@@ -427,7 +427,7 @@
     <script>
        now = Math.floor(Date.now() / 1000)
         // console.log(window.location.host)
-       var ws = new WebSocket(`ws://${window.location.host}/ws/` + now);
+    //var ws = new WebSocket(`ws://${window.location.host}/ws/` + now); 
         // ws.onmessage = function (event) {
         //     console.log(event)
         //     ///     var messages = document.getElementById('messages')
@@ -437,7 +437,7 @@
         //     ///    messages.appendChild(message)
         // };
 
-        //        const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/1");
+        //const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
         //       ws.onmessage = function (event) {
         //         console.log(event.data)
         //   }
@@ -456,7 +456,7 @@
         showSlides(slideIndex);
         document.getElementById("myAnchor").addEventListener("click", function (event) {
 
-            console.log('clicked');
+         //   console.log('clicked');
 
             submitContact();//
             event.preventDefault()
@@ -492,8 +492,8 @@
             dots[slideIndex - 1].className += " active";
             if (running == false)
                 setTimeout(() => {
-                    console.log(slideIndex)
-                    //   showSlides(), slideIndex++
+                   // console.log(slideIndex)
+                     showSlides(), slideIndex++
                 }, 10000); // Change image every 2 seconds
         }
 
