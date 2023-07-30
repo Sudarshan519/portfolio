@@ -63,7 +63,7 @@ from core.config import settings
 from other_apps.upload_file import firebase_upload
 from webapps.base import webapp_router
 from apps.attendance_system.route_attendance import attendance_router
-# from websocket_manager.websocket_api  import notificationRoute
+from websocket_manager.websocket_api  import notificationRoute
 from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
@@ -79,7 +79,7 @@ app = FastAPI()
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 app.include_router(attendance_router,tags=[ ])
-# app.include_router(notificationRoute,tags=[ ])
+app.include_router(notificationRoute,tags=[ ])
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from apps.rps_remit.main import remit_app
