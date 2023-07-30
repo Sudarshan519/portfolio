@@ -13,3 +13,10 @@ class Users(Base):
     verified=Column(Boolean,default=True)
     is_superuser = Column(Boolean(),default=False)
 
+class Banners(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    url=Column(String,nullable=True)
+    image=Column(String )
+    @property
+    def image_url(self):
+        return 'http://127.0.0.1:8000'+self.image
