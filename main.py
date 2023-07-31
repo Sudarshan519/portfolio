@@ -43,7 +43,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,
 # from fastapi_sqlalchemy import DBSessionMiddleware, db
 from core.hashing import Hasher
 from db.base import Base
-from db.models.user import User
+from db.models.user import Users as User
 from other_apps.get_rates import get_rates
 
 from schemas.schema import Book as SchemaBook
@@ -67,8 +67,9 @@ from websocket_manager.websocket_api  import notificationRoute
 from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
+
+from fastapi.middleware.cors import CORSMiddleware
 # from db.mongo_db import db_mongo as mongo_db
-from apps.rps_remit.main import remit_app
 def get_user(username:str,db: Session)->User:
     user = db.query(User).filter(User.email == username).first()
  
@@ -76,13 +77,37 @@ def get_user(username:str,db: Session)->User:
 
 def create_tables():           #new
 	Base.metadata.create_all(bind=engine)
+def populateAdmin(db:Session=Depends(get_db)):
+    try:
+        user=db.query(User).filter(User.email=='admin').first()
+        if user:
+            pass
+        else:
+            db.add(User(email='admin',hashed_password=Hasher.get_password_hash(password='admin')))
+    finally:
+        pass
 app = FastAPI() 
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://127.0.0.1:8001",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 app.include_router(attendance_router,tags=[ ])
 app.include_router(notificationRoute,tags=[ ])
+app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount('/remit_app',remit_app)
+from apps.rps_remit.main import remit_app
+app.include_router(remit_app,prefix='/remit_app',tags=['REMIT APP'])
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(

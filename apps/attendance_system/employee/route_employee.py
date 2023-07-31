@@ -43,7 +43,7 @@ class Profile(BaseModel):
     
     @classmethod
     def __get_validators__(cls) :
-        print(cls)
+        # print(cls)
         yield cls.validate_to_json
 
     @classmethod

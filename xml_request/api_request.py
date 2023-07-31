@@ -67,7 +67,7 @@ response = requests.request("POST", url, headers=headers, data=payload,)
 
 
 my_dict = xmltodict.parse(response.text, process_namespaces=True, postprocessor=postprocess_dict) 
-print(json.dumps(my_dict,indent=2),)
+print(json.dumps(my_dict,indent=2))
 # for k,v in my_dict.items():
 #     print(k.split(":")[-1],v)
 # prints the response

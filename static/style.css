@@ -213,7 +213,9 @@ footer {
 * {
     box-sizing: border-box
 }
-
+.slideshow-container {
+    overflow: hidden;
+}
 .mySlides1,
 .mySlides2 {
     display: none;

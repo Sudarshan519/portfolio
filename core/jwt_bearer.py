@@ -35,4 +35,19 @@ class JWTBearer(HTTPBearer):
             
             isTokenValid = True
         return isTokenValid
+    def verify_refresh(self,refresh:str)->bool:
+        isTokenValid: bool = False
+        # print(jwtoken)
+
+        try:
+            payload = decodeJWT(refresh)
+            # print(payload)
+            # payload1=jwt.decode(jwtoken,settings.SECRET_KEY,algorithms=[settings.ALGORITHM])
+            # print(payload1)
+        except:
+            payload = None
+        if payload:
+            
+            isTokenValid = True
+        return isTokenValid
     

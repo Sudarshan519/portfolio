@@ -7,5 +7,5 @@ def get_rates():
     to=datetime.datetime.now().strftime('%Y-%m-%d')
     url=f'https://www.nrb.org.np/api/forex/v1/rates?page=1&per_page=100&from={to}&to={to}'
     r =  requests.get(url) 
-    print(r.json()['data']['payload'])
-    return r.json()['data']['payload']
+    # print(r.json()['data']['payload'])
+    return r.json()['data']['payload'][0]

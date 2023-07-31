@@ -1,28 +1,35 @@
 import base64
-from datetime import timedelta
+from datetime import date, timedelta
 import datetime
 from typing import Annotated
-from fastapi import FastAPI, HTTPException, Header, Request, Response
+from fastapi import APIRouter, FastAPI, HTTPException, Header, Request, Response
 from fastapi_sqlalchemy import db
 from jose import JWTError
+from pydantic import BaseModel
 # from pydantic import EmailStr
-from core.config import jwtSettings, settings
+from core.config import  settings#jwtSettings,
 from core.hashing import Hasher
-from core.security import create_access_token
+from core.security import create_access_token,Authorize
 from db.session import get_db
 from requests import Session
 from other_apps.get_rates import get_rates
 # from fastapi_jwt_auth import AuthJWT
 from fastapi import Depends,status
 from core import oauth2
-from db.models.user import User
+
+from db.models.user import Banners, ExchangeRate, Rates, Users as User
 from schemas.users import UserBaseSchema, UserCreate, UserResponse
 from apps.rps_remit.dashboard import router
-remit_app = FastAPI()
+
+
+from fastapi.staticfiles import StaticFiles
+# remit_app = FastAPI()
+
 import jwt
-app=remit_app
-ACCESS_TOKEN_EXPIRES_IN = jwtSettings.ACCESS_TOKEN_EXPIRES_IN
-REFRESH_TOKEN_EXPIRES_IN = jwtSettings.REFRESH_TOKEN_EXPIRES_IN
+app=APIRouter(include_in_schema=True) #remit_app
+remit_app=app
+ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 app.include_router(router,prefix='/dashboard')
 
 from core.jwt_bearer import JWTBearer
@@ -47,12 +54,32 @@ def get_current_user( jwtb: str = Depends(JWTBearer()), db: Session = Depends(ge
 
 
 
-@remit_app.get("/")
+@app.get("/")
 def index():
    return {"message": "Hello World from remit app"}
 @app.get('/exchange-rates/',tags=['ExchangeRate'])
-async def get_exchanges_rates():
+async def get_exchanges_rates(db: Session = Depends(get_db)):
+
+    dbrates=db.query(ExchangeRate).filter(ExchangeRate.date==date.today()).order_by(ExchangeRate.id.desc()).first()
+    if dbrates:
+        dbrates.rates
+        return dbrates
     rates=  get_rates()
+    exchangeRate=ExchangeRate(published_on=datetime.datetime.strptime(rates['published_on'],'%Y-%m-%d %H:%M:%S'),modified_on=datetime.datetime.strptime(rates['modified_on'],'%Y-%m-%d %H:%M:%S'),date=datetime.datetime.strptime(rates['date'],'%Y-%m-%d'))
+    print(exchangeRate)
+    db.add(exchangeRate)
+    db.commit( )
+    db.refresh(exchangeRate)
+    print(rates['rates'])
+    allrates=[]
+    for data in rates['rates']:
+ 
+        rate=Rates(iso3=data['currency']['iso3'],name=data['currency']['name'],unit=data['currency']['unit'],buy=data ['buy'],sell=data ['sell'],rate=exchangeRate.id)
+        allrates.append(rate)
+
+    # print(exchangeRate)
+    db.bulk_save_objects(allrates)
+    db.commit()
     return rates
 
 @app.post('/register',response_model=UserResponse,tags=['Register'])
@@ -80,6 +107,14 @@ async def register(payload:UserCreate,db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+class BannerResponse(BaseModel):
+    url:str=None
+    image_url:str=None
+    class Config:
+        orm_mode=True
+@app.get('/banners',tags=['Banners'],response_model=list[BannerResponse])
+async def banners( db: Session = Depends(get_db),):
+    return db.query(Banners).all() 
 @app.post('/login',tags=['Login'])
 async def login(payload: UserCreate,response: Response, db: Session = Depends(get_db),):
                 #Authorize: AuthJWT = Depends()):
@@ -110,8 +145,8 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
    #      subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
 
     # Create refresh token
-   #  refresh_token = Authorize.create_refresh_token(
-   #      subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
+    refresh_token = Authorize.create_refresh_token(
+        data={'id':str(user.id)}, expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
     # Store refresh and access tokens in cookie
    #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
@@ -122,51 +157,53 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    return {'status': 'success', 'access_token': access_token,#'refresh_token':refresh_token
+    return {'status': 'success', 'access_token': access_token,'refresh_token':refresh_token
             }
 # import jwt
 # # Refresh access token
-# @app.get('/refresh',tags=['Refresh Token'])
-# def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db),Authorize: AuthJWT = Depends()):
-#     try:
-#         key=base64.b64decode(
-#         jwtSettings.JWT_PUBLIC_KEY).decode('utf-8')
-#         decoded=jwt.decode(refresh_token, key , algorithms=["RS256"])#(refresh_token)
-#         print(decoded)
-#         start=datetime.datetime.fromtimestamp(decoded['exp'])
-#         stop = datetime.datetime.now()
+@app.get('/refresh',tags=['Refresh Token'])
+def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db)):#,Authorize: AuthJWT = Depends()
+    try:
+        key=base64.b64decode(
+        settings.JWT_PUBLIC_KEY).decode('utf-8')
+        decoded=jwt.decode(refresh_token, settings.SECRET_KEY , algorithms=[settings.ALGORITHM])#"RS256"])#(refresh_token)
+        print(decoded)
+        start=datetime.datetime.fromtimestamp(decoded['exp'])
+        stop = datetime.datetime.now()
 
-#         elapsed =start-stop 
-#         print(elapsed.total_seconds() )
-#         if elapsed.total_seconds()>0:
-#          user_id = decoded['sub']
-#          if not user_id:
-#                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-#                                  detail='Could not refresh access token')
-#          user = db.query(User).filter(User.id == user_id).first()
-#          if not user:
-#                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-#                                  detail='The user belonging to this token no logger exist')
-#          access_token = Authorize.create_access_token(
-#                subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
-#         else:
-#             raise HTTPException(status_code=401,detail='Token invalid/expired.')
-#     except Exception as e:
+        elapsed =start-stop 
+        print(elapsed)
+        print(elapsed.total_seconds() )
+        if elapsed.total_seconds()>0:
+         user_id = decoded['id']
+         if not user_id:
+               raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                 detail='Could not refresh access token')
+         user = db.query(User).filter(User.id == user_id).first()
+         if not user:
+               raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                 detail='The user belonging to this token no logger exist')
+ 
+         access_token = create_access_token(
+                data={"sub": str(user.id)}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
+        else:
+            raise HTTPException(status_code=401,detail='Token invalid/expired.')
+    except Exception as e:
         
-#         print(e)
-#         error = e.__class__.__name__
-#         if error == 'MissingTokenError':
-#             raise HTTPException(
-#                 status_code=status.HTTP_400_BAD_REQUEST, detail='Please provide refresh token')
-#         raise HTTPException(status_code=401,detail='Token invalid/expired.')
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+        print(e)
+        error = e.__class__.__name__
+        if error == 'MissingTokenError':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Please provide refresh token')
+        raise HTTPException(status_code=401,detail='Token invalid/expired.')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=error)
 
-#    #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
-#    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
-#    #  response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
-#    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
-#     return {'access_token': access_token}
+   #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
+   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
+   #  response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
+   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
+    return {'access_token': access_token}
 
 # @app.get('/logout', status_code=status.HTTP_200_OK,tags=['Logout'])
 # def logout(response: Response, user_id: str = Depends(oauth2.require_user)):#Authorize: AuthJWT = Depends(), 

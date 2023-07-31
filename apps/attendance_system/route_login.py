@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, Response,status
 from requests import Session    #new
 from apps.utils import OAuth2PasswordBearerWithCookie
 from core.config import settings
-from db.models.user import User
+from db.models.user import Users
 from db.session import get_db    #new
 from db.models.attendance import AttendanceUser
 oauth2_scheme = oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
