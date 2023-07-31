@@ -18,15 +18,15 @@ now = Math.floor(Date.now() / 1000)
 // console.log(window.location.host)
 var url = "jobsserach.vercel.app";
 //${window.location.host}
-var ws = new WebSocket(`ws://${url}/ws/` + 1);
-ws.onmessage = function (event) {
-    console.log(event)
-    //     ///     var messages = document.getElementById('messages')
-    //     ///     var message = document.createElement('li')
-    //     ///    var content = document.createTextNode(event.data)
-    //     ///     message.appendChild(content)
-    //     ///    messages.appendChild(message)
-};
+// var ws = new WebSocket(`ws://${url}/ws/` + 1);
+// ws.onmessage = function (event) {
+//     console.log(event)
+//     //     ///     var messages = document.getElementById('messages')
+//     //     ///     var message = document.createElement('li')
+//     //     ///    var content = document.createTextNode(event.data)
+//     //     ///     message.appendChild(content)
+//     //     ///    messages.appendChild(message)
+// };
 
 //const ws = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
 //       ws.onmessage = function (event) {
@@ -141,9 +141,9 @@ window.onclick = function (event) {
 }
 
 // Handle page refresh or tab close
-window.addEventListener('beforeunload', function () {
-    // Close the WebSocket connection before the page is unloaded
-    if (socket) {
-        socket.close();
-    }
-})
+// window.addEventListener('beforeunload', function () {
+//     // Close the WebSocket connection before the page is unloaded
+//     if (socket) {
+//         socket.close();
+//     }
+// })
