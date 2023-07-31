@@ -4,11 +4,11 @@ from fastapi import HTTPException, UploadFile
 import requests
 
 
-def read_config():
-    with open("google-services-2.json") as config_file:
-        return json.load(config_file)
+# def read_config():
+#     with open("google-services.json") as config_file:
+#         return json.load(config_file)
 
-config = read_config()
+# config = read_config()
 FIREBASE_STORAGE_BUCKET = "gs://rasanadmin.appspot.com"#config["FIREBASE_STORAGE_BUCKET"]
 FIREBASE_API_KEY = "AIzaSyAeEZJKo7GIUtyOQKF1mS40ePL-TxUG3ZI"#config["FIREBASE_API_KEY"]
 
