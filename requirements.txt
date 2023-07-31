@@ -74,7 +74,11 @@ uvloop==0.17.0
 watchfiles==0.18.1
 wcwidth==0.2.6
 websockets==10.4
+<<<<<<< HEAD
 # PyJWT==1.7.1
+=======
+PyJWT==1.7.1
+>>>>>>> a6f8a64efedf4e18a7341b123c5b16211102d8a1
 # fastapi-jwt-auth[asymmetric]
 
 google-cloud-storage
