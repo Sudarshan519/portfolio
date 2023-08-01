@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 # from fastapi_jwt_auth import AuthJWT
-
+import pymysql
 from pathlib import Path
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -18,11 +18,16 @@ class Settings:
     MySQL_USER : str = os.getenv("MYSQL_USER")
     MySQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
     MySQL_SERVER : str = os.getenv("MySQL_SERVER","localhost")
-    MySQL_PORT : str = os.getenv("MySQL_PORT",3306) # default MySQL port is 5432
+    # MySQL_PORT : str = os.getenv("MySQL_PORT",3306) # default MySQL port is 5432
     MySQL_DB : str = os.getenv("MYSQL_DB")
     DATABASE_URL =SQLITE_URL# f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
     # DATABASE_URL = f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
-    # DATABASE_URL =f"mysql+mysqlconnector://{MySQL_USER}:{MySQL_PASSWORD}@{MySQL_SERVER}:{MySQL_PORT}/{MySQL_DB}" #POSTGRES_URL
+    MySQL_USER_PYTHON= os.getenv("MYSQL_USER_PYTHON")
+    MySQL_PASSWORD_PYRHON=os.getenv("PASSWORD_PYTHON")
+    MySQL_SERVER_PYTHON : str = os.getenv("MYSQL_HOST_PYTHON","localhost")
+ 
+    MySQL_DB_PYTHON=os.getenv("DATABASE_PYTHON")
+    DATABASE_URL_PYTHON =f"mysql+pymysql://{MySQL_USER_PYTHON}:{MySQL_PASSWORD_PYRHON}@{MySQL_SERVER_PYTHON}/{MySQL_DB_PYTHON}" #POSTGRES_URL
     # DATABASE_URL =POSTGRES_URL
     ACCESS_TOKEN_EXPIRES_IN=os.getenv("ACCESS_TOKEN_EXPIRES_IN")
     REFRESH_TOKEN_EXPIRES_IN=os.getenv("REFRESH_TOKEN_EXPIRES_IN") 
