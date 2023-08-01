@@ -22,6 +22,8 @@ def get_db() -> Generator:   #new
         
     except:
         pass
+    else:
+        pass
     finally:
         db.close()
 

@@ -46,7 +46,8 @@ def as_form(cls: Type[BaseModel]):
     setattr(cls, 'as_form', as_form_func)
     return cls
 
- 
+
+
 class LeaveDayType(str,Enum):
     FULLDAY="FULLDAY"
     HALFDAY="HALFDAY"

@@ -107,7 +107,9 @@ app.include_router(notificationRoute,tags=[ ])
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 from apps.rps_remit.main import remit_app
+from apps.rps_remit.main import remitapp
 app.include_router(remit_app,prefix='/remit_app',tags=['REMIT APP'])
+app.mount('/remitapp',remitapp,name="REMIT APP")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(
