@@ -9,7 +9,7 @@ from schemas.attendance import RecivingMethod
 
 class Documents(Base):
     id=Column(Integer,primary_key=True,index=True)
-    type=Column(Enum(("PASSWORD","PASSWORD"),('DRIVING_LICENSE',"DRIVING_LICENSE"),("RESIDENT_CARD","RESIDENT_CARD",),("MY_NUMBER_CARD","MY_NUMBER_CARD")))
+    type=Column(Enum(("PASSPORT","PASSPORT"),('DRIVING_LICENSE',"DRIVING_LICENSE"),("RESIDENT_CARD","RESIDENT_CARD",),("MY_NUMBER_CARD","MY_NUMBER_CARD")))
     passport_img=Column(String,nullable=True)
     driving_license=Column(String,nullable=True)
     my_number_card=Column(String,nullable=True)
