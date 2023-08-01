@@ -23,7 +23,7 @@ url = "https://rps.digital-remittance.com/api/Send.svc"
 # """
 username="testRps"
 password="testRps"
-type_data="ReasonOfTransfer"
+type_data="PaymentMode"
 payload=f"""<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
  
     <Body>
@@ -67,7 +67,9 @@ response = requests.request("POST", url, headers=headers, data=payload,)
 
 
 my_dict = xmltodict.parse(response.text, process_namespaces=True, postprocessor=postprocess_dict) 
-print(json.dumps(my_dict,indent=2))
+parsedict=(my_dict['Envelope']['Body']['http://tempuri.org/:GetStaticDataResponse']['http://tempuri.org/:GetStaticDataResult'])
+
+print(json.dumps(parsedict,indent=2))
 # for k,v in my_dict.items():
 #     print(k.split(":")[-1],v)
 # prints the response

@@ -27,7 +27,9 @@ from fastapi.staticfiles import StaticFiles
 
 import jwt
 app=APIRouter(include_in_schema=True) #remit_app
+remitapp=FastAPI()
 remit_app=app
+app=remitapp
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 app.include_router(router,prefix='/dashboard')
@@ -57,6 +59,9 @@ def get_current_user( jwtb: str = Depends(JWTBearer()), db: Session = Depends(ge
 @app.get("/")
 def index():
    return {"message": "Hello World from remit app"}
+
+
+
 @app.get('/exchange-rates/',tags=['ExchangeRate'])
 async def get_exchanges_rates(db: Session = Depends(get_db)):
 
