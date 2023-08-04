@@ -235,11 +235,11 @@ async def home_data(user:User=Depends(get_current_user)):#current_user:Attendanc
 async def benificary():
     pass
 
-@app.post('/cash-deposit-locations')
+@app.get('/cash-deposit-locations')
 async def cash_deposit_location():
     pass
 
-@app.post('/cash-pickup-locations')
+@app.get('/cash-pickup-locations')
 async def cash_deposit_location():
     pass
 

@@ -3,6 +3,8 @@ from enum import Enum
 from typing import Optional
 from pydantic import BaseModel,EmailStr
 
+
+
 class UserBaseSchema(BaseModel):
     # name: str
     email: EmailStr
@@ -143,17 +145,17 @@ class CreateCustomer(BaseModel):
 
 
 class Receiver(BaseModel):
-    CustomerId:str
+    CustomerId:int
     Name:str
-    Gender:str
-    Mobile:str
+    Gender:str="Male"
+    Mobile:str="9863432121"
     Relationship:str
     Address:str
-    PaymentMode:str
-    BankBranchId:str
+    PaymentMode:str="Cash Payment"
+    BankBranchId:int
     AccountNumber:str
-    OTPProcessId:str
-    OTP:str
+    OTPProcessId:int
+    OTP:int
 
 
 class GetServiceChargeByCollection(BaseModel):
@@ -181,41 +183,41 @@ class SearchTransactionRequest(BaseModel):
 
 class SendOtpRequest(BaseModel):
     Operation:str
-    Mobile:str
+    Mobile:str="9876543212"
     CustomerId:str=None
     ReceiverId:str=None
     PinNo:str=None
     PaymentMode:str=None
-    BankBranchId:str=None
+    BankBranchId:int
     AccountNumber:str=None
     CustomerFullName:str=None
     CustomerDOB:str=None
     CustomerIdNumber:str=None
 
 class SendTransasctionRequest(BaseModel):
-    CustomerId:str
+    CustomerId:int
     SenderName:str
-    SendGender:str
-    SenderDoB:str
+    SenderGender:str='Male'
+    SenderDoB:date
     SenderAddress:str
 
     #Optional
     SenderPhone:str=None
-    SenderMobile:str 
+    SenderMobile:str="9876543211" 
     SenderCity:str 
     SenderDistrict:str 
     SenderState:str 
     SenderNationality:str 
     Employer:str 
     SenderIDType:str 
-    SenderIDNumber:str
+    SenderIDNumber:int
     SenderIDExpiryDate:str=None
     SenderIDIssuedPlace:str=None
-    ReceiverId:str=None
-    RecevierName:str
-    ReceviverGender:str
+    ReceiverId:int
+    ReceiverName:str
+    ReceiverGender:str="Male"
     ReceiverAddress:str
-    ReceiverMobile:str
+    ReceiverMobile:int="9876543212"
     ReceiverCity:str
     SendCountry:str
     PayoutCountry:str
@@ -231,14 +233,14 @@ class SendTransasctionRequest(BaseModel):
     AccountNumber:str=None
     AccountType:str=None
     NewAccountRequest:str=None
-    PartnerPinNo:str
+    PartnerPinNo:int
     IncomeSource:str
     RemittanceReason:str
 
     Relationship:str
-    CSPCode:str
-    OTPProcessId:str
-    OTP:str
+    CSPCode:int
+    OTPProcessId:int
+    OTP:int
 
 
 class ValidateBankAccountRequest(BaseModel):
