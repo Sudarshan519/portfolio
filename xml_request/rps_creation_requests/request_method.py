@@ -232,7 +232,7 @@ class RequestMethods:
 
     @staticmethod
     def send_transaction(sendTransactionRequest:SendTransasctionRequest):
-        response=client.service.SendOTP({
+        response=client.service.SendTransaction({
             'UserName': username,
             'Password': password,
             **{k:v for k,v in sendTransactionRequest.dict().items()}

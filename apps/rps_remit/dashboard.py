@@ -1,5 +1,5 @@
 from ast import List
-from typing import Any
+from typing import Any, Type
 from fastapi import APIRouter, Body,Depends, File, Form, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -9,7 +9,7 @@ from apps.rps_remit.gs_cloud_storage import upload_to_gcs
 from db.models.user import Banners, Users
 from db.session import get_db
 from other_apps.upload_file import firebase_upload
-from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, Receiver, SearchCsp, SearchTransactionRequest, StaticDataList
+from schemas.users import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
 from xml_request.rps_creation_requests.request_method import RequestMethods
 
 
@@ -21,31 +21,33 @@ class ResponseModel(BaseModel):
     Code:str=None
     Message:str=None
     DataList:list[DataModel]=[]
-   
+
+
+
+@router.get('/static_data')
+def static_datalist(type:StaticDataList):
+   return RequestMethods.get_static_data(type.value)
+
+
 
 @router.get('/acpayBankList')
-def acPayBankList(acPayBankList:AcPayBankListRequest= Depends()):
+def acPayBankList(acPayBankList:AcPayBankListRequest= Depends(),):
    return RequestMethods.acpay_bank_branchlist(acPayBankList)   
 @router.post('/cancel-transasction')
 def cancelTransaction(cancelRequest:CancelTransactionRequest):
     return RequestMethods.cancel_transaction(cancelRequest)   
 
-@router.get('/cash-payout-location-list')
-def cashPayoutLocationList(cashPayoutLocationRequest:CashPayoutLocationRequest= Depends()):
+@router.get('/cash-payout-location-list',)
+def cashPayoutLocationList(cashPayoutLocationRequest:CashPayoutLocationRequest= Depends(),):
    return RequestMethods.cash_payout_locationlist(cashPayoutLocationRequest)   
 
-@router.get('/compliance-transactions')
+@router.get('/compliance-transactions',)
 def complianceTransactions( ):
    return RequestMethods.compliance_transactions( )   
 
 @router.post('/create-csp')
 def createCsp(cspRequest:CreateCSPRequest):
     return RequestMethods.create_csp(cspRequest)
-
-@router.get('/static_data')
-def static_datalist(type:StaticDataList):
-   return RequestMethods.get_static_data(type.value)
-
 
 @router.get('/get-state-district')
 def state_district(country:str):
@@ -84,7 +86,13 @@ async def searchCSP(cspsearchrequest:SearchCsp):
 @router.post('/search-transactions')
 async def searchCSP(searchTransactions:SearchTransactionRequest):
     return RequestMethods.search_transaction(searchTransactions)
+@router.post('/send-transactions')
+async def sendTransaction(sendTransaction:SendTransasctionRequest):
+   return RequestMethods.send_transaction(sendTransaction)
 
+@router.get('/unverified-customer')
+async def unverified_customers():
+    return RequestMethods.unverified_customer()
 # @router.post('/uploadcspDocument')
 # async def uploadCSPDocument(document:Any):
 #       return RequestMethods.uploadCSPDocument(document)
