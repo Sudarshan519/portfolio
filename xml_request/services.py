@@ -29,7 +29,11 @@ wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
 # transport.load_custom_xml(custom_envelope_xml)
 
 # Create the Zeep client using the custom transport
-client = Client(wsdl_url)
+client=None
+try:
+    client = Client(wsdl_url)
+except:
+    pass
 # input_params = {
 #     'username': username,
 #     'password': password,

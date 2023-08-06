@@ -1,0 +1,204 @@
+[{"name": "AFGHANISTAN", "currency": "['AFN']", "flag": "\ud83c\udde6\ud83c\uddeb"}
+,{"name": "ALBANIA", "currency": "['ALL']", "flag": "\ud83c\udde6\ud83c\uddf1"}
+,{"name": "ALGERIA", "currency": "['DZD']", "flag": "\ud83c\udde9\ud83c\uddff"}
+,{"name": "AMERICAN SAMOA", "currency": "['USD']", "flag": "\ud83c\udde6\ud83c\uddf8"}
+,{"name": "ANGOLA", "currency": "['AOA']", "flag": "\ud83c\udde6\ud83c\uddf4"}
+,{"name": "ANGUILLA", "currency": "['XCD']", "flag": "\ud83c\udde6\ud83c\uddee"}
+,{"name": "ANTIGUA AND BARBUDA", "currency": "['XCD']", "flag": "\ud83c\udde6\ud83c\uddec"}
+,{"name": "ARGENTINA", "currency": "['ARS']", "flag": "\ud83c\udde6\ud83c\uddf7"}
+,{"name": "ARMENIA", "currency": "['AMD']", "flag": "\ud83c\udde6\ud83c\uddf2"}
+,{"name": "ARUBA", "currency": "['AWG']", "flag": "\ud83c\udde6\ud83c\uddfc"}
+,{"name": "AUSTRALIA", "currency": "['AUD']", "flag": "\ud83c\udde6\ud83c\uddfa"}
+,{"name": "AUSTRIA", "currency": "['EUR']", "flag": "\ud83c\udde6\ud83c\uddf9"}
+,{"name": "AZERBAIJAN", "currency": "['AZN']", "flag": "\ud83c\udde6\ud83c\uddff"}
+,{"name": "BAHRAIN", "currency": "['BHD']", "flag": "\ud83c\udde7\ud83c\udded"}
+,{"name": "BANGLADESH", "currency": "['BDT']", "flag": "\ud83c\udde7\ud83c\udde9"}
+,{"name": "BARBADOS", "currency": "['BBD']", "flag": "\ud83c\udde7\ud83c\udde7"}
+,{"name": "BELARUS", "currency": "['BYR']", "flag": "\ud83c\udde7\ud83c\uddfe"}
+,{"name": "BELGIUM", "currency": "['EUR']", "flag": "\ud83c\udde7\ud83c\uddea"}
+,{"name": "BELIZE", "currency": "['BZD']", "flag": "\ud83c\udde7\ud83c\uddff"}
+,{"name": "BENIN", "currency": "['XOF']", "flag": "\ud83c\udde7\ud83c\uddef"}
+,{"name": "BERMUDA", "currency": "['BMD']", "flag": "\ud83c\udde7\ud83c\uddf2"}
+,{"name": "BHUTAN", "currency": "['BTN', 'INR']", "flag": "\ud83c\udde7\ud83c\uddf9"}
+,{"name": "BOSNIA AND HERZEGOVINA", "currency": "['BAM']", "flag": "\ud83c\udde7\ud83c\udde6"}
+,{"name": "BOTSWANA", "currency": "['BWP']", "flag": "\ud83c\udde7\ud83c\uddfc"}
+,{"name": "BRAZIL", "currency": "['BRL']", "flag": "\ud83c\udde7\ud83c\uddf7"}
+,{"name": "BRITISH INDIAN OCEAN TERRITORY", "currency": "['USD']", "flag": "\ud83c\uddee\ud83c\uddf4"}
+,{"name": "BULGARIA", "currency": "['BGN']", "flag": "\ud83c\udde7\ud83c\uddec"}
+,{"name": "BURKINA FASO", "currency": "['XOF']", "flag": "\ud83c\udde7\ud83c\uddeb"}
+,{"name": "BURUNDI", "currency": "['BIF']", "flag": "\ud83c\udde7\ud83c\uddee"}
+,{"name": "CAMBODIA", "currency": "['KHR']", "flag": "\ud83c\uddf0\ud83c\udded"}
+,{"name": "CAMEROON", "currency": "['XAF']", "flag": "\ud83c\udde8\ud83c\uddf2"}
+,{"name": "CANADA", "currency": "['CAD']", "flag": "\ud83c\udde8\ud83c\udde6"}
+,{"name": "CAYMAN ISLANDS", "currency": "['KYD']", "flag": "\ud83c\uddf0\ud83c\uddfe"}
+,{"name": "CENTRAL AFRICAN REPUBLIC", "currency": "['XAF']", "flag": "\ud83c\udde8\ud83c\uddeb"}
+,{"name": "CHAD", "currency": "['XAF']", "flag": "\ud83c\uddf9\ud83c\udde9"}
+,{"name": "CHILE", "currency": "['CLF', 'CLP']", "flag": "\ud83c\udde8\ud83c\uddf1"}
+,{"name": "CHINA", "currency": "['CNY']", "flag": "\ud83c\udde8\ud83c\uddf3"}
+,{"name": "CHRISTMAS ISLAND", "currency": "['AUD']", "flag": "\ud83c\udde8\ud83c\uddfd"}
+,{"name": "COCOS (KEELING) ISLANDS", "currency": "['AUD']", "flag": "\ud83c\udde8\ud83c\udde8"}
+,{"name": "COLOMBIA", "currency": "['COP']", "flag": "\ud83c\udde8\ud83c\uddf4"}
+,{"name": "COMOROS", "currency": "['KMF']", "flag": "\ud83c\uddf0\ud83c\uddf2"}
+,{"name": "COOK ISLANDS", "currency": "['NZD']", "flag": "\ud83c\udde8\ud83c\uddf0"}
+,{"name": "COSTA RICA", "currency": "['CRC']", "flag": "\ud83c\udde8\ud83c\uddf7"}
+,{"name": "CROATIA", "currency": "['HRK']", "flag": "\ud83c\udded\ud83c\uddf7"}
+,{"name": "CUBA", "currency": "['CUC', 'CUP']", "flag": "\ud83c\udde8\ud83c\uddfa"}
+,{"name": "CYPRUS", "currency": "['EUR']", "flag": "\ud83c\udde8\ud83c\uddfe"}
+,{"name": "DENMARK", "currency": "['DKK']", "flag": "\ud83c\udde9\ud83c\uddf0"}
+,{"name": "DJIBOUTI", "currency": "['DJF']", "flag": "\ud83c\udde9\ud83c\uddef"}
+,{"name": "DOMINICA", "currency": "['XCD']", "flag": "\ud83c\udde9\ud83c\uddf2"}
+,{"name": "DOMINICAN REPUBLIC", "currency": "['DOP']", "flag": "\ud83c\udde9\ud83c\uddf4"}
+,{"name": "ECUADOR", "currency": "['USD']", "flag": "\ud83c\uddea\ud83c\udde8"}
+,{"name": "EGYPT", "currency": "['EGP']", "flag": "\ud83c\uddea\ud83c\uddec"}
+,{"name": "EL SALVADOR", "currency": "['SVC', 'USD']", "flag": "\ud83c\uddf8\ud83c\uddfb"}
+,{"name": "EQUATORIAL GUINEA", "currency": "['XAF']", "flag": "\ud83c\uddec\ud83c\uddf6"}
+,{"name": "ERITREA", "currency": "['ERN']", "flag": "\ud83c\uddea\ud83c\uddf7"}
+,{"name": "ESTONIA", "currency": "['EUR']", "flag": "\ud83c\uddea\ud83c\uddea"}
+,{"name": "ETHIOPIA", "currency": "['ETB']", "flag": "\ud83c\uddea\ud83c\uddf9"}
+,{"name": "FAROE ISLANDS", "currency": "['DKK']", "flag": "\ud83c\uddeb\ud83c\uddf4"}
+,{"name": "FIJI", "currency": "['FJD']", "flag": "\ud83c\uddeb\ud83c\uddef"}
+,{"name": "FINLAND", "currency": "['EUR']", "flag": "\ud83c\uddeb\ud83c\uddee"}
+,{"name": "FRANCE", "currency": "['EUR']", "flag": "\ud83c\uddeb\ud83c\uddf7"}
+,{"name": "FRENCH GUIANA", "currency": "['EUR']", "flag": "\ud83c\uddec\ud83c\uddeb"}
+,{"name": "FRENCH POLYNESIA", "currency": "['XPF']", "flag": "\ud83c\uddf5\ud83c\uddeb"}
+,{"name": "GABON", "currency": "['XAF']", "flag": "\ud83c\uddec\ud83c\udde6"}
+,{"name": "GEORGIA", "currency": "['GEL']", "flag": "\ud83c\uddec\ud83c\uddea"}
+,{"name": "GERMANY", "currency": "['EUR']", "flag": "\ud83c\udde9\ud83c\uddea"}
+,{"name": "GHANA", "currency": "['GHS']", "flag": "\ud83c\uddec\ud83c\udded"}
+,{"name": "GIBRALTAR", "currency": "['GIP']", "flag": "\ud83c\uddec\ud83c\uddee"}
+,{"name": "GREECE", "currency": "['EUR']", "flag": "\ud83c\uddec\ud83c\uddf7"}
+,{"name": "GREENLAND", "currency": "['DKK']", "flag": "\ud83c\uddec\ud83c\uddf1"}
+,{"name": "GRENADA", "currency": "['XCD']", "flag": "\ud83c\uddec\ud83c\udde9"}
+,{"name": "GUADELOUPE", "currency": "['EUR']", "flag": "\ud83c\uddec\ud83c\uddf5"}
+,{"name": "GUAM", "currency": "['USD']", "flag": "\ud83c\uddec\ud83c\uddfa"}
+,{"name": "GUATEMALA", "currency": "['GTQ']", "flag": "\ud83c\uddec\ud83c\uddf9"}
+,{"name": "GUERNSEY", "currency": "['GBP']", "flag": "\ud83c\uddec\ud83c\uddec"}
+,{"name": "GUINEA", "currency": "['GNF']", "flag": "\ud83c\uddec\ud83c\uddf3"}
+,{"name": "GUINEA-BISSAU", "currency": "['XOF']", "flag": "\ud83c\uddec\ud83c\uddfc"}
+,{"name": "GUYANA", "currency": "['GYD']", "flag": "\ud83c\uddec\ud83c\uddfe"}
+,{"name": "HAITI", "currency": "['HTG', 'USD']", "flag": "\ud83c\udded\ud83c\uddf9"}
+,{"name": "HEARD ISLAND AND MCDONALD ISLANDS", "currency": "['AUD']", "flag": "\ud83c\udded\ud83c\uddf2"}
+,{"name": "HONDURAS", "currency": "['HNL']", "flag": "\ud83c\udded\ud83c\uddf3"}
+,{"name": "HONG KONG", "currency": "['HKD']", "flag": "\ud83c\udded\ud83c\uddf0"}
+,{"name": "HUNGARY", "currency": "['HUF']", "flag": "\ud83c\udded\ud83c\uddfa"}
+,{"name": "ICELAND", "currency": "['ISK']", "flag": "\ud83c\uddee\ud83c\uddf8"}
+,{"name": "INDIA", "currency": "['INR']", "flag": "\ud83c\uddee\ud83c\uddf3"}
+,{"name": "INDONESIA", "currency": "['IDR']", "flag": "\ud83c\uddee\ud83c\udde9"}
+,{"name": "IRAQ", "currency": "['IQD']", "flag": "\ud83c\uddee\ud83c\uddf6"}
+,{"name": "IRELAND", "currency": "['EUR']", "flag": "\ud83c\uddee\ud83c\uddea"}
+,{"name": "ISLE OF MAN", "currency": "['GBP']", "flag": "\ud83c\uddee\ud83c\uddf2"}
+,{"name": "ISRAEL", "currency": "['ILS']", "flag": "\ud83c\uddee\ud83c\uddf1"}
+,{"name": "ITALY", "currency": "['EUR']", "flag": "\ud83c\uddee\ud83c\uddf9"}
+,{"name": "JAMAICA", "currency": "['JMD']", "flag": "\ud83c\uddef\ud83c\uddf2"}
+,{"name": "JAPAN", "currency": "['JPY']", "flag": "\ud83c\uddef\ud83c\uddf5"}
+,{"name": "JERSEY", "currency": "['GBP']", "flag": "\ud83c\uddef\ud83c\uddea"}
+,{"name": "JORDAN", "currency": "['JOD']", "flag": "\ud83c\uddef\ud83c\uddf4"}
+,{"name": "KAZAKHSTAN", "currency": "['KZT']", "flag": "\ud83c\uddf0\ud83c\uddff"}
+,{"name": "KENYA", "currency": "['KES']", "flag": "\ud83c\uddf0\ud83c\uddea"}
+,{"name": "KIRIBATI", "currency": "['AUD']", "flag": "\ud83c\uddf0\ud83c\uddee"}
+,{"name": "KUWAIT", "currency": "['KWD']", "flag": "\ud83c\uddf0\ud83c\uddfc"}
+,{"name": "KYRGYZSTAN", "currency": "['KGS']", "flag": "\ud83c\uddf0\ud83c\uddec"}
+,{"name": "LAO PEOPLE'S DEMOCRATIC REPUBLIC", "currency": "['LAK']", "flag": "\ud83c\uddf1\ud83c\udde6"}
+,{"name": "LATVIA", "currency": "['EUR']", "flag": "\ud83c\uddf1\ud83c\uddfb"}
+,{"name": "LEBANON", "currency": "['LBP']", "flag": "\ud83c\uddf1\ud83c\udde7"}
+,{"name": "LESOTHO", "currency": "['LSL', 'ZAR']", "flag": "\ud83c\uddf1\ud83c\uddf8"}
+,{"name": "LIBERIA", "currency": "['LRD']", "flag": "\ud83c\uddf1\ud83c\uddf7"}
+,{"name": "LIBYA", "currency": "['LYD']", "flag": "\ud83c\uddf1\ud83c\uddfe"}
+,{"name": "LIECHTENSTEIN", "currency": "['CHF']", "flag": "\ud83c\uddf1\ud83c\uddee"}
+,{"name": "LITHUANIA", "currency": "['EUR']", "flag": "\ud83c\uddf1\ud83c\uddf9"}
+,{"name": "LUXEMBOURG", "currency": "['EUR']", "flag": "\ud83c\uddf1\ud83c\uddfa"}
+,{"name": "MADAGASCAR", "currency": "['MGA']", "flag": "\ud83c\uddf2\ud83c\uddec"}
+,{"name": "MALAWI", "currency": "['MWK']", "flag": "\ud83c\uddf2\ud83c\uddfc"}
+,{"name": "MALAYSIA", "currency": "['MYR']", "flag": "\ud83c\uddf2\ud83c\uddfe"}
+,{"name": "MALDIVES", "currency": "['MVR']", "flag": "\ud83c\uddf2\ud83c\uddfb"}
+,{"name": "MALI", "currency": "['XOF']", "flag": "\ud83c\uddf2\ud83c\uddf1"}
+,{"name": "MALTA", "currency": "['EUR']", "flag": "\ud83c\uddf2\ud83c\uddf9"}
+,{"name": "MARSHALL ISLANDS", "currency": "['USD']", "flag": "\ud83c\uddf2\ud83c\udded"}
+,{"name": "MARTINIQUE", "currency": "['EUR']", "flag": "\ud83c\uddf2\ud83c\uddf6"}
+,{"name": "MAURITANIA", "currency": "['MRO']", "flag": "\ud83c\uddf2\ud83c\uddf7"}
+,{"name": "MAURITIUS", "currency": "['MUR']", "flag": "\ud83c\uddf2\ud83c\uddfa"}
+,{"name": "MAYOTTE", "currency": "['EUR']", "flag": "\ud83c\uddfe\ud83c\uddf9"}
+,{"name": "MEXICO", "currency": "['MXN']", "flag": "\ud83c\uddf2\ud83c\uddfd"}
+,{"name": "MONACO", "currency": "['EUR']", "flag": "\ud83c\uddf2\ud83c\udde8"}
+,{"name": "MONGOLIA", "currency": "['MNT']", "flag": "\ud83c\uddf2\ud83c\uddf3"}
+,{"name": "MONTSERRAT", "currency": "['XCD']", "flag": "\ud83c\uddf2\ud83c\uddf8"}
+,{"name": "MOROCCO", "currency": "['MAD']", "flag": "\ud83c\uddf2\ud83c\udde6"}
+,{"name": "MOZAMBIQUE", "currency": "['MZN']", "flag": "\ud83c\uddf2\ud83c\uddff"}
+,{"name": "NAMIBIA", "currency": "['NAD', 'ZAR']", "flag": "\ud83c\uddf3\ud83c\udde6"}
+,{"name": "NAURU", "currency": "['AUD']", "flag": "\ud83c\uddf3\ud83c\uddf7"}
+,{"name": "NEPAL", "currency": "['NPR']", "flag": "\ud83c\uddf3\ud83c\uddf5"}
+,{"name": "NETHERLANDS", "currency": "['EUR']", "flag": "\ud83c\uddf3\ud83c\uddf1"}
+,{"name": "NEW CALEDONIA", "currency": "['XPF']", "flag": "\ud83c\uddf3\ud83c\udde8"}
+,{"name": "NEW ZEALAND", "currency": "['NZD']", "flag": "\ud83c\uddf3\ud83c\uddff"}
+,{"name": "NICARAGUA", "currency": "['NIO']", "flag": "\ud83c\uddf3\ud83c\uddee"}
+,{"name": "NIGER", "currency": "['XOF']", "flag": "\ud83c\uddf3\ud83c\uddea"}
+,{"name": "NIGERIA", "currency": "['NGN']", "flag": "\ud83c\uddf3\ud83c\uddec"}
+,{"name": "NIUE", "currency": "['NZD']", "flag": "\ud83c\uddf3\ud83c\uddfa"}
+,{"name": "NORFOLK ISLAND", "currency": "['AUD']", "flag": "\ud83c\uddf3\ud83c\uddeb"}
+,{"name": "NORTHERN MARIANA ISLANDS", "currency": "['USD']", "flag": "\ud83c\uddf2\ud83c\uddf5"}
+,{"name": "NORWAY", "currency": "['NOK']", "flag": "\ud83c\uddf3\ud83c\uddf4"}
+,{"name": "OMAN", "currency": "['OMR']", "flag": "\ud83c\uddf4\ud83c\uddf2"}
+,{"name": "PAKISTAN", "currency": "['PKR']", "flag": "\ud83c\uddf5\ud83c\uddf0"}
+,{"name": "PALAU", "currency": "['USD']", "flag": "\ud83c\uddf5\ud83c\uddfc"}
+,{"name": "PANAMA", "currency": "['PAB', 'USD']", "flag": "\ud83c\uddf5\ud83c\udde6"}
+,{"name": "PAPUA NEW GUINEA", "currency": "['PGK']", "flag": "\ud83c\uddf5\ud83c\uddec"}
+,{"name": "PARAGUAY", "currency": "['PYG']", "flag": "\ud83c\uddf5\ud83c\uddfe"}
+,{"name": "PERU", "currency": "['PEN']", "flag": "\ud83c\uddf5\ud83c\uddea"}
+,{"name": "PHILIPPINES", "currency": "['PHP']", "flag": "\ud83c\uddf5\ud83c\udded"}
+,{"name": "POLAND", "currency": "['PLN']", "flag": "\ud83c\uddf5\ud83c\uddf1"}
+,{"name": "PORTUGAL", "currency": "['EUR']", "flag": "\ud83c\uddf5\ud83c\uddf9"}
+,{"name": "PUERTO RICO", "currency": "['USD']", "flag": "\ud83c\uddf5\ud83c\uddf7"}
+,{"name": "QATAR", "currency": "['QAR']", "flag": "\ud83c\uddf6\ud83c\udde6"}
+,{"name": "R\u00c9UNION", "currency": "['EUR']", "flag": "\ud83c\uddf7\ud83c\uddea"}
+,{"name": "ROMANIA", "currency": "['RON']", "flag": "\ud83c\uddf7\ud83c\uddf4"}
+,{"name": "RUSSIAN FEDERATION", "currency": "['RUB']", "flag": "\ud83c\uddf7\ud83c\uddfa"}
+,{"name": "RWANDA", "currency": "['RWF']", "flag": "\ud83c\uddf7\ud83c\uddfc"}
+,{"name": "SAINT KITTS AND NEVIS", "currency": "['XCD']", "flag": "\ud83c\uddf0\ud83c\uddf3"}
+,{"name": "SAINT LUCIA", "currency": "['XCD']", "flag": "\ud83c\uddf1\ud83c\udde8"}
+,{"name": "SAINT PIERRE AND MIQUELON", "currency": "['EUR']", "flag": "\ud83c\uddf5\ud83c\uddf2"}
+,{"name": "SAINT VINCENT AND THE GRENADINES", "currency": "['XCD']", "flag": "\ud83c\uddfb\ud83c\udde8"}
+,{"name": "SAMOA", "currency": "['WST']", "flag": "\ud83c\uddfc\ud83c\uddf8"}
+,{"name": "SAN MARINO", "currency": "['EUR']", "flag": "\ud83c\uddf8\ud83c\uddf2"}
+,{"name": "SAUDI ARABIA", "currency": "['SAR']", "flag": "\ud83c\uddf8\ud83c\udde6"}
+,{"name": "SENEGAL", "currency": "['XOF']", "flag": "\ud83c\uddf8\ud83c\uddf3"}
+,{"name": "SERBIA", "currency": "['RSD']", "flag": "\ud83c\uddf7\ud83c\uddf8"}
+,{"name": "SEYCHELLES", "currency": "['SCR']", "flag": "\ud83c\uddf8\ud83c\udde8"}
+,{"name": "SIERRA LEONE", "currency": "['SLL']", "flag": "\ud83c\uddf8\ud83c\uddf1"}
+,{"name": "SINGAPORE", "currency": "['SGD']", "flag": "\ud83c\uddf8\ud83c\uddec"}
+,{"name": "SLOVAKIA", "currency": "['EUR']", "flag": "\ud83c\uddf8\ud83c\uddf0"}
+,{"name": "SLOVENIA", "currency": "['EUR']", "flag": "\ud83c\uddf8\ud83c\uddee"}
+,{"name": "SOLOMON ISLANDS", "currency": "['SBD']", "flag": "\ud83c\uddf8\ud83c\udde7"}
+,{"name": "SOMALIA", "currency": "['SOS']", "flag": "\ud83c\uddf8\ud83c\uddf4"}
+,{"name": "SOUTH AFRICA", "currency": "['ZAR']", "flag": "\ud83c\uddff\ud83c\udde6"}
+,{"name": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS", "currency": "['GBP']", "flag": "\ud83c\uddec\ud83c\uddf8"}
+,{"name": "SOUTH SUDAN", "currency": "['SSP']", "flag": "\ud83c\uddf8\ud83c\uddf8"}
+,{"name": "SPAIN", "currency": "['EUR']", "flag": "\ud83c\uddea\ud83c\uddf8"}
+,{"name": "SRI LANKA", "currency": "['LKR']", "flag": "\ud83c\uddf1\ud83c\uddf0"}
+,{"name": "SUDAN", "currency": "['SDG']", "flag": "\ud83c\uddf8\ud83c\udde9"}
+,{"name": "SURINAME", "currency": "['SRD']", "flag": "\ud83c\uddf8\ud83c\uddf7"}
+,{"name": "SVALBARD AND JAN MAYEN", "currency": "['NOK']", "flag": "\ud83c\uddf8\ud83c\uddef"}
+,{"name": "SWEDEN", "currency": "['SEK']", "flag": "\ud83c\uddf8\ud83c\uddea"}
+,{"name": "SWITZERLAND", "currency": "['CHE', 'CHF', 'CHW']", "flag": "\ud83c\udde8\ud83c\udded"}
+,{"name": "SYRIAN ARAB REPUBLIC", "currency": "['SYP']", "flag": "\ud83c\uddf8\ud83c\uddfe"}
+,{"name": "TAJIKISTAN", "currency": "['TJS']", "flag": "\ud83c\uddf9\ud83c\uddef"}
+,{"name": "THAILAND", "currency": "['THB']", "flag": "\ud83c\uddf9\ud83c\udded"}
+,{"name": "TOGO", "currency": "['XOF']", "flag": "\ud83c\uddf9\ud83c\uddec"}
+,{"name": "TOKELAU", "currency": "['NZD']", "flag": "\ud83c\uddf9\ud83c\uddf0"}
+,{"name": "TONGA", "currency": "['TOP']", "flag": "\ud83c\uddf9\ud83c\uddf4"}
+,{"name": "TRINIDAD AND TOBAGO", "currency": "['TTD']", "flag": "\ud83c\uddf9\ud83c\uddf9"}
+,{"name": "TUNISIA", "currency": "['TND']", "flag": "\ud83c\uddf9\ud83c\uddf3"}
+,{"name": "TURKMENISTAN", "currency": "['TMT']", "flag": "\ud83c\uddf9\ud83c\uddf2"}
+,{"name": "TUVALU", "currency": "['AUD']", "flag": "\ud83c\uddf9\ud83c\uddfb"}
+,{"name": "UGANDA", "currency": "['UGX']", "flag": "\ud83c\uddfa\ud83c\uddec"}
+,{"name": "UKRAINE", "currency": "['UAH']", "flag": "\ud83c\uddfa\ud83c\udde6"}
+,{"name": "UNITED ARAB EMIRATES", "currency": "['AED']", "flag": "\ud83c\udde6\ud83c\uddea"}
+,{"name": "UNITED STATES OF AMERICA", "currency": "['USD', 'USN', 'USS']", "flag": "\ud83c\uddfa\ud83c\uddf8"}
+,{"name": "URUGUAY", "currency": "['UYI', 'UYU']", "flag": "\ud83c\uddfa\ud83c\uddfe"}
+,{"name": "UZBEKISTAN", "currency": "['UZS']", "flag": "\ud83c\uddfa\ud83c\uddff"}
+,{"name": "VANUATU", "currency": "['VUV']", "flag": "\ud83c\uddfb\ud83c\uddfa"}
+,{"name": "WALLIS AND FUTUNA", "currency": "['XPF']", "flag": "\ud83c\uddfc\ud83c\uddeb"}
+,{"name": "WESTERN SAHARA", "currency": "['MAD', 'DZD', 'MRO']", "flag": "\ud83c\uddea\ud83c\udded"}
+,{"name": "YEMEN", "currency": "['YER']", "flag": "\ud83c\uddfe\ud83c\uddea"}
+,{"name": "ZAMBIA", "currency": "['ZMK']", "flag": "\ud83c\uddff\ud83c\uddf2"}
+,{"name": "ZIMBABWE", "currency": "['USD']", "flag": "\ud83c\uddff\ud83c\uddfc"}
+]

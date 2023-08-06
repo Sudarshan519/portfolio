@@ -44,6 +44,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,
 from core.hashing import Hasher
 from db.base import Base
 from db.models.user import Users as User
+from db.session_sqlmodel import init_db
 from other_apps.get_rates import get_rates
 
 from schemas.schema import Book as SchemaBook
@@ -91,6 +92,9 @@ def populateAdmin(db:Session=Depends(get_db)):
     finally:
         pass
 app = FastAPI() 
+from apps.rps_remit.main import remit_app
+from apps.rps_remit.main import remitapp
+app.include_router(remit_app,prefix='/remit_app',tags=['REMIT APP'])
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
@@ -110,10 +114,10 @@ app.include_router(attendance_router,tags=[ ])
 app.include_router(notificationRoute,tags=[ ])
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-from apps.rps_remit.main import remit_app
-from apps.rps_remit.main import remitapp
-app.include_router(remit_app,prefix='/remit_app',tags=['REMIT APP'])
-app.mount('/remitapp',remitapp,name="REMIT APP")
+from apps.hero.main import app as heroapp
+app.include_router(heroapp,prefix='',tags=['Hero'])
+
+# app.mount('/remitapp',remitapp,name="REMIT APP")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(
@@ -133,6 +137,10 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
             if str(exc) == 'No response returned.' and await request.is_disconnected():
                 return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
+        
+@app.on_event("startup")
+def on_startup(): 
+    init_db()
 # to avoid csrftokenError
 # app.add_middleware(SuppressNoResponseReturnedMiddleware)
 # app.add_middleware(DBSessionMiddleware, db_url=settings.SQLITE_URL)#settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])

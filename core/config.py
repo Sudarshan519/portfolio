@@ -27,7 +27,7 @@ class Settings:
     MySQL_SERVER_PYTHON : str = os.getenv("MYSQL_HOST_PYTHON","localhost")
  
     MySQL_DB_PYTHON=os.getenv("DATABASE_PYTHON")
-    DATABASE_URL_PYTHON =f"mysql+pymysql://{MySQL_USER_PYTHON}:{MySQL_PASSWORD_PYRHON}@{MySQL_SERVER_PYTHON}/{MySQL_DB_PYTHON}" #POSTGRES_URL
+    DATABASE_URL_PYTHON =f"mysql+mysqlconnector://SudarshanShresth:Asmir123@Sudarshanshrestha.mysql.pythonanywhere-services.com:3306/SudarshanShresth$default" #POSTGRES_URL
     # DATABASE_URL =POSTGRES_URL
     ACCESS_TOKEN_EXPIRES_IN=os.getenv("ACCESS_TOKEN_EXPIRES_IN")
     REFRESH_TOKEN_EXPIRES_IN=os.getenv("REFRESH_TOKEN_EXPIRES_IN") 

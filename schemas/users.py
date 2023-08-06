@@ -3,15 +3,42 @@ from enum import Enum
 from typing import Optional
 from pydantic import BaseModel,EmailStr
 
+class ForeignExchangeCharge(BaseModel):
+    id:int
+    min_amount:float
+    # charge_upto_one_lakh_in_rs:Column(Float,default:250)
+    charge_upto_one_lakh_in_percentage:float
+    charge_from_one_ten_lakh_in_percentage:float
+    charge_from_one_ten_lakh_in_percentage:float
+    created_at:date
+    updated_at:date
+    cancellation_charge:float
+    issuance_charge=float
 
+class KycTypeBase(BaseModel):
+    # limit on transaction
+    id:int
+    name:str
+    total_limit:int
+    per_day_limit:int
+    per_month_limit:int
+    per_year_limit:int
+
+    # limit on amount
+    per_day_amount:float
+    per_month_amount:float
+    per_year_amount:float
 
 class UserBaseSchema(BaseModel):
     # name: str
     email: EmailStr
-    # photo: str
+    photo: str=None
 
     class Config:
         orm_mode = True
+
+
+        
 #properties required during user creation
 class UserCreate(UserBaseSchema):
     # username: str
@@ -36,6 +63,12 @@ class UserResponse(UserBaseSchema):
     # created_at: datetime
     # updated_at: datetime
 
+class Role(str,Enum):
+    OWNER='OWNER'
+    MANAGER='MANAGER'
+    EMPLOYEE='EMPLOYEE'
+    AGENT='AGENT'
+    USER=''
 
 class StaticDataList(str,Enum):
     Gender= 'Gender'

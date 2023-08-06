@@ -4,12 +4,16 @@ import datetime
 from typing import Annotated
 from fastapi import APIRouter, FastAPI, HTTPException, Header, Request, Response
 from fastapi_sqlalchemy import db
+import iso3166
 from jose import JWTError
 from pydantic import BaseModel
+from apps.hero.country_with_currency import CountryCurrencyCreate
+from apps.hero.currency_router import createNewCurrency
 # from pydantic import EmailStr
 from core.config import  settings#jwtSettings,
 from core.hashing import Hasher
 from core.security import create_access_token,Authorize
+from db.repository.role_permission import RoleService
 from db.session import get_db
 from requests import Session
 from other_apps.get_rates import get_rates
@@ -17,22 +21,26 @@ from other_apps.get_rates import get_rates
 from fastapi import Depends,status
 from core import oauth2
 
-from db.models.user import Banners, ExchangeRate, Rates, Users as User
+from db.models.user import Banners, ExchangeRate, Permissions, Rates, Users as User, all_permissons
 from schemas.users import UserBaseSchema, UserCreate, UserResponse
 from apps.rps_remit.dashboard import router
-
-
+from apps.hero.main import app as heroapp
+from apps.rps_remit.compliance_service import router as compliance
 from fastapi.staticfiles import StaticFiles
 # remit_app = FastAPI()
 
 import jwt
-app=APIRouter(include_in_schema=True) #remit_app
+app=APIRouter(include_in_schema=True,prefix="/remit_app") #remit_app
 remitapp=FastAPI()
 remit_app=app
-app=remitapp
+# app=remitapp
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 app.include_router(router,prefix='/dashboard')
+app.include_router(heroapp,prefix='/heroes')
+app.include_router(compliance,prefix='/compliance')
+
+
 
 from core.jwt_bearer import JWTBearer
 def get_current_user( jwtb: str = Depends(JWTBearer()), db: Session = Depends(get_db)):
@@ -53,22 +61,81 @@ def get_current_user( jwtb: str = Depends(JWTBearer()), db: Session = Depends(ge
     except JWTError as e:
         return credentials_exception
 
+@app.post('/create-permission')
+async def create_permission(name:str,db: Session = Depends(get_db)):
 
-
+    role=Permissions(name)
+    return RoleService.createPermission(role,db)
+# @app.post('/create-role')
+# async def create_role(name:str,permission:list[str]):
+#     print(name)
+#     print(permission)
+#     pass
+    # role=Role(name,permission)
+    # return RoleService.createRole(role)
+@app.get('/all-permissions')
+def all():
+    
+    return all_permissons()
 
 @app.get("/")
 def index():
    return {"message": "Hello World from remit app"}
 
 
+def flag_emoji(name):
+    alpha = iso3166.countries.get(name).alpha2
+    box = lambda ch: chr( ord(ch) + 0x1f1a5 )
+    return box(alpha[0]) + box(alpha[1])
 
+from countryinfo import CountryInfo
 @app.get('/exchange-rates/',tags=['ExchangeRate'])
 async def get_exchanges_rates(db: Session = Depends(get_db)):
 
     dbrates=db.query(ExchangeRate).filter(ExchangeRate.date==date.today()).order_by(ExchangeRate.id.desc()).first()
     if dbrates:
         dbrates.rates
-        return dbrates
+        flag=[]
+        f = open("myfile.json", "w")
+        f.write("[")
+        f.close()
+
+        for country_name in iso3166.countries_by_name:
+           
+            # if country_name != 'åland islands':
+                try:
+                    countryi = CountryInfo(country_name)
+                    # print(country_name)
+                    
+             
+                
+                    flag=flag_emoji(country_name)
+                    currency=str(countryi.currencies())
+                    result=createNewCurrency(currency=CountryCurrencyCreate(name=country_name,currency=currency,flag=flag))
+
+                    print(result)
+                except:
+                    ''
+                else:
+                    ''
+        f = open("myfile.json", "a")
+        f.write("]")
+        f.close()
+
+            # 
+                # print(countryi.currencies())
+            # print(iso3166.countries.get(country).currencies())
+        # print(iso3166.countries)
+        # for rate in dbrates.rates:
+        #     print(rate.iso3)
+            
+            # print(iso3166.countries_by_alpha3.get("NPR"))
+            # print(flag_emoji(("NP")))
+            # flag.append(await flag_emoji(rate.iso3))
+        # print(dbrates.rates)
+        return {
+            "flag":flag,
+            "rates":dbrates}
     rates=  get_rates()
     exchangeRate=ExchangeRate(published_on=datetime.datetime.strptime(rates['published_on'],'%Y-%m-%d %H:%M:%S'),modified_on=datetime.datetime.strptime(rates['modified_on'],'%Y-%m-%d %H:%M:%S'),date=datetime.datetime.strptime(rates['date'],'%Y-%m-%d'))
     print(exchangeRate)
@@ -87,7 +154,7 @@ async def get_exchanges_rates(db: Session = Depends(get_db)):
     db.commit()
     return rates
 
-@app.post('/register',response_model=UserResponse,tags=['Register'])
+@app.post('/register',response_model=UserResponse,tags=['RPS REMIT:Register'])
 async def register(payload:UserCreate,db: Session = Depends(get_db)):
     # Check if user already exist
     user = db.query(User).filter(
@@ -217,11 +284,16 @@ def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db
 
 #     return {'status': 'success'}
 
+@app.post('/tpin-setup')
+async def setupTransactionPin(otp,user:User=Depends(get_current_user)):
+    pass
+
+
 
 @app.post('/verify-otp',tags=['VerifyOtp'])
 def verify_otp(otp,email):
     pass
-@app.post('/verify-otp',tags=['VerifyOtp'])
+@app.post('/signup-individual',tags=['SignupIndividual'])
 def signup_individual(otp,email):
     pass
 @app.post('/documents')
@@ -231,8 +303,8 @@ async def user_documents():
 async def home_data(user:User=Depends(get_current_user)):#current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
    return user
 
-@app.post('/add-benificary')
-async def benificary():
+@app.post('/add-recipients')
+async def add_recipients(recipient):
     pass
 
 @app.get('/cash-deposit-locations')
@@ -250,10 +322,10 @@ async def bank_deposit():
 @app.post('/recipients')
 async def all_recipients():
     pass
-@app.get('/transactions')
+@app.get('/transactions',tags=['Transactions History'])
 async def all_transactions():
     pass
 
-@app.post('/transactions-submit')
+@app.post('/transactions-submit',tags=['Send Money'])
 async def cash_deposit_location():
     pass 
