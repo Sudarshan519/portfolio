@@ -15,7 +15,7 @@ class RecivingMethod(str,Enum):
     CASH="CASH"
     WALLET="WALLET"
 
-class UserStatus(str,Enum):
+class UserKycStatus(str,Enum):
     UNVERIFIED="UNVERIFIED"
     TEMPORARY="TEMPORARY"
     VERIFIED="VERIFIED"

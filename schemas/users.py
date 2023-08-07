@@ -1,6 +1,6 @@
 from datetime import date
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 from pydantic import BaseModel,EmailStr
 
 class ForeignExchangeCharge(BaseModel):
@@ -33,20 +33,42 @@ class UserBaseSchema(BaseModel):
     # name: str
     email: EmailStr
     photo: str=None
+    phone: str=None
+    email_verified : bool=False
+    phone_verified: bool=False
+    kyc_status: str=None
+    user_type:str=None
 
     class Config:
         orm_mode = True
 
 
+class UserLoginResponse(BaseModel):
+    access_token:str
+    refresh_token:str
+    user:UserBaseSchema
+
+    class Config:
+        orm_mode = True
+class LoginResponse(BaseModel):
+    status:str="success"
+    data:UserLoginResponse
         
 #properties required during user creation
 class UserCreate(UserBaseSchema):
-    # username: str
+    username: str
     # email : EmailStr
     password : str
     # is_employer:Optional[bool]
     # class Config():  #tells pydantic to convert even non dict obj to json
     #     orm_mode = True
+class UserLoginRequest(BaseModel):
+    # username:str=None
+    email:EmailStr
+    password:str
+    deviceId:str=None
+    gps:str=None
+    ip:str=None
 
 class ShowUser(BaseModel):   #new
     username : str=None

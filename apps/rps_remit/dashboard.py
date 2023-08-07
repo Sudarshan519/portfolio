@@ -4,7 +4,7 @@ from typing import Any, Type
 from fastapi import APIRouter, Body,Depends, File, Form, Query, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from apps.rps_remit.fireabse_bucket import upload_file
+from apps.rps_remit.fireabse_bucket import download_file, upload_file
 from apps.rps_remit.gs_cloud_storage import upload_to_gcs
 
 from db.models.user import Banners, Users, all_permissons
@@ -44,6 +44,7 @@ def index():
 class UserSchema(BaseModel):
    id:int
    email:str
+   phone:str
    verified:bool
    is_active:bool
 
@@ -67,18 +68,21 @@ async def add_banner(url:str=Body( ),image:UploadFile =File(...),db:Session=Depe
    file_content=await image.read()
    filename=image.filename
    upload_to_gcs(filename,file_content ,image.content_type)
-   if image:
+   # if image:
       
-      with open("images/"+filename, 'wb') as f:
-            while contents := image.file.read(1024 * 1024):
-                    f.write(contents)
-      image_url='/images/'+filename
+      # with open("images/"+filename, 'wb') as f:
+      #       while contents := image.file.read(1024 * 1024):
+      #               f.write(contents)
+      # image_url='/images/'+filename
       # await upload_file(image)
       # print(image.filename)
       # ext= image.filename.split(".")[-1]
+      
+      # url=await download_file(image.filename)
       # image_url=firebase_upload(image.file.read(),ext,image.filename)
       # print(image_url)
-   banner=Banners(url=url,image=image_url)
+   banner=Banners(url=url,image=filename)
+   print(banner)
    db.add(banner)
    db.commit()
    db.refresh(banner)

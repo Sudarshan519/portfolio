@@ -3,10 +3,11 @@ from datetime import timedelta
 import datetime
 from sqlalchemy import Column, Date, DateTime, Enum, Float,Integer, String,Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
+from apps.rps_remit.gs_cloud_storage import generate_signed_url
 from db.base import Base
 from pydantic import BaseModel
 
-from schemas.attendance import RecivingMethod
+from schemas.attendance import RecivingMethod, UserKycStatus
 
 class ForeignExchangeCharge(Base):
     id=Column(Integer,primary_key=True,index=True)
@@ -59,10 +60,12 @@ class Users(Base):
     # username = Column(String(60),unique=True,nullable=False)
     email = Column(String(60),nullable=False,unique=True,index=True)
     phone=Column(String(16),nullable=True)
+    photo=Column(String(256),nullable=True)
     phone_verified=Column(Boolean,default=False)
     hashed_password = Column(String(256),nullable=False)
     is_active = Column(Boolean(),default=True)
-    verified=Column(Boolean,default=True)
+    verified=Column(Boolean,default=False)
+    kyc_status=Column(Enum(UserKycStatus),default=UserKycStatus.UNVERIFIED)
     kyc_verified=Column(Boolean,default=False)
     # full_kyc=Column(Boolean,default=False)
     is_superuser = Column(Boolean(),default=False)
@@ -83,8 +86,10 @@ class Users(Base):
     @property
     def check_transaction_limit(self,db):
         return True
+    @property
+    def email_verified(self):
+        return self.verified
 
-    
 class Banners(Base):
     id = Column(Integer,primary_key=True,index=True)
     url=Column(String,nullable=True)
@@ -92,7 +97,9 @@ class Banners(Base):
     @property
     def image_url(self):
         return 'http://127.0.0.1:8000'+self.image
-
+    @property 
+    def get_image(self):
+        return generate_signed_url(self.image)
 
 class OTPSetup(Base):
     id=Column(Integer,primary_key=True,index=True)

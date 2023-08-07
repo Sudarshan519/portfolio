@@ -22,7 +22,7 @@ from fastapi import Depends,status
 from core import oauth2
 
 from db.models.user import Banners, ExchangeRate, Permissions, Rates, Users as User, all_permissons
-from schemas.users import UserBaseSchema, UserCreate, UserResponse
+from schemas.users import LoginResponse, UserBaseSchema, UserCreate, UserLoginRequest, UserResponse
 from apps.rps_remit.dashboard import router
 from apps.hero.main import app as heroapp
 from apps.rps_remit.compliance_service import router as compliance
@@ -30,7 +30,7 @@ from fastapi.staticfiles import StaticFiles
 # remit_app = FastAPI()
 
 import jwt
-app=APIRouter(include_in_schema=True,prefix="/remit_app") #remit_app
+app=APIRouter(include_in_schema=True,prefix="") #remit_app
 remitapp=FastAPI()
 remit_app=app
 # app=remitapp
@@ -181,14 +181,14 @@ async def register(payload:UserCreate,db: Session = Depends(get_db)):
     return new_user
 class BannerResponse(BaseModel):
     url:str=None
-    image_url:str=None
+    get_image:str=None
     class Config:
         orm_mode=True
 @app.get('/banners',tags=['Banners'],response_model=list[BannerResponse])
 async def banners( db: Session = Depends(get_db),):
     return db.query(Banners).all() 
-@app.post('/login',tags=['Login'])
-async def login(payload: UserCreate,response: Response, db: Session = Depends(get_db),):
+@app.post('/login',tags=['Login'],response_model=LoginResponse)
+async def login(payload: UserLoginRequest,response: Response, db: Session = Depends(get_db),):
                 #Authorize: AuthJWT = Depends()):
     # Check if the user exist
     user = db.query(User).filter(
@@ -204,7 +204,7 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
 
     # Check if the password is valid
     if not Hasher.verify_password(payload.password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Incorrect Email or Password')
 
     # Create access token
@@ -229,7 +229,13 @@ async def login(payload: UserCreate,response: Response, db: Session = Depends(ge
    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    return {'status': 'success', 'access_token': access_token,'refresh_token':refresh_token
+    return {'status': 'success', 'data':{'access_token': access_token,'refresh_token':refresh_token,
+        "user":    user}
+        # 'email_verified':user.verified,
+        # 'phone_verified':user.phone_verified,
+        # 'password_expired':False,
+        # 'ekyc_verified':False,
+        # 'ekyc_status':False
             }
 # import jwt
 # # Refresh access token

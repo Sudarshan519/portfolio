@@ -37,3 +37,5 @@ async def download_file(filename: str):
         return response.content
     else:
         raise HTTPException(status_code=response.status_code, detail=response.text)
+    
+
