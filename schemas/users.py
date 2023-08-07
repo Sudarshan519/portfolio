@@ -138,6 +138,7 @@ class CreateCustomer(BaseModel):
     CitizenshipNo:str
     State:str
     District:str
+    firebase_token:str
     class Config:
                 schema_extra = {
             "example": {
@@ -172,7 +173,8 @@ class CreateCustomer(BaseModel):
             "OTP": "string",
             "CitizenshipNo": "string",
             "State": "string",
-            "District": "string"
+            "District": "string",
+            "firebase_token":"string"
 }
         }
 
