@@ -10,7 +10,7 @@ from apps.rps_remit.gs_cloud_storage import upload_to_gcs
 from db.models.user import Banners, Users, all_permissons
 from db.session import get_db
 from other_apps.upload_file import firebase_upload
-from schemas.users import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, ForeignExchangeCharge, KycTypeBase, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
+from schemas.users import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, ForeignExchangeCharge, GetServiceCharge, KycTypeBase, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
 from xml_request.rps_creation_requests.request_method import RequestMethods
 
 
@@ -67,8 +67,8 @@ def get_customer_by_mobile(id:int):
 
 
 @router.get('/service_charge')
-def service_charge():
-    return RequestMethods.get_service_charge()
+def service_charge(serviceCharge:GetServiceCharge= Depends()):
+    return RequestMethods.get_service_charge(serviceCharge)
 
 @router.post('/search-csp')
 async def searchCSP(cspsearchrequest:SearchCsp):

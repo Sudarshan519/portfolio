@@ -7,8 +7,7 @@ from fastapi_sqlalchemy import db
 import iso3166
 from jose import JWTError
 from pydantic import BaseModel
-from apps.hero.country_with_currency import CountryCurrencyCreate
-from apps.hero.currency_router import createNewCurrency
+ 
 # from pydantic import EmailStr
 from core.config import  settings#jwtSettings,
 from core.hashing import Hasher
@@ -24,11 +23,16 @@ from core import oauth2
 from db.models.user import Banners, ExchangeRate, Permissions, Rates, Users as User, all_permissons
 from schemas.users import LoginResponse, UserBaseSchema, UserCreate, UserLoginRequest, UserResponse
 from apps.rps_remit.dashboard import router
-from apps.hero.main import app as heroapp
+from apps.rps_remit.hero.main import app as heroapp
+
+from apps.rps_remit.banners.main import app as banners
+
+from apps.rps_remit.transactions_state.main import app as transactionstate
+from apps.rps_remit.currency.currency_router import app as currencyapp
 from apps.rps_remit.compliance_service import router as compliance
 from fastapi.staticfiles import StaticFiles
 # remit_app = FastAPI()
-
+from apps.rps_remit.forex_exchange.main import app as forex
 import jwt
 app=APIRouter(include_in_schema=True,prefix="") #remit_app
 remitapp=FastAPI()
@@ -36,9 +40,15 @@ remit_app=app
 # app=remitapp
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
-app.include_router(router,prefix='/dashboard')
-app.include_router(heroapp,prefix='/heroes')
+app.include_router(transactionstate,prefix='')
+app.include_router(banners,prefix='')
+app.include_router(currencyapp,prefix='/currency')
+
+app.include_router(heroapp,prefix='')
+app.include_router(forex,prefix='')
 app.include_router(compliance,prefix='/compliance')
+app.include_router(router,prefix='/dashboard')
+
 
 
 
@@ -96,28 +106,28 @@ async def get_exchanges_rates(db: Session = Depends(get_db)):
     if dbrates:
         dbrates.rates
         flag=[]
-        f = open("myfile.json", "w")
-        f.write("[")
-        f.close()
+        # f = open("myfile.json", "w")
+        # f.write("[")
+        # f.close()
 
-        for country_name in iso3166.countries_by_name:
+        # for country_name in iso3166.countries_by_name:
            
-            # if country_name != 'åland islands':
-                try:
-                    countryi = CountryInfo(country_name)
-                    # print(country_name)
+        #     # if country_name != 'åland islands':
+        #         try:
+        #             countryi = CountryInfo(country_name)
+        #             # print(country_name)
                     
              
                 
-                    flag=flag_emoji(country_name)
-                    currency=str(countryi.currencies())
-                    result=createNewCurrency(currency=CountryCurrencyCreate(name=country_name,currency=currency,flag=flag))
+        #             flag=flag_emoji(country_name)
+        #             currency=str(countryi.currencies())
+        #             result=createNewCurrency(currency=CountryCurrencyCreate(name=country_name,currency=currency,flag=flag))
 
-                    print(result)
-                except:
-                    ''
-                else:
-                    ''
+        #             print(result)
+        #         except:
+        #             ''
+        #         else:
+                    # ''
         f = open("myfile.json", "a")
         f.write("]")
         f.close()
@@ -290,6 +300,14 @@ def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db
 
 #     return {'status': 'success'}
 
+
+@app.post('/forgot-password')
+async def forgot_password():
+    pass
+@app.post('/reset-password')
+async def reset_password():
+    pass
+
 @app.post('/tpin-setup')
 async def setupTransactionPin(otp,user:User=Depends(get_current_user)):
     pass
@@ -299,8 +317,9 @@ async def setupTransactionPin(otp,user:User=Depends(get_current_user)):
 @app.post('/verify-otp',tags=['VerifyOtp'])
 def verify_otp(otp,email):
     pass
-@app.post('/signup-individual',tags=['SignupIndividual'])
+@app.post('/signup-individual-business',tags=['SignupIndividualBusiness'])
 def signup_individual(otp,email):
+
     pass
 @app.post('/documents')
 async def user_documents():

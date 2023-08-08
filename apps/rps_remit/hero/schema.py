@@ -17,7 +17,7 @@ class HeroRead(HeroBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 class HeroUpdate(HeroBase):
-    name: str 
+    pass
 
  
 class Hero(HeroBase, RecordService, table=True):

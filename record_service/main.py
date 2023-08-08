@@ -32,12 +32,15 @@ class RecordService(SQLModel):
         session.refresh(self)
 
     def update(self, source: dict| SQLModel, session):
+ 
         if isinstance(source, SQLModel):
             source = source.dict(exclude_unset=True)
 
         for key, value in source.items():
             setattr(self, key, value)
         self.save(session)
+        session.refresh(self)
+        return self
 
     def delete(self, session):
         session.delete(self)

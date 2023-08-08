@@ -166,15 +166,17 @@ class RequestMethods:
         # Process the response 
         return serialize_object(response) 
     @staticmethod
-    def get_service_charge():
+    def get_service_charge(payment_mode:str):
         response = client.service.GetServiceCharge(
              { 'UserName': username,
                 'Password': password,
-                'CollectionCurrency':'JPY',
-                'Country':'Japan',
-                'TransferAmount':'',
-                'PayoutAmount':'',
-                 }
+                **{k:v for k,v in payment_mode.dict().items()}
+                # 'CollectionCurrency':'JPY',
+                # 'Country':'Japan',
+                # 'TransferAmount':'',
+                # 'PayoutAmount':'',
+                # 'PaymentMode':str
+                }
         #     {
                 # 'UserName': username,
                 # 'Password': password,

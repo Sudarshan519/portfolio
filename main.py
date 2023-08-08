@@ -94,7 +94,7 @@ def populateAdmin(db:Session=Depends(get_db)):
 app = FastAPI() 
 from apps.rps_remit.main import remit_app
 from apps.rps_remit.main import remitapp
-app.include_router(remit_app,prefix='/remit_app',tags=['REMIT APP'])
+app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
@@ -114,8 +114,8 @@ app.include_router(attendance_router,tags=[ ])
 app.include_router(notificationRoute,tags=[ ])
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-from apps.hero.main import app as heroapp
-app.include_router(heroapp,prefix='',tags=['Hero'])
+# from apps.rps_remit.hero.main import app as heroapp
+# app.include_router(heroapp,prefix='',tags=['Hero'])
 
 # app.mount('/remitapp',remitapp,name="REMIT APP")
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware

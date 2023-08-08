@@ -7,9 +7,12 @@ class ForeignExchangeCharge(BaseModel):
     id:int
     min_amount:float
     # charge_upto_one_lakh_in_rs:Column(Float,default:250)
-    charge_upto_one_lakh_in_percentage:float
-    charge_from_one_ten_lakh_in_percentage:float
-    charge_from_one_ten_lakh_in_percentage:float
+    charge_upto_one_lakh:float=None
+    carge_from_one_ten_lakh:float=None
+    charge_from_ten_lakh_to_1core:float=None
+    charge_upto_one_lakh_in_percentage:float=None
+    charge_from_one_ten_lakh_in_percentage:float=None
+    charge_from_ten_lakh_to_1core_in_percentage:float=None
     created_at:date
     updated_at:date
     cancellation_charge:float
@@ -43,6 +46,27 @@ class UserBaseSchema(BaseModel):
         orm_mode = True
 
 
+class PersonalCardDetails(BaseModel):
+    title:str
+
+
+class IndividualBusiness(BaseModel):
+    title:str
+    firstname:str
+    middlename:str=None
+    lastname:str
+    country:str
+    residence_type:str
+    status_of_residence:str
+    profession:str
+    passport_number:str
+    passport_image:str
+    referal:str
+    organization_type:str
+    registered_business_name:str
+    registration_number:str
+
+
 class UserLoginResponse(BaseModel):
     access_token:str
     refresh_token:str
@@ -55,7 +79,7 @@ class LoginResponse(BaseModel):
     data:UserLoginResponse
         
 #properties required during user creation
-class UserCreate(UserBaseSchema):
+class UserCreate(BaseModel):
     username: str
     # email : EmailStr
     password : str
@@ -167,17 +191,17 @@ class CreateCustomer(BaseModel):
             "FirstName": "E",
             "LastName": "string",
             "MiddleName": "string",
-            "Nationality": "string",
+            "Nationality": "Nepal",
             "ResidenceStatus": "Japanese",
             "ResidenctType": "Japanese",
             "Profession": "string",
             "Email": "string",
-            "Mobile": "9876543211",
-            "PostalCode": "string",
+            "Mobile": "0709876543212",
+            "PostalCode": "0000000",
             "BuildingName": "string",
             "Dob": "2002-02-22",
             "IDType": "Residence Card",
-            "IDNumber": "string1",
+            "IDNumber": "string1234",
             "IDExpiryDate": "2022-02-22",
             "IDIssuedPlace": "string",
             "IntendUseOfAccount": "string",
@@ -223,7 +247,16 @@ class GetServiceChargeByCollection(BaseModel):
     BankBranchId:str
     ISNewAccount:str
 
-
+class GetServiceCharge(BaseModel):
+    Country:str
+    CollectionAmount: str=None
+    CollectionCurrency : str=None
+    ServiceCharge: str=None
+    TransferAmount    : str=None
+    ExchangeRate  : str=None
+    PayoutAmount  : str=None
+    PayoutCurrency    : str=None
+    PaymentMode:str=None
 class SearchCsp(BaseModel):
     CSPCode:str
     CMobile:str
@@ -260,7 +293,7 @@ class SendTransasctionRequest(BaseModel):
 
     #Optional
     SenderPhone:str=None
-    SenderMobile:str="9876543211" 
+    SenderMobile:str="0709876543211" 
     SenderCity:str 
     SenderDistrict:str 
     SenderState:str 
@@ -274,7 +307,7 @@ class SendTransasctionRequest(BaseModel):
     ReceiverName:str
     ReceiverGender:str="Male"
     ReceiverAddress:str
-    ReceiverMobile:int="9876543212"
+    ReceiverMobile:int="9823579775"
     ReceiverCity:str
     SendCountry:str
     PayoutCountry:str
@@ -298,6 +331,56 @@ class SendTransasctionRequest(BaseModel):
     CSPCode:int
     OTPProcessId:int
     OTP:int
+    # PaymentMode:str="Cash Payment"
+    class Config:
+        schema_extra={
+            "example":{
+                    "CustomerId": 0,
+                    "SenderName": "string",
+                    "SenderGender": "Male",
+                    "SenderDoB": "2023-08-08",
+                    "SenderAddress": "string",
+                    "SenderPhone": "9876543212",
+                    "SenderMobile": "0809876543211",
+                    "SenderCity": "string",
+                    "SenderDistrict": "string",
+                    "SenderState": "string",
+                    "SenderNationality": "string",
+                    "Employer": "string",
+                    "SenderIDType": "string",
+                    "SenderIDNumber": 0,
+                    "SenderIDExpiryDate": "string",
+                    "SenderIDIssuedPlace": "string",
+                    "ReceiverId": 0,
+                    "ReceiverName": "string",
+                    "ReceiverGender": "Male",
+                    "ReceiverAddress": "string",
+                    "ReceiverMobile": "9823579775",
+                    "ReceiverCity": "string",
+                    "SendCountry": "string",
+                    "PayoutCountry": "string",
+                    "PayoutMode": "Cash",
+                    "CollectedAmount": "string",
+                    "ServiceCharge": "string",
+                    "SendAmount": "string",
+                    "SendCurrency": "string",
+                    "PayAmount": "string",
+                    "PayCurrency": "string",
+                    "ExchangeRate": "string",
+                    "BankBranchId": "string",
+                    "AccountNumber": "string",
+                    "AccountType": "string",
+                    "NewAccountRequest": "string",
+                    "PartnerPinNo": 0,
+                    "IncomeSource": "string",
+                    "RemittanceReason": "string",
+                    "Relationship": "string",
+                    "CSPCode": 0,
+                    "OTPProcessId": 0,
+                    "OTP": 0,
+                   
+}
+        }
 
 
 class ValidateBankAccountRequest(BaseModel):

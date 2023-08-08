@@ -1,7 +1,8 @@
 import json
 from typing import Optional
 from fastapi import APIRouter, Depends, FastAPI, HTTPException
-from apps.hero.country_with_currency import *
+ 
+from apps.rps_remit.currency.country_with_currency import *
 from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
@@ -26,7 +27,7 @@ async def create(currency:CountryCurrencyCreate,db:Session=Depends(get_session))
     return CountryCurrency.create(currency,CountryCurrencyBase, db)
 
 @app.get('/{id}',response_model=CountryCurrencyRead)
-async def get_hero(id:int,db:Session=Depends(get_session)):
+async def get_currency(id:int,db:Session=Depends(get_session)):
     return CountryCurrency.by_id(id,session=db)
 
 
