@@ -2,7 +2,8 @@ from pydantic import BaseModel
 from sqlmodel import SQLModel
 
 
-class UserProfile(SQLModel):      
+class UserProfile(SQLModel):  
+    user_id:str    
     title: str 
     first_name: str 
     last_name: str 

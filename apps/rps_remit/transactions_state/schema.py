@@ -27,7 +27,7 @@ class TransactionStateRead(TransactionStateBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 class TransactionStateUpdate(TransactionStateBase):
-    name: str 
+    pass
 
  
 class TransactionState(TransactionStateBase, RecordService, table=True):

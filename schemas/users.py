@@ -55,7 +55,7 @@ class IndividualBusiness(BaseModel):
     firstname:str
     middlename:str=None
     lastname:str
-    country:str
+    nationality:str
     residence_type:str
     status_of_residence:str
     profession:str
@@ -65,6 +65,7 @@ class IndividualBusiness(BaseModel):
     organization_type:str
     registered_business_name:str
     registration_number:str
+    referal:str=None
 
 
 class UserLoginResponse(BaseModel):

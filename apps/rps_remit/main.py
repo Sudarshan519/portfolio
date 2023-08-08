@@ -21,7 +21,7 @@ from fastapi import Depends,status
 from core import oauth2
 
 from db.models.user import Banners, ExchangeRate, Permissions, Rates, Users as User, all_permissons
-from schemas.users import LoginResponse, UserBaseSchema, UserCreate, UserLoginRequest, UserResponse
+from schemas.users import IndividualBusiness, LoginResponse, UserBaseSchema, UserCreate, UserLoginRequest, UserResponse
 from apps.rps_remit.dashboard import router
 from apps.rps_remit.hero.main import app as heroapp
 
@@ -189,6 +189,12 @@ async def register(payload:UserCreate,db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@app.post('verify-email')
+async def verify_email(otp,phone):
+    pass
+
+
 class BannerResponse(BaseModel):
     url:str=None
     get_image:str=None
@@ -305,7 +311,11 @@ def refresh_token(refresh_token: str = Header(...), db: Session = Depends(get_db
 async def forgot_password():
     pass
 @app.post('/reset-password')
-async def reset_password():
+async def reset_password(email:str):
+    pass
+
+@app.post('/verify-otp',tags=['VerifyOtp'])
+def verify_otp(otp,email):
     pass
 
 @app.post('/tpin-setup')
@@ -313,13 +323,18 @@ async def setupTransactionPin(otp,user:User=Depends(get_current_user)):
     pass
 
 
+app.post('/change-password')
+async def change_password(newpassword:str):
+    pass
 
-@app.post('/verify-otp',tags=['VerifyOtp'])
-def verify_otp(otp,email):
+@app.post('/mobile-setup',tags=['REMIT MOBILE SETUP'])
+async def phone_setup(mobile:str):
+    pass
+@app.post('/verify-mobile',tags=['REMIT MOBILE VERIFY'])
+def verify_mobile(otp,mobile):
     pass
 @app.post('/signup-individual-business',tags=['SignupIndividualBusiness'])
-def signup_individual(otp,email):
-
+def signup_individual(signupIndividualBusiness:IndividualBusiness):
     pass
 @app.post('/documents')
 async def user_documents():
