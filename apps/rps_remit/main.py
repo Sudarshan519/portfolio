@@ -33,13 +33,15 @@ from apps.rps_remit.compliance_service import router as compliance
 from fastapi.staticfiles import StaticFiles
 # remit_app = FastAPI()
 from apps.rps_remit.forex_exchange.main import app as forex
+from apps.rps_remit.user.main import app as userapp
 import jwt
 app=APIRouter(include_in_schema=True,prefix="") #remit_app
-remitapp=FastAPI()
+# remitapp=FastAPI()
 remit_app=app
 # app=remitapp
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+app.include_router(userapp,prefix="")
 app.include_router(transactionstate,prefix='')
 app.include_router(banners,prefix='')
 app.include_router(currencyapp,prefix='/currency')

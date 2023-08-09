@@ -93,7 +93,7 @@ def populateAdmin(db:Session=Depends(get_db)):
         pass
 app = FastAPI() 
 from apps.rps_remit.main import remit_app
-from apps.rps_remit.main import remitapp
+# from apps.rps_remit.main import remitapp
 app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
 origins = [
     "http://localhost.tiangolo.com",
