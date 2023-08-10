@@ -7,7 +7,7 @@ from fastapi.params import Depends
 from fastapi import APIRouter
 from requests import Session
 from db.models.attendance import EmployeeModel
-from websocket_manager.manager import ws_manager
+from websocket_example.manager import ws_manager
 from db.session import get_db
 
 notificationRoute = APIRouter(prefix='',tags=[])

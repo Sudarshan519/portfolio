@@ -3,7 +3,8 @@ from zeep.transports import Transport
 url = "https://rps.digital-remittance.com/api/Send.svc?wsdl"
 # Replace "your_soap_service_url" with the actual URL of the SOAP service
 soap_service_url =url
-wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
+wsdl_url=url
+# wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
 # Replace placeholders with actual values for username, password, and type_data
 # username = "testRps"
 # password = "testRps"
@@ -29,11 +30,15 @@ wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
 # transport.load_custom_xml(custom_envelope_xml)
 
 # Create the Zeep client using the custom transport
-client=None
-try:
-    client = Client(wsdl_url)
-except:
-    pass
+# client=None
+client = Client(wsdl_url)
+# async def initClient():
+#     try:
+#         return await Client(wsdl_url)
+
+#     except:
+#         pass
+# initClient()
 # input_params = {
 #     'username': username,
 #     'password': password,

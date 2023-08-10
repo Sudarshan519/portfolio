@@ -12,8 +12,8 @@ from db.session_sqlmodel import get_session
 from schemas.users import LoginResponse, UserLoginRequest
  
 
-app=APIRouter(prefix="/user",tags=['REMIT APP']) 
-@app.post('/register',tags=['RPS REMIT:Register'],)#response_model=RemitUserRead)#
+app=APIRouter(prefix="/user",tags=[]) 
+@app.post('/register',tags=['RPS REMIT:REGISTER'],)#response_model=RemitUserRead)#
 async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
     # Check if user already exist
     try:
