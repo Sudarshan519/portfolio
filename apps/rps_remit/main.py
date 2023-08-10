@@ -36,6 +36,21 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # app=remitapp
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+
+from apps.rps_remit.transaction.main import app as transactionapp
+app.include_router(transactionapp,prefix='')
+
+
+
+from apps.rps_remit.user_profile.main import app as userProfile
+app.include_router(userProfile,prefix='')
+
+
+from apps.rps_remit.kyc.main import app as ekycapp
+app.include_router(ekycapp,prefix='')
+
+
+
 from apps.rps_remit.otp.main import app as otpmain
 app.include_router(otpmain,prefix="") 
 

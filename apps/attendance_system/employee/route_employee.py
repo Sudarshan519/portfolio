@@ -152,9 +152,11 @@ async def login(phone:int, db: Session = Depends(get_db)):
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee does not exist.")
     else:
         user=AttendanceRepo.get_user(phone,db)
+        print(user)
         if not user:
             AttendanceRepo.create_user(phone,db)
         otp=AttendanceRepo.create_otp(phone,db)
+        print(otp.code)
         return {"otp":otp.code}
  
 
@@ -178,9 +180,10 @@ class CompanyOut(BaseModel):
 
 @router.get('/companies',response_model=list[CompanyOut]  ,tags=['Employee Invitations'])#response_model=list[Invitations],
 async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    
-    if current_user.is_employer:
-        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
+    print(current_user)
+    if current_user:
+        if current_user.is_employer:
+            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
     # employee=AttendanceRepo.employee_companies( (current_user.phone) ,db)
     # allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
     return db.query(EmployeeModel).filter(EmployeeModel.phone==current_user.phone,).all()#EmployeeModel.status!=Status.INIT

@@ -128,7 +128,7 @@ app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 
 # attendance route
-# app.include_router(attendance_router,tags=[ ])
+app.include_router(attendance_router,tags=[ ])
 # app.include_router(notificationRoute,tags=[ ])
 
 
@@ -165,7 +165,7 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 async def on_startup(): 
     create_tables()
     print("start up complete")
-    # init_db()
+    init_db()
 
 async def main():
     config = uvicorn.Config("main:app" , port=6000, log_level="info")

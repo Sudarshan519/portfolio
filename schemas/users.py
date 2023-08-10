@@ -2,6 +2,10 @@ from datetime import date
 from enum import Enum
 from typing import Any, Optional
 from pydantic import BaseModel,EmailStr
+from pyparsing import List
+
+from apps.rps_remit.kyc.schema import  Kyc
+from apps.rps_remit.user_profile.schema import UserProfile
 
 class ForeignExchangeCharge(BaseModel):
     id:int
@@ -34,6 +38,7 @@ class KycTypeBase(BaseModel):
 
 class UserBaseSchema(BaseModel):
     # name: str
+    id:int
     email: EmailStr
     photo: str=None
     phone: str=None
@@ -41,7 +46,9 @@ class UserBaseSchema(BaseModel):
     phone_verified: bool=False
     kyc_status: str=None
     user_type:str=None
-
+    profile_setup:Optional[bool]
+    kyc:List[Kyc]=[]
+    profile:List[UserProfile]=[]
     class Config:
         orm_mode = True
 

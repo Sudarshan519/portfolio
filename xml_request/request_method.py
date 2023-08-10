@@ -3,7 +3,7 @@ from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPa
 # from xml_request.services import client
 from zeep.helpers import serialize_object
 username = "testRps"
-password = "testRps"
+password = "testRps10#"
 type_data = "IncomeSource"
 
 
