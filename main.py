@@ -65,6 +65,8 @@ from fastapi.staticfiles import StaticFiles
 
 from fastapi.middleware.cors import CORSMiddleware
 
+# from xml_request.services import retry_transport
+
 
 # from db.mongo_db import db_mongo as mongo_db
 # async def get_user(username:str,db: Session)->User:
@@ -165,7 +167,8 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 async def on_startup(): 
     create_tables()
     print("start up complete")
-    # init_db()
+    init_db()
+    # retry_transport()
 
 async def main():
     config = uvicorn.Config("main:app" , port=6000, log_level="info")

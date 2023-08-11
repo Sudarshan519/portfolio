@@ -1,9 +1,10 @@
 
+from fastapi import HTTPException
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
-# from xml_request.services import client
+from xml_request.services import  client
 from zeep.helpers import serialize_object
 username = "testRps"
-password = "testRps"
+password = "testRps100#"
 type_data = "IncomeSource"
 
 
@@ -12,15 +13,19 @@ type_data = "IncomeSource"
 class RequestMethods:
     @staticmethod
     def acpay_bank_branchlist(acPayBankListRequest:AcPayBankListRequest):
-        response = client.service.AcPayBankBranchList(
-               { 'UserName': username,
-                'Password': password,
-             **{k:v for k,v in  acPayBankListRequest.dict().items()}
+        try:
+            response = client.service.AcPayBankBranchList(
+                { 'UserName': username,
+                    'Password': password,
+                **{k:v for k,v in  acPayBankListRequest.dict().items()}
 
-                }
-             )
+                    }
+                )
         # Process the response 
-        return serialize_object(response) 
+            return serialize_object(response) 
+        except:
+            # retry_transport()
+            return HTTPException(status_code=500,detail="SERVER DOWN")
     @staticmethod
     def cancel_transaction(cancelTransactionRequest:CancelTransactionRequest):
         response = client.service.CancelTransaction(

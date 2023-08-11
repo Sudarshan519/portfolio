@@ -9,7 +9,7 @@ DATABASE_URL = "sqlite:///db/database.db"#settings.DATABASE_URL## os.environ.get
 engine = create_engine(DATABASE_URL,connect_args={'check_same_thread': False,})
 # "extend_existing":True
 from sqlalchemy.orm import sessionmaker
-async def init_db():
+def init_db():
     SQLModel.metadata.create_all(engine)
 
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)

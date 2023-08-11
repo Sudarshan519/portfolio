@@ -1,3 +1,4 @@
+from faker import Generator
 from zeep import Client
 from zeep.transports import Transport
 url = "https://rps.digital-remittance.com/api/Send.svc?wsdl"
@@ -30,14 +31,44 @@ wsdl_url=url
 # transport.load_custom_xml(custom_envelope_xml)
 
 # Create the Zeep client using the custom transport
-# client=None
-client = Client(wsdl_url)
+# Set the timeout value in seconds
+timeout_seconds = 3
+# Create a custom transport with the specified timeout
+transport = Transport(timeout=timeout_seconds)
+client=Client(wsdl_url, transport=transport)
+a=None
+# def retry_transport():
+#     try: 
+#         client = Client(wsdl_url, transport=transport)
+#         print(a)
+#         a=5
+#         return (client)
+        
+#     except:
+#         a=99
+#         print(a)
+        
+#         client=None
+#         return (client)
+
+
 # async def initClient():
 #     try:
 #         return await Client(wsdl_url)
 
 #     except:
 #         pass
+
+def get_client() -> Generator:   #new
+    try:
+        db = Client(wsdl_url)
+        yield db
+    except:
+        pass
+    else:
+        pass
+    finally:
+        pass
 # initClient()
 # input_params = {
 #     'username': username,

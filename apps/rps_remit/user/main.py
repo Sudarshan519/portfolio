@@ -2,6 +2,8 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlmodel import Session
+from apps.rps_remit.otp.main import OTPService
+from apps.rps_remit.otp.schema import OTP
  
 from apps.rps_remit.user.schema import *
 from core.hashing import Hasher
@@ -45,8 +47,9 @@ async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+        otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
         
-        return {"otp":"2023"}#new_user
+        return {"otp":otp}#new_user
 
 
 

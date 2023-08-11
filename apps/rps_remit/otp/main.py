@@ -10,7 +10,7 @@ app=APIRouter(prefix='/otp',tags=['OTP'])
 class OTPService:
     @staticmethod
     def verify_otp(email,code,db:Session):
-        otp=db.query(OTP).where(OTP.phoneOrEmail==email)
+        otp=db.query(OTP).where(OTP.phoneOrEmail==email).order_by(OTP.id.desc()).first()
         if code==otp.otp_code:
                 return True
         return False
@@ -56,13 +56,22 @@ async def verify_phone(phone,code,db:Session=Depends(get_session)):
 
 @app.post('/verify-email')
 async def verify_email(email,code,db:Session=Depends(get_session)):
-    user=db.query(RemitUser).where(RemitUser.email==email,RemitUser.phone_verified==True).first()
-    if user:
-        return {"status":"failed","data":"Email verified successfully"}
+    user=db.query(RemitUser).where(RemitUser.email==email).first()
+ 
+    if not user:
+        
+        
+ 
+        return {"status":False,"data":"Email verified failed"}
 
     otp_verified=OTPService.verify_otp(email,code,db)
     if otp_verified:
+        user.verified = True
+        db.commit()
+        db.refresh(user)
+ 
+        
          
-        return {"status":"success","data":"OTP Sent to your mobile."}
+        return {"status":"success","data":"Email verified successfully."}
     return {"status":"failed","data":"Invalid otp"}
 
