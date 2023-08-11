@@ -34,10 +34,7 @@ class OTP(OTPSetupBase, RecordService, table=True):
  
 class OTPCreate(OTPSetupBase):
     pass
-
-class HeroRead(OTPSetupBase):
-    id:Optional[int] = Field(default=None, primary_key=True) 
-
+ 
 class OTPUpdate(OTPSetupBase):
     pass
 

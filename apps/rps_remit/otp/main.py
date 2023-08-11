@@ -4,7 +4,7 @@ from sqlmodel import Session
 from apps.rps_remit.user.schema import RemitUser
 
 from db.session_sqlmodel import get_session
-app=APIRouter(prefix='/otp',tags=['OTP'])
+app=APIRouter(prefix='/otp',tags=['OTP-VERIFY'])
 
 
 class OTPService:

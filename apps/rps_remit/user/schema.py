@@ -1,16 +1,25 @@
 import datetime
-from typing import Optional
+from typing import List, Optional,TYPE_CHECKING
 from pydantic import BaseModel, EmailStr
-from sqlmodel import Field, SQLModel,Column,String,Boolean,Enum,Integer,ForeignKey
+from sqlmodel import Field, Relationship, SQLModel,Column,String,Boolean,Enum,Integer,ForeignKey
+from apps.rps_remit.recipient.main import RecipientResponse
+from apps.rps_remit.recipient.schema import Recipient
+from apps.rps_remit.transaction.schema import Transaction
+
+
 
 from record_service.main import RecordService
-from schemas.attendance import UserKycStatus
+from schemas.attendance import UserKycStatus 
+if TYPE_CHECKING:
+    from ..kyc.schema import Kyc
+    from apps.rps_remit.user_profile.schema import UserProfile
+ 
 
 class RemitUserBase(SQLModel):
     # id: Column(Integer,primary_key=True,index=True)
     username :str=''# Column(String(60),unique=True,nullable=False)
     email :str
-    phone:str=Field(sa_column=Column(String(16),nullable=True))
+    phone:str=Field(default=None,sa_column=Column(String(16),nullable=True,)) 
     photo :str=''
     phone_verified:bool=False
     hashed_password: str
@@ -33,9 +42,13 @@ class RemitUserBase(SQLModel):
     per_day_amount:int=Field(sa_column=Column(Integer,default=0))
     per_month_amount:int=Field(sa_column=Column(Integer,default=0))
     per_year_amount:int=Field(sa_column=Column(Integer,default=0))
+
+    
     @property
     def email_verified(self):
         return self.verified
+
+    
 class RemitUserCreate(BaseModel):
     email: EmailStr 
     password : str
@@ -45,7 +58,22 @@ class RemitUserRead(RemitUserBase):
 
 class RemitUserUpdate(RemitUserBase):
     pass
-
  
 class RemitUser(RemitUserBase, RecordService, table=True):
     id:Optional[int] = Field(default=None, primary_key=True) 
+    kyc: List["Kyc"] = Relationship(back_populates="user")
+    profile: List["UserProfile"] = Relationship(back_populates="userprofile",
+                                            # sa_relationship={
+                                            #     'order_by':'UserProfile.index.desc()'
+                                            # }
+                                                )
+    transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
+    recipient: List["Recipient"] = Relationship(back_populates="user_recipient")
+    @property
+    def profile_setup(self):
+        print(self)
+        return True if self.profile!=[] else False
+    @property
+    def user_type(self):
+        # return None
+        return None if not self.profile else self.profile[-1].profile_type

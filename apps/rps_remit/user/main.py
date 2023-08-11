@@ -95,6 +95,7 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
+    print(user.kyc)
     return {'status': 'success', 'data':{'access_token': access_token,'refresh_token':refresh_token,
         "user":    user}
         # 'email_verified':user.verified,

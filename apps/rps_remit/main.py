@@ -27,7 +27,10 @@
 
 # remit_app = FastAPI()
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
+
+from other_apps.fcm_send import NotificationService
+from utils.send_mail import EmailService
 
 
 app=APIRouter(include_in_schema=True,prefix="") #remit_app
@@ -36,6 +39,40 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # app=remitapp
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+
+@app.post('/notification',tags=["RPS REMTI NOTIFICATION"])
+async def send_notification(title:str,msg:str):
+    NotificationService.send_notification(title,msg)
+    return "sucess"
+
+@app.post("/send-email",tags=["RPS REMIT EMAIL SEND"])
+async def send_email(title:str,msg:str,background_tasks: BackgroundTasks):
+    EmailService.send_mail_from_background( background_tasks,email=['sudarshan@mailinator.com',],subject=title, body=msg)#["sudarshan@mailinator.com"],title,msg)
+    return "sucess"
+
+from apps.rps_remit.transaction.main import app as transactionapp
+app.include_router(transactionapp,prefix='')
+
+
+
+from apps.rps_remit.receiving_methods.main import app as recivingmethodapp
+app.include_router(recivingmethodapp,prefix='')
+
+from apps.rps_remit.recipient.main import app as recipientapp
+app.include_router(recipientapp,prefix='')
+
+
+
+
+from apps.rps_remit.user_profile.main import app as userProfile
+app.include_router(userProfile,prefix='')
+
+
+from apps.rps_remit.kyc.main import app as ekycapp
+app.include_router(ekycapp,prefix='')
+
+
+
 from apps.rps_remit.otp.main import app as otpmain
 app.include_router(otpmain,prefix="") 
 
@@ -58,6 +95,9 @@ app.include_router(forex,prefix='')
 app.include_router(banners,prefix='')
 app.include_router(transactionstate,prefix='')
 app.include_router(heroapp,prefix='')
+
+
+
 # from apps.rps_remit.currency.main import app as currencyapp
 # app.include_router(currencyapp,prefix='/currency')
 

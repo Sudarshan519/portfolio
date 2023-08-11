@@ -1,0 +1,14 @@
+from enum import Enum
+class TransactionStatus(str,Enum):
+    INITIATED="INITIATED"
+    PENDING="PENDING"
+    VERIFIED="VERIFIED"
+    CLOSED="CLOSED"
+    CANCELED="CANCELED"
+
+class CardType(str,Enum):
+    RESIDENT_CARD="RESIDENT CARD"
+    MY_NUMBER_CARD="MY NUMBER CARD"
+    DRIVING_LICENSE="DRIVING LICENSE"
+
+

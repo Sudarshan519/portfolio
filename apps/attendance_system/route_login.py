@@ -30,6 +30,7 @@ def get_current_user_from_bearer( jwtb: str = Depends(JWTBearer()), db: Session 
  
         
         username: str = payload.get("sub")
+
         return get_user(username=username, db=db)
  
     except JWTError as e:
