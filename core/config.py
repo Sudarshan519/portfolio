@@ -41,6 +41,7 @@ class Settings:
     CELERY_RESULT_BACKEND: str = os.environ.get("CELERY_RESULT_BACKEND","redis://127.0.0.1:6379/0")
 
     JWT_PUBLIC_KEY:str=os.environ.get("JWT_PUBLIC_KEY")
+    EXTERNALPGURL:str=os.environ.get("EXTERNALPGURL")
 # @AuthJWT.load_config
 # def get_config():
 #     return Settings()

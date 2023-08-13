@@ -11,6 +11,7 @@ from db.repository.attendance_repo import AttendanceRepo
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from pydantic import BaseModel,root_validator
 from typing import Optional
+from other_apps.week_util import getWeekDate
 from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut
 from datetime import date, datetime, time, timedelta
 from other_apps.upload_file import firebase_upload
@@ -282,3 +283,23 @@ async def accept_invitations(id:int,status:Status, current_user:AttendanceUser=D
      
  
 
+@router.get('/monthly-report',tags=[ 'Employee Report'])
+async def getMonthlyReport(companyId:int=None ,employeeId:int=None, db:Session= Depends(get_db),page:int=1,limit=100):
+    return AttendanceRepo.employeeWithAttendanceMonthlyReport(db,companyId,employeeId,page,limit)
+
+
+@router.get("/weekly-report",tags=[ 'Employee Report'])
+async def weeklyreport(companyId:int,employeeId:int=None, db: Session = Depends(get_db)):
+    dates= getWeekDate()
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db,employeeId)
+    # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
+ 
+    return weekdata
+@router.get("/today-report",tags=[ 'Employee Report'])
+async def attendance(companyId:int, db: Session = Depends(get_db),page:int=1,limit:int=10):
+        return AttendanceRepo.employeeWithDailyReport(companyId,db,page-1,limit)
+        # return AttendanceRepo.reportToday(companyId,db)
+
+        # allAttendances=AttendanceRepo.todayReport(companyId,db)
+        # return allAttendances
+ 

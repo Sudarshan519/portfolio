@@ -429,7 +429,7 @@ class AttendanceRepo:
             result.append(v)       
         return  result
     @staticmethod
-    def employeewithAttendanceWeeklyReport(companyId,db,employeeId:int=None):
+    def employeewithAttendanceWeeklyReport(companyId,db,employeeId:int=None,phone:str=None):
         dates= getWeekDate()
         now=datetime.now()
         # dates= getMonthRange(2023,6)
