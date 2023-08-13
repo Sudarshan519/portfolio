@@ -162,7 +162,7 @@ async def login(phone:int, db: Session = Depends(get_db)):
  
 
 @router.post('/verify-otp',tags=['Employee Login/Verify'])
-async def verifyOtp(phone=Body(...),otp:str=Body(...),db: Session = Depends(get_db)):
+async def verifyOtp(phone=Body(default=9800000000),otp:str=Body(default='1117'),db: Session = Depends(get_db)):
     
    return AttendanceRepo.verify_otp(otp,phone,db)
 

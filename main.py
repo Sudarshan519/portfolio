@@ -133,7 +133,7 @@ from apps.attendance_system.route_attendance import attendance_router
 # attendance route
 # app.include_router(
 #      attendance_router,tags=[ ])
-app.mount('/hajir/',attendance_router )
+app.mount('/hajir/',attendance_router,name="HAJIR APP" )
 # app.include_router(notificationRoute,tags=[ ])
 
 

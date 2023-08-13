@@ -19,7 +19,7 @@ class ForeignExchangeChargeBase(SQLModel):
     created_at:date=date.today()
     updated_at:datetime=datetime.now()
     cancellation_charge:float
-    issuance_charge=float
+    issuance_charge:float
 
 
 
@@ -33,5 +33,5 @@ class ForexExchangeUpdate(ForeignExchangeChargeBase):
     pass
 
  
-class ForexExchange(ForeignExchangeChargeBase, RecordService, table=True):
+class ForeignExchangeCharge(ForeignExchangeChargeBase, RecordService, table=True):
     id:Optional[int] = Field(default=None, primary_key=True) 
