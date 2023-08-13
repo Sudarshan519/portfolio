@@ -31,7 +31,7 @@ class RecordService(SQLModel):
         session.commit()
         session.refresh(self)
 
-    def update(self, source: dict| SQLModel, session:Session):
+    def update(self, source: dict or SQLModel, session:Session):
  
         if isinstance(source, SQLModel):
             source = source.dict(exclude_unset=True)
