@@ -43,7 +43,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
 # from fastapi_sqlalchemy import DBSessionMiddleware, db
 # from core.hashing import Hasher
-from db.base import Base
+# from db.base import Base
 # from db.models.user import Users as User
 from db.session_sqlmodel import init_db
  
@@ -74,8 +74,8 @@ from fastapi.middleware.cors import CORSMiddleware
  
 #     return user
 
-async def create_tables():           #new
-	Base.metadata.create_all(bind=engine)
+# async def create_tables():           #new
+# 	Base.metadata.create_all(bind=engine)
 # async def populateAdmin(db:Session=Depends(get_db)):
 #     try:
 #         user=db.query(User).filter(User.email=='admin').first()
@@ -166,7 +166,7 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
         
 @app.on_event("startup")
 async def on_startup(): 
-    create_tables()
+    # create_tables()
     print("start up complete")
     init_db()
     # retry_transport()
