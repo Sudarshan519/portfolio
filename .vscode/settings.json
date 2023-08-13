@@ -3,5 +3,6 @@
     "sqltools.useNodeRuntime": true,
     "python.analysis.extraPaths": [
         "./websocket_example"
-    ]
+    ],
+    "liveServer.settings.port": 5502
 }

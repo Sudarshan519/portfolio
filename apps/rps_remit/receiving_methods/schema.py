@@ -21,7 +21,7 @@ class RecivingMethodRead(RecivingMethodBase):
 
 class RecivingMethod(RecivingMethodBase, RecordService, table=True):
     id:Optional[int] = Field(default=None, primary_key=True) 
-    recipient:"Recipient" = Relationship(back_populates="recivingmethod") 
+    recipient_recivingmethods:"Recipient" = Relationship(back_populates="recivingmethod") 
 
  
 class RecivingMethodCreate(RecivingMethodBase):

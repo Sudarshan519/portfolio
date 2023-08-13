@@ -14,5 +14,10 @@ async def home(request: Request, db: Session = Depends(get_db),msg:str = None): 
     # jobs = list_jobs(db=db)
     cookie_exist=True if request.cookies.get('name') is not None else False
     return templates.TemplateResponse(
-        "base.html", {"request": request},# "jobs": jobs,"msg":msg,"name": "Welcome "+request.cookies.get('name')} if cookie_exist else {"request": request, "jobs": jobs,"msg":msg,}  #new
+        "portfolio.html", {"request": request},# "jobs": jobs,"msg":msg,"name": "Welcome "+request.cookies.get('name')} if cookie_exist else {"request": request, "jobs": jobs,"msg":msg,}  #new
+    )
+@router.get('/portfolio-details/{tag}')
+async def info(request: Request,tag:str):
+    return templates.TemplateResponse(
+        "portfolio-details.html", {"request": request},# "jobs": jobs,"msg":msg,"name": "Welcome "+request.cookies.get('name')} if cookie_exist else {"request": request, "jobs": jobs,"msg":msg,}  #new
     )

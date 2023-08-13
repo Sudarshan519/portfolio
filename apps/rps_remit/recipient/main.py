@@ -6,9 +6,7 @@ from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from ..receiving_methods.schema import RecivingMethodRead
 app=APIRouter(prefix='/recipient',tags=["REMIT RECIPIENT"] )
-class RecipientResponse(BaseModel):
-    recipient:RecipientRead
-    recivingMethods:List[RecivingMethodRead]
+
 @app.get('/',response_model=list[RecipientResponse])
 async def all(db:Session=Depends(get_session)):
     return Recipient.all(session=db)

@@ -11,6 +11,8 @@ from record_service.main import RecordService
 if TYPE_CHECKING:
     from ..receiving_methods.schema import RecivingMethod
     from apps.rps_remit.user.schema import RemitUser
+    from apps.rps_remit.receiving_methods.schema import RecivingMethodRead
+
 
 class RecipientBase(SQLModel):
     user_id:Optional[int]=Field(default=1, foreign_key="remituser.id",nullable=True)
@@ -28,18 +30,26 @@ class RecipientBase(SQLModel):
     note:str
 
 
+class Recipient(RecipientBase, RecordService, table=True):
+    id:Optional[int] = Field(default=None, primary_key=True) 
+    user_recipient: Optional["RemitUser"] = Relationship(back_populates="recipient")
+    recivingmethod: List["RecivingMethod"] = Relationship(back_populates="recipient_recivingmethods") 
+    # transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
 class RecipientRead(RecipientBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
  
 
-class Recipient(RecipientBase, RecordService, table=True):
-    id:Optional[int] = Field(default=None, primary_key=True) 
-    user_recipient: Optional["RemitUser"] = Relationship(back_populates="recipient")
-    recivingmethod: List["RecivingMethod"] = Relationship(back_populates="recipient") 
-    # transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
+
 class RecipientCreate(RecipientBase):
     pass
  
 class RecipientUpdate(RecipientBase):
     pass
 
+
+from apps.rps_remit.receiving_methods.schema import RecivingMethod
+
+
+class RecipientResponse(RecipientBase):
+ 
+    recivingmethod:List[RecivingMethod]
