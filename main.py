@@ -129,9 +129,11 @@ app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # mongo db route
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 
-# from apps.attendance_system.route_attendance import attendance_router
-# # attendance route
-# app.include_router(attendance_router,tags=[ ])
+from apps.attendance_system.route_attendance import attendance_router
+# attendance route
+# app.include_router(
+#      attendance_router,tags=[ ])
+app.mount('/hajir/',attendance_router )
 # app.include_router(notificationRoute,tags=[ ])
 
 
