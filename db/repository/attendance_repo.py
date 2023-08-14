@@ -22,9 +22,35 @@ import json
 
 # ['unique ids']
 # filter id by unidqe id 
-#  insert
-import time
+#  insert 
 class AttendanceRepo:
+    @staticmethod
+    def employee_daily_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        # dates= getMonthRange(now.year,now.month)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date==date.today()).all()
+        return attendacnes
+    
+    @staticmethod
+    def employee_weekly_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        dates= getWeekDate( )
+        print(dates)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
+        return attendacnes
+    @staticmethod
+    def employee_monthly_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        dates= getMonthRange(now.year,now.month)
+        print(dates)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
+        return attendacnes
     @staticmethod
     def allLeave(id,db):
         employee=db.get(EmployeeModel,id)

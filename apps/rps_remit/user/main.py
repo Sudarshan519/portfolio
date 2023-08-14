@@ -1,17 +1,20 @@
  
 from datetime import timedelta
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlmodel import Session
 from apps.rps_remit.otp.main import OTPService
-from apps.rps_remit.otp.schema import OTP
+# from apps.rps_remit.otp.schema import OTP
  
 from apps.rps_remit.user.schema import *
+from apps.rps_remit.user.user_from_token import get_remit_user_from_bearer
 from core.hashing import Hasher
 from core.config import settings
 from core.security import Authorize, create_access_token
 
 from db.session_sqlmodel import get_session
-from schemas.users import LoginResponse, UserLoginRequest
+from schemas.base import GenericResponse, PageResponse, create_data_model
+from schemas.users import LoginResponse, UserBaseSchema, UserLoginRequest
  
 
 app=APIRouter(prefix="/user",tags=[]) 
@@ -52,8 +55,18 @@ async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
         return {"otp":otp}#new_user
 
 
+class ResponseSchema(BaseModel):
+    status:str="success"
+    data:Any
 
-@app.post('/login',tags=['Login'],response_model=LoginResponse)
+
+@app.get('/user',tags=['Home'],response_model=GenericResponse[UserBaseSchema])
+async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer)):
+    RemitUserResponse=create_data_model(RemitUser)
+    BaseResponse=create_data_model(PageResponse[RemitUserResponse ])
+    return  GenericResponse(data=current_user)
+
+@app.post('/login',tags=['Login'],response_model=LoginResponse )
 async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
                 #Authorize: AuthJWT = Depends()):
     # Check if the user exist
@@ -65,8 +78,9 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
 
     # Check if user verified his email
     if not user.verified:
+        otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Please verify your email address')
+                            detail={"otp":otp,"error":'Please verify your email address'})
 
     # Check if the password is valid
     if not Hasher.verify_password(payload.password, user.hashed_password):

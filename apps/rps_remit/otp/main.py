@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from apps.rps_remit.otp.schema import OTP
+from apps.rps_remit.otp.schema import REMITOTP as OTP
 from sqlmodel import Session
 from apps.rps_remit.user.schema import RemitUser
 

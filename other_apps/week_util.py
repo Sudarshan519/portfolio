@@ -1,7 +1,7 @@
 from datetime import datetime,timedelta
 
 
-def getWeekDate(): 
+def getWeekDate(int=None): 
     date=datetime.today() 
     newdate=date 
     start_of_week = newdate - timedelta(days = newdate.weekday()) 

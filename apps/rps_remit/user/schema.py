@@ -71,7 +71,6 @@ class RemitUser(RemitUserBase, RecordService, table=True):
     recipient: List["Recipient"] = Relationship(back_populates="user_recipient")
     @property
     def profile_setup(self):
-        print(self)
         return True if self.profile!=[] else False
     @property
     def user_type(self):

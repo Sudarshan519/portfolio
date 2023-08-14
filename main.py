@@ -107,6 +107,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from apps.subscription_payment.main import app as subscription
+# # from apps.rps_remit.main import remitapp
+# app.mount('/remitapp',remit_app,name="REMIT APP")
+
+app.mount('/subscription',subscription,)#,tags=['REMIT APP'])
 
 # remit_app route
 from apps.rps_remit.main import app as remit_app

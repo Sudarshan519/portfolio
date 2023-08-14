@@ -167,7 +167,7 @@ async def verifyOtp(phone=Body(default=9800000000),otp:str=Body(default='1117'),
    return AttendanceRepo.verify_otp(otp,phone,db)
 
 class CompanyOut(BaseModel):
-    id:int
+    id:Optional[int]=None
     company_name:Optional[str]=None
     company_id:Optional[str]=None
     login_time:Optional[time]
@@ -283,21 +283,27 @@ async def accept_invitations(id:int,status:Status, current_user:AttendanceUser=D
      
  
 
-@router.get('/monthly-report',tags=[ 'Employee Report'])
-async def getMonthlyReport(companyId:int=None ,employeeId:int=None, db:Session= Depends(get_db),page:int=1,limit=100):
-    return AttendanceRepo.employeeWithAttendanceMonthlyReport(db,companyId,employeeId,page,limit)
+@router.get('/monthly-report',tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def getMonthlyReport(companyId:int=None , current_user:AttendanceUser=Depends(get_current_user_from_bearer), db:Session= Depends(get_db),page:int=1,limit=100):
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+    return AttendanceRepo.employee_monthly_report(employee.id, companyId,db,)
 
 
-@router.get("/weekly-report",tags=[ 'Employee Report'])
-async def weeklyreport(companyId:int,employeeId:int=None, db: Session = Depends(get_db)):
-    dates= getWeekDate()
-    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db,employeeId)
+@router.get("/weekly-report",tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def weeklyreport(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer), db: Session = Depends(get_db)):
+    # dates= getWeekDate()#employeeId:int=None,
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+    weekdata=AttendanceRepo.employee_weekly_report( employee.id, companyId, db)
     # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
  
     return weekdata
-@router.get("/today-report",tags=[ 'Employee Report'])
-async def attendance(companyId:int, db: Session = Depends(get_db),page:int=1,limit:int=10):
-        return AttendanceRepo.employeeWithDailyReport(companyId,db,page-1,limit)
+@router.get("/today-report",tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def attendance(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer), db: Session = Depends(get_db),page:int=1,limit:int=10):
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+        # print(employee.id)
+    return AttendanceRepo.employee_daily_report(employee.id, companyId,db,0)
+    # return AttendanceRepo.employee_monthly_report( employee.id, companyId, db)
+        # return AttendanceRepo.employeeWithDailyReport(companyId,db,page-1,limit)
         # return AttendanceRepo.reportToday(companyId,db)
 
         # allAttendances=AttendanceRepo.todayReport(companyId,db)

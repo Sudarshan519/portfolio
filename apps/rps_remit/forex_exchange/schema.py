@@ -20,6 +20,7 @@ class ForeignExchangeChargeBase(SQLModel):
     updated_at:datetime=datetime.now()
     cancellation_charge:float
     issuance_charge:float
+    # max_amount:float=100000000
 
 
 

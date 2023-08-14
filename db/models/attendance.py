@@ -97,10 +97,13 @@ class EmployeeModel(Base):
     total_casual_leave_taken=Column(Integer,default=0)
     @property
     def available_sick_leave(self):
-        return self.company.total_sick_leave_in_year or 0- self.total_sick_leave_taken or 0
+        if( self.company.total_sick_leave_in_year):
+            return  self.company.total_sick_leave_in_year or 0-self.total_sick_leave_taken or 0
+        else:
+            return 0
     @property
     def available_casual_leave(self):
-        return self.company.total_casual_leave_in_year or 0-self.total_casual_leave_taken or 0
+        return 0 #or self.company.total_casual_leave_in_year or 0-self.total_casual_leave_taken or 0
     @property
     def company_name(self):
         return self.company.name

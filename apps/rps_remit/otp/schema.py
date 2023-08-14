@@ -27,7 +27,8 @@ class OTPRead(OTPSetupBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 
-class OTP(OTPSetupBase, RecordService, table=True):
+class REMITOTP(OTPSetupBase, RecordService, table=True):
+    __tablename__="remitotp"
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 

@@ -40,8 +40,8 @@ class KycTypeBase(BaseModel):
 
 class UserBaseSchema(BaseModel):
     # name: str
-    id:int
-    email: EmailStr
+    id:int=None
+    email: EmailStr=None
     photo: str=None
     phone: str=None
     email_verified : bool=False
@@ -49,6 +49,12 @@ class UserBaseSchema(BaseModel):
     kyc_status: str=None
     user_type:str=None
     profile_setup:Optional[bool]
+    per_day_limit:int=0
+    per_day_amount:float=0
+    per_month_limit:int#=0
+    per_month_amount:float=0
+    per_year_limit:int=0
+    per_year_amount:float=0
     kyc:List[Kyc]=[]
     profile:List[UserProfile]=[]
     recipient:List[Recipient]=[]
