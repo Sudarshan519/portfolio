@@ -6,8 +6,11 @@ from xml_request.request_method import RequestMethods
 
 router=APIRouter(tags=['Compliance'])
 @router.get('/static_data')
+
 def static_datalist(type:StaticDataList):
-   return RequestMethods.get_static_data(type.value)
+    
+    return RequestMethods.get_static_data(type.value)
+ 
 
 
 

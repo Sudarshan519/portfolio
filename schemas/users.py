@@ -5,8 +5,8 @@ from pydantic import BaseModel,EmailStr
 from pyparsing import List
 
 from apps.rps_remit.kyc.schema import  Kyc
-from apps.rps_remit.recipient.schema import Recipient
-from apps.rps_remit.transaction.schema import Transaction
+from apps.rps_remit.recipient.schema import Recipient, RecipientResponse
+from apps.rps_remit.transaction.schema import Transaction, TransactionRead
 from apps.rps_remit.user_profile.schema import UserProfile
 
 class ForeignExchangeCharge(BaseModel):
@@ -41,6 +41,7 @@ class KycTypeBase(BaseModel):
 class UserBaseSchema(BaseModel):
     # name: str
     id:int=None
+    username:str=None
     email: EmailStr=None
     photo: str=None
     phone: str=None
@@ -57,11 +58,14 @@ class UserBaseSchema(BaseModel):
     per_year_amount:float=0
     kyc:List[Kyc]=[]
     profile:List[UserProfile]=[]
-    recipient:List[Recipient]=[]
-    transaction:List[Transaction]=[]
+    # recipients:List[Recipient]=[]
+    transactions:List[TransactionRead]=[]
+    quick_send: List[RecipientResponse]=None
+
+ 
     class Config:
         orm_mode = True
-
+        # allow_population_by_field_name = True
 
 class PersonalCardDetails(BaseModel):
     title:str

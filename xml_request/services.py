@@ -35,8 +35,18 @@ wsdl_url=url
 timeout_seconds = 3
 # Create a custom transport with the specified timeout
 transport = Transport(timeout=timeout_seconds)
-client=Client(wsdl_url, transport=transport)
+
+try:
+    client=Client(wsdl_url, transport=transport)
+except Exception as e:
+    print(e)
+    client=None
+    pass
 a=None
+
+
+
+
 # def retry_transport():
 #     try: 
 #         client = Client(wsdl_url, transport=transport)

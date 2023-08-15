@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlmodel import Session
 from apps.rps_remit.otp.main import OTPService
+from apps.rps_remit.transaction.schema import TransactionRead
 # from apps.rps_remit.otp.schema import OTP
  
 from apps.rps_remit.user.schema import *
@@ -60,11 +61,11 @@ class ResponseSchema(BaseModel):
     data:Any
 
 
-@app.get('/user',tags=['Home'],response_model=GenericResponse[UserBaseSchema])
+@app.get('/user',tags=['Home'],response_model=UserBaseSchema)
 async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer)):
     RemitUserResponse=create_data_model(RemitUser)
-    BaseResponse=create_data_model(PageResponse[RemitUserResponse ])
-    return  GenericResponse(data=current_user)
+    # BaseResponse=create_data_model(PageResponse[RemitUserResponse ]) 
+    return  current_user#GenericResponse(data=current_user)
 
 @app.post('/login',tags=['Login'],response_model=LoginResponse )
 async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
@@ -118,4 +119,8 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
         # 'ekyc_verified':False,
         # 'ekyc_status':False
             }
-    
+
+
+@app.get('/transactions',response_model=List[TransactionRead],tags=["Transactions"])
+async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit=2,offset=0):
+  return db.query(Transaction).where(Transaction.sender_id==current_user.id).order_by(Transaction.id.desc()).limit(2).offset(offset*limit).all()
