@@ -1,18 +1,21 @@
 import datetime
 from typing import List, Optional,TYPE_CHECKING
-from pydantic import BaseModel, EmailStr
-from sqlmodel import Field, Relationship, SQLModel,Column,String,Boolean,Enum,Integer,ForeignKey
-from apps.rps_remit.recipient.main import RecipientResponse
-from apps.rps_remit.recipient.schema import Recipient
+from fastapi import Depends
+
+from pydantic import BaseModel, EmailStr 
+from sqlmodel import Field, Relationship, SQLModel,Column, Session,String,Boolean,Enum,Integer,ForeignKey, select 
+
 from apps.rps_remit.transaction.schema import Transaction
-
-
+from db.session_sqlmodel import get_session 
+ 
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from record_service.main import RecordService
 from schemas.attendance import UserKycStatus 
 if TYPE_CHECKING:
     from ..kyc.schema import Kyc
     from apps.rps_remit.user_profile.schema import UserProfile
+    from apps.rps_remit.recipient.schema import Recipient
  
 
 class RemitUserBase(SQLModel):
@@ -59,7 +62,9 @@ class RemitUserRead(RemitUserBase):
 class RemitUserUpdate(RemitUserBase):
     pass
  
+ 
 class RemitUser(RemitUserBase, RecordService, table=True):
+ 
     id:Optional[int] = Field(default=None, primary_key=True) 
     kyc: List["Kyc"] = Relationship(back_populates="user")
     profile: List["UserProfile"] = Relationship(back_populates="userprofile",
@@ -69,6 +74,21 @@ class RemitUser(RemitUserBase, RecordService, table=True):
                                                 )
     transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
     recipient: List["Recipient"] = Relationship(back_populates="user_recipient")
+
+    # @hybrid_property
+    # def filtered_children(self):
+    #     return [child for child in self.children if child.name == "Child 1"]
+
+    # @filtered_children.expression
+    # def filtered_children(cls):
+    #     return select(Recipient).filter(Recipient.is_quick_send == cls.id, ).all()
+
+    @property
+    def recipients(self, limit=20):
+        return self.recipient[:limit]
+    @property
+    def quick_send(self):
+        return [recipient for recipient in self.recipient if recipient.is_quick_send]
     @property
     def profile_setup(self):
         return True if self.profile!=[] else False
@@ -76,3 +96,5 @@ class RemitUser(RemitUserBase, RecordService, table=True):
     def user_type(self):
         # return None
         return None if not self.profile else self.profile[-1].profile_type
+     
+        

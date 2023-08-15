@@ -5,7 +5,8 @@ from apps.rps_remit.recipient.schema import *
 from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from .schema import *
-
+def create_recivingMethod(hero:RecivingMethodCreate,db):
+    return RecivingMethod.create(hero,RecivingMethodBase, db)
 app=APIRouter(prefix='/recipient_method',tags=["REMIT RECIPIENT RECIVING METHOD"] )
 # class RecivingMethodResponse(BaseModel):
 #     RecivingMethod:RecivingMethodRead
@@ -13,6 +14,8 @@ app=APIRouter(prefix='/recipient_method',tags=["REMIT RECIPIENT RECIVING METHOD"
 @app.get('/',)#response_model=list[RecivingMethodResponse])
 async def all(db:Session=Depends(get_session)):
     return RecivingMethod.all(session=db)
+
+
 
 @app.post('/')
 async def create(hero:RecivingMethodUpdate,db:Session=Depends(get_session)):

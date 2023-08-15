@@ -1,18 +1,37 @@
 
 from fastapi import HTTPException
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
-# from xml_request.services import  client
+from xml_request.services import   client
 from zeep.helpers import serialize_object
 username = "testRps"
 password = "testRps100#"
 type_data = "IncomeSource"
+class BaseService:
+    @staticmethod
+    def _handle_exception(e: Exception, message: str):
+        # Customize your exception handling logic here
+        print(f"An error occurred: {message}")
+        print(f"Exception details: {e}")
+        raise HTTPException(status_code=500,detail=str(e))
+        raise e
+
+    @classmethod
+    def handle_exceptions(cls, func):
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                cls._handle_exception(e, f"Error in {func.__name__}")
+        return wrapper
 
 
 # // RpsAdmin123
 # // admin
-class RequestMethods:
+class RequestMethods(BaseService):
+ 
     @staticmethod
-    def acpay_bank_branchlist(acPayBankListRequest:AcPayBankListRequest):
+    @BaseService.handle_exceptions
+    def acpay_bank_branchlist(self,acPayBankListRequest:AcPayBankListRequest):
         try:
             response = client.service.AcPayBankBranchList(
                 { 'UserName': username,
@@ -27,6 +46,7 @@ class RequestMethods:
             # retry_transport()
             return HTTPException(status_code=500,detail="SERVER DOWN")
     @staticmethod
+ 
     def cancel_transaction(cancelTransactionRequest:CancelTransactionRequest):
         response = client.service.CancelTransaction(
                { 
@@ -40,6 +60,7 @@ class RequestMethods:
         return serialize_object(response) 
     
     @staticmethod
+ 
     def cash_payout_locationlist(cashPayoutLocationLost:CashPayoutLocationRequest):
         response = client.service.CashPayLocationList(
                { 
@@ -52,7 +73,7 @@ class RequestMethods:
         # Process the response 
         return serialize_object(response) 
     
-    @staticmethod
+    @staticmethod 
     def create_csp(cspRequest:CreateCSPRequest):
         response = client.service.CreateCSPRequest(
                { 
@@ -161,15 +182,18 @@ class RequestMethods:
         # Process the response 
         return serialize_object(response) 
     @staticmethod
+    @BaseService.handle_exceptions
     def get_static_data(type:str)->dict:
         # Call the 'GetStaticData' SOAP operation with the necessary parameters in the request body
-        response = client.service.GetStaticData(
-               { 'UserName': username,
-                'Password': password,
-                'Type': type}
-             )
-        # Process the response 
-        return serialize_object(response) 
+ 
+            response = client.service.GetStaticData(
+                { 'UserName': username,
+                    'Password': password,
+                    'Type': type}
+                )
+            # Process the response 
+            return serialize_object(response) 
+    
     @staticmethod
     def get_service_charge(payment_mode:str):
         response = client.service.GetServiceCharge(

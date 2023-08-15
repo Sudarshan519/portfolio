@@ -60,11 +60,11 @@ class ResponseSchema(BaseModel):
     data:Any
 
 
-@app.get('/user',tags=['Home'],response_model=GenericResponse[UserBaseSchema])
+@app.get('/user',tags=['Home'],response_model=UserBaseSchema)
 async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer)):
     RemitUserResponse=create_data_model(RemitUser)
-    BaseResponse=create_data_model(PageResponse[RemitUserResponse ])
-    return  GenericResponse(data=current_user)
+    # BaseResponse=create_data_model(PageResponse[RemitUserResponse ]) 
+    return  current_user#GenericResponse(data=current_user)
 
 @app.post('/login',tags=['Login'],response_model=LoginResponse )
 async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):

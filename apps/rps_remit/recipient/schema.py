@@ -28,12 +28,15 @@ class RecipientBase(SQLModel):
     mobile:str
     address:str
     note:str
-
+    is_quick_send:bool
 
 class Recipient(RecipientBase, RecordService, table=True):
     id:Optional[int] = Field(default=None, primary_key=True) 
     user_recipient: Optional["RemitUser"] = Relationship(back_populates="recipient")
-    recivingmethod: List["RecivingMethod"] = Relationship(back_populates="recipient_recivingmethods") 
+    recivingmethod: List["RecivingMethod"] = Relationship(back_populates="recipient_recivingmethods" ) 
+    @property
+    def placeholder(self):
+        return self.first_name[0]+self.last_name[0]
     # transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
 class RecipientRead(RecipientBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
@@ -52,4 +55,4 @@ from apps.rps_remit.receiving_methods.schema import RecivingMethod
 
 class RecipientResponse(RecipientBase):
  
-    recivingmethod:List[RecivingMethod]
+    recivingmethod:List[RecivingMethod] 
