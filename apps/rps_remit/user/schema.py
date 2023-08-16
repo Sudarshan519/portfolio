@@ -12,10 +12,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from record_service.main import RecordService
 from schemas.attendance import UserKycStatus 
+from apps.rps_remit.recipient.schema import Recipient
 if TYPE_CHECKING:
     from ..kyc.schema import Kyc
     from apps.rps_remit.user_profile.schema import UserProfile
-    from apps.rps_remit.recipient.schema import Recipient
+    
  
 
 class RemitUserBase(SQLModel):
@@ -47,7 +48,7 @@ class RemitUserBase(SQLModel):
     per_month_amount:int=Field(sa_column=Column(Integer,default=0))
     per_year_amount:int=Field(sa_column=Column(Integer,default=0))
 
-    
+    refrence_id:int=None
     @property
     def email_verified(self):
         return self.verified
@@ -104,7 +105,7 @@ class RemitUser(RemitUserBase, RecordService, table=True):
     @property
     def quick_send(self):
         quickdata=[recipient for recipient in self.recipient if recipient.is_quick_send]
-        return quickdata[:10] if quickdata.__len__>=10 else quickdata
+        return quickdata[:10] if len(quickdata)>=10 else quickdata
     @property
     def profile_setup(self):
         return True if self.profile!=[] else False

@@ -1,0 +1,11 @@
+{
+    "Code": "000",
+    "Message": "Success",
+    "CollectionAmount": 4310.53,
+    "CollectionCurrency": "Yen",
+    "ServiceCharge": 100,
+    "TransferAmount": 4210.53,
+    "ExchangeRate": 0.95,
+    "PayoutAmount": 4000,
+    "PayoutCurrency": "NPR"
+}

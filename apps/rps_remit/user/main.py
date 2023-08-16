@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlmodel import Session
 from apps.rps_remit.otp.main import OTPService
+from apps.rps_remit.recipient.schema import RecipientRead, RecipientResponse
 from apps.rps_remit.transaction.schema import TransactionRead
 # from apps.rps_remit.otp.schema import OTP
  
@@ -126,5 +127,9 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
 
 
 @app.get('/transactions',response_model=List[TransactionRead],tags=["Transactions"])
-async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit:int=2,offset:int=0):
-  return db.query(Transaction).where(Transaction.sender_id==current_user.id).order_by(Transaction.id.desc()).offset(offset*limit).limit(2).all()
+async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit:int=10,offset:int=0):
+  return db.query(Transaction).where(Transaction.sender_id==current_user.id).order_by(Transaction.id.desc()).offset(offset*limit).limit(limit).all()
+
+@app.get('/recipients',response_model=List[RecipientResponse],tags=["Recipients"])
+async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit:int=10,offset:int=0):
+  return db.query(Recipient).where(Recipient.user_id==current_user.id).order_by(Recipient.id.desc()).offset(offset*limit).limit(limit).all()
