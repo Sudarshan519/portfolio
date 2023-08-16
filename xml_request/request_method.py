@@ -1,7 +1,7 @@
 
 from fastapi import HTTPException
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
-# from xml_request.services import   client
+from xml_request.services import   client
 from zeep.helpers import serialize_object
 username = "testRps"
 password = "testRps100#"
@@ -46,7 +46,7 @@ class RequestMethods(BaseService):
             # retry_transport()
             return HTTPException(status_code=500,detail="SERVER DOWN")
     @staticmethod
- 
+    @BaseService.handle_exceptions
     def cancel_transaction(cancelTransactionRequest:CancelTransactionRequest):
         response = client.service.CancelTransaction(
                { 
@@ -60,7 +60,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
- 
+    @BaseService.handle_exceptions
     def cash_payout_locationlist(cashPayoutLocationLost:CashPayoutLocationRequest):
         response = client.service.CashPayLocationList(
                { 
@@ -74,6 +74,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod 
+    @BaseService.handle_exceptions
     def create_csp(cspRequest:CreateCSPRequest):
         response = client.service.CreateCSPRequest(
                { 
@@ -89,6 +90,7 @@ class RequestMethods(BaseService):
         # Process the response 
         return serialize_object(response) 
     @staticmethod
+    @BaseService.handle_exceptions
     def create_customers(customer:CreateCustomer):
         reqdata= { 
                 'UserName': username,
@@ -116,6 +118,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def create_receivier(receiver:Receiver):
         response = client.service.CreateReceiver(
                { 
@@ -129,6 +132,7 @@ class RequestMethods(BaseService):
         return serialize_object(response)  
 
     @staticmethod 
+    @BaseService.handle_exceptions
     def get_balance():
         response = client.service.GetBalance(
                { 
@@ -141,6 +145,7 @@ class RequestMethods(BaseService):
 
     
     @staticmethod 
+    @BaseService.handle_exceptions
     def compliance_transactions():
         response = client.service.ComplianceTransactions (
                { 
@@ -155,6 +160,7 @@ class RequestMethods(BaseService):
  
 
     @staticmethod
+    @BaseService.handle_exceptions
     def get_state_district(country:str):
         response = client.service.GetStateDistrict(
                { 'UserName': username,
@@ -164,6 +170,7 @@ class RequestMethods(BaseService):
         # Process the response 
         return serialize_object(response) 
     @staticmethod
+    @BaseService.handle_exceptions
     def get_customer_by_id(id:int):
         response = client.service.GetCustomerByIdNumber(
                { 'UserName': username,
@@ -173,6 +180,7 @@ class RequestMethods(BaseService):
         # Process the response 
         return serialize_object(response) 
     @staticmethod
+    @BaseService.handle_exceptions
     def get_cutomer_by_mobile(phone:str):
         response = client.service.GetCustomerByMobile(
                { 'UserName': username,
@@ -181,7 +189,7 @@ class RequestMethods(BaseService):
              )
         # Process the response 
         return serialize_object(response) 
-    @staticmethod
+    @staticmethod 
     @BaseService.handle_exceptions
     def get_static_data(type:str)->dict:
         # Call the 'GetStaticData' SOAP operation with the necessary parameters in the request body
@@ -195,6 +203,7 @@ class RequestMethods(BaseService):
             return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def get_service_charge(payment_mode:str):
         response = client.service.GetServiceCharge(
              { 'UserName': username,
@@ -221,6 +230,7 @@ class RequestMethods(BaseService):
         # request=
  
     @staticmethod
+    @BaseService.handle_exceptions
     def get_service_charge_by_collection(serviceChageRequest:GetServiceChargeByCollection):
         response=client.service.GetServiceChargeByCollection({
             'UserName': username,
@@ -231,6 +241,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
         
     @staticmethod
+    @BaseService.handle_exceptions
     def search_csp(searchRequest:SearchCsp):
         response=client.service.SearchCSP({
             'UserName': username,
@@ -241,6 +252,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def search_transaction(searchTransactionRequest:SearchTransactionRequest):
         response=client.service.SearchTransaction({
             'UserName': username,
@@ -251,6 +263,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
 
     @staticmethod
+    @BaseService.handle_exceptions
     def send_otp(otpRequest:SendOtpRequest):
         response=client.service.SendOTP({
             'UserName': username,
@@ -262,6 +275,7 @@ class RequestMethods(BaseService):
 
 
     @staticmethod
+    @BaseService.handle_exceptions
     def send_transaction(sendTransactionRequest:SendTransasctionRequest):
         response=client.service.SendTransaction({
             'UserName': username,
@@ -272,6 +286,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def unverified_customer():
         response=client.service.UnverifiedCustomers({
             'UserName': username,
@@ -280,6 +295,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def unverified_transactions():
         response=client.service.UnverifiedTransactions({
             'UserName': username,
@@ -288,6 +304,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def validate_bank_account(validateBankAccountRequest: ValidateBankAccountRequest):
 
         response=client.service.ValidateBankAccount({
@@ -298,6 +315,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def verifyTransactions(validateTransasctions:ValidateTransactionRequest):
         response=client.service.ValidateBankAccount({
                 'UserName': username,
@@ -307,6 +325,7 @@ class RequestMethods(BaseService):
         return serialize_object(response) 
     
     @staticmethod
+    @BaseService.handle_exceptions
     def upload_customer_document():
         # 
         

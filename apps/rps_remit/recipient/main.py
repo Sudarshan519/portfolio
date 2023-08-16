@@ -6,7 +6,13 @@ from apps.rps_remit.recipient.schema import *
 from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from ..receiving_methods.schema import RecivingMethodCreate, RecivingMethodRead
+
+class ResposeCreate(BaseModel):
+    recipient:RecipientRead
+    recivingMethod:RecivingMethodCreate
 app=APIRouter(prefix='/recipient',tags=["REMIT RECIPIENT"] )
+
+
 @app.post('/add_recipient')
 async def add_recipient(recipient:RecipientCreate,recivingMethod:RecivingMethodCreate , db:Session=Depends(get_session)):
     recipient= Recipient.create(recipient,RecipientBase, db)

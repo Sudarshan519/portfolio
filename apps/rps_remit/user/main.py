@@ -47,10 +47,10 @@ async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
         payload.email = str(payload.email.lower())
         payload_dict=payload.dict()
         del payload_dict['password']
-        new_user = RemitUser(hashed_password=hashed_password,**payload_dict)
-        db.add(new_user)
+        remituser = RemitUser(hashed_password=hashed_password,**payload_dict)
+        db.add(remituser)
         db.commit()
-        db.refresh(new_user)
+        db.refresh(remituser)
         otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
         
         return {"otp":otp}#new_user
@@ -87,6 +87,10 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
     if not Hasher.verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Incorrect Email or Password')
+    # Set Fcm token 
+    if user.fcm_token!=payload.fcm_token:
+        user.fcm_token=payload.fcm_token
+        db.commit()
 
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -122,5 +126,5 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
 
 
 @app.get('/transactions',response_model=List[TransactionRead],tags=["Transactions"])
-async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit=2,offset=0):
-  return db.query(Transaction).where(Transaction.sender_id==current_user.id).order_by(Transaction.id.desc()).limit(2).offset(offset*limit).all()
+async def get_users_transactions(db:Session=Depends(get_session),current_user:RemitUser=Depends(get_remit_user_from_bearer),limit:int=2,offset:int=0):
+  return db.query(Transaction).where(Transaction.sender_id==current_user.id).order_by(Transaction.id.desc()).offset(offset*limit).limit(2).all()

@@ -37,6 +37,7 @@ class RemitUserBase(SQLModel):
     # document:int=Field(sa_column=Column(Integer,ForeignKey("Documents.id"),nullable=True))
     # kycType:int=Field(sa_column=Column(Integer,ForeignKey("Kyc.id"),nullable=True))
     # limit on transaction
+    fcm_token:str=None
     total_limit:int=Field(sa_column=Column(Integer,default=0))
     per_day_limit:int=Field(sa_column=Column(Integer,default=0))
     per_month_limit:int=Field(sa_column=Column(Integer,default=0))
@@ -102,7 +103,8 @@ class RemitUser(RemitUserBase, RecordService, table=True):
         return self.recipient[:limit]
     @property
     def quick_send(self):
-        return [recipient for recipient in self.recipient if recipient.is_quick_send]
+        quickdata=[recipient for recipient in self.recipient if recipient.is_quick_send]
+        return quickdata[:10] if quickdata.__len__>=10 else quickdata
     @property
     def profile_setup(self):
         return True if self.profile!=[] else False

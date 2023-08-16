@@ -52,7 +52,7 @@ class Transaction(TransactionBase, RecordService, table=True):
         return self.recipient.first_name
     @property
     def country(self):
-        return "Ne" if self.recipient.recipient_country=="Nepal" else "Jp"
+        return "NP" if self.recipient.recipient_country=="Nepal" else "Jp"
     @property
     def placeholder(self):
         return (self.recipient.first_name[0]+self.recipient.last_name[0]).upper()

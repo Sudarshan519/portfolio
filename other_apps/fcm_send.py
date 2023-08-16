@@ -10,6 +10,12 @@ headersList = {
  "Authorization": "Bearer AAAAfg4K7Zg:APA91bH64IBqL3YLRipSjH7OZ8qpWObmQYEZb7APgZ76ohlRf8JnUewDz-zBNXTQRSIoYEQIV6v7evWnp6jqw-vcfMfRnwGQvuqUptDI4CwKsSewNmzNdvMPqZIQpJzyLODyLwQdW3vM",
  "Content-Type": "application/json" 
 }
+headersList1={
+ "Accept": "*/*",
+ "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+ "Authorization": "Bearer AAAAYxii3ME:APA91bHaL6f9iVj00fF8agpP8TN7R5WsWLgHUJ8DgEBRzGExxmyNpwR8bCQhW8Wxzm3bodhHshfie_8QsoKtd2HUbtxUSW5NtPftWbcuenyj6ZY7ZdgJCvX_KiZKzBPESTKqPDpVbpm7",
+ "Content-Type": "application/json" 
+}
 
 # payload = json.dumps( {
 #       "to": "",
@@ -36,17 +42,21 @@ async def send_notification(email: str, background_tasks: BackgroundTasks):
 
 class NotificationService:
     @staticmethod
-    def send_notification(title:str,message:str):
+    def send_notification(title:str,message:str,to:str=None,id:int=None,status:str=None):
         reqUrl = "https://fcm.googleapis.com/fcm/send"
 
  
         payload = json.dumps( {
               # "to": "",
-               "to":"dUzGdt5-QXqwda56ASjOJg:APA91bEwBfwRJoIEXPffZ0JBytbvTc6UGdcLSuNE04rrsaOFpqqaPofYlHAswxqJn2pDLPUT4Y5F-fm35GnMl5Ph7cCF-g6_Fhj_Qc-CfMW4F1k_nYC6hgVy3o_tCPe0XbPpYXK2u6UL",
-              "notification": {
+               "to":to,#"dUzGdt5-QXqwda56ASjOJg:APA91bEwBfwRJoIEXPffZ0JBytbvTc6UGdcLSuNE04rrsaOFpqqaPofYlHAswxqJn2pDLPUT4Y5F-fm35GnMl5Ph7cCF-g6_Fhj_Qc-CfMW4F1k_nYC6hgVy3o_tCPe0XbPpYXK2u6UL",
+               "data":{
+       "id":id,
+       "status":status
+      }, "notification": {
                 "body": message,
-                "title": title
+                "title": title,
+                
               }
             })
-        response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+        response = requests.request("POST", reqUrl, data=payload,  headers=headersList1)
         print(response.content)

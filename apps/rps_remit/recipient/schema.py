@@ -44,7 +44,7 @@ class Recipient(RecipientBase, RecordService, table=True):
     # transaction: List["Transaction"] = Relationship(back_populates="usertransaction")
 class RecipientRead(RecipientBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
- 
+    # recivingmethod: List[RecivingMethod]
 
 
 class RecipientCreate(RecipientBase):

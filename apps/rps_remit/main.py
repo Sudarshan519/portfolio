@@ -27,7 +27,7 @@
 
 # remit_app = FastAPI()
 
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, UploadFile
 
 from other_apps.fcm_send import NotificationService
 from utils.send_mail import EmailService
@@ -41,9 +41,9 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 @app.post('/notification',tags=["RPS REMTI NOTIFICATION"])
-async def send_notification(title:str,msg:str):
-    NotificationService.send_notification(title,msg)
-    return "sucess"
+async def send_notification(title:str,msg:str,to:str,data:dict=None,file:UploadFile=None):
+    NotificationService.send_notification(title,msg,to)
+    return {"status":"sucess"}
 
 @app.post("/send-email",tags=["RPS REMIT EMAIL SEND"])
 async def send_email(title:str,msg:str,background_tasks: BackgroundTasks):

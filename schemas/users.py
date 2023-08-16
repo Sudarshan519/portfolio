@@ -114,6 +114,7 @@ class UserLoginRequest(BaseModel):
     password:str
     deviceId:str=None
     gps:str=None
+    fcm_token:str=None
     ip:str=None
 
 class ShowUser(BaseModel):   #new
