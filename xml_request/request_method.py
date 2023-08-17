@@ -2,7 +2,7 @@
 from fastapi import HTTPException
 from apps.rps_remit.compliance_schema import GetServiceCharge
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
-from xml_request.services import   client
+# from xml_request.services import   client
 from zeep.helpers import serialize_object
 username = "testRps"
 password = "testRps100#"

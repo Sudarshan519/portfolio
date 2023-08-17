@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException
 from apps.rps_remit.otp.schema import REMITOTP as OTP
 from sqlmodel import Session
 from apps.rps_remit.user.schema import RemitUser
@@ -55,14 +55,14 @@ async def verify_phone(phone,code,db:Session=Depends(get_session)):
 
 
 @app.post('/verify-email')
-async def verify_email(email,code,db:Session=Depends(get_session)):
+async def verify_email(email=Body(...),code=Body(...),db:Session=Depends(get_session)):
     user=db.query(RemitUser).where(RemitUser.email==email).first()
  
     if not user:
         
         
  
-        return {"status":False,"data":"Email verified failed"}
+        raise HTTPException(status_code=400,detail={"status":False,"data":"Email verified failed"})
 
     otp_verified=OTPService.verify_otp(email,code,db)
     if otp_verified:
@@ -73,5 +73,5 @@ async def verify_email(email,code,db:Session=Depends(get_session)):
         
          
         return {"status":"success","data":"Email verified successfully."}
-    return {"status":"failed","data":"Invalid otp"}
+    raise HTTPException(status_code=400,detail={"status":"failed","data":"Invalid otp"})
 

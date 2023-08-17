@@ -20,20 +20,21 @@ from schemas.users import LoginResponse, UserBaseSchema, UserLoginRequest
  
 
 app=APIRouter(prefix="/user",tags=[]) 
-@app.post('/register',tags=['RPS REMIT:REGISTER'],)#response_model=RemitUserRead)#
+@app.post('/register',tags=['RPS REMIT:REGISTER'],response_model=LoginResponse )#response_model=RemitUserRead)#
 async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
     # Check if user already exist
     try:
         user = db.query(RemitUser).filter(
             RemitUser.email == str(payload.email.lower()),
             # RemitUserBase.verified==False
-            ).first()
-
+            ).first() 
     except Exception as e:
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=e)
     if user:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                                detail='Account already exist')
+ 
+        if user.verified:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                    detail='Account already exist')
 
     else:
     # Compare password and passwordConfirm
@@ -48,13 +49,44 @@ async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
         payload.email = str(payload.email.lower())
         payload_dict=payload.dict()
         del payload_dict['password']
-        remituser = RemitUser(hashed_password=hashed_password,**payload_dict)
-        db.add(remituser)
+        user = RemitUser(hashed_password=hashed_password,**payload_dict)
+        db.add(user)
         db.commit()
-        db.refresh(remituser)
+        db.refresh(user)
+        print(user)
         otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
-        
-        return {"otp":otp}#new_user
+        # Create access token
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+                data={"sub": str(user.id)}, expires_delta=access_token_expires
+            )
+   #  access_token = 
+   #  Authorize.create_access_token(
+   #      subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
+
+    # Create refresh token
+    refresh_token = Authorize.create_refresh_token(
+            data={'id':str(user.id)}, expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRES_IN))
+
+    # Store refresh and access tokens in cookie
+   #  response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
+   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
+   #  response.set_cookie('refresh_token', refresh_token,
+   #                      REFRESH_TOKEN_EXPIRES_IN * 60, REFRESH_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
+   #  response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
+   #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
+
+    # Send both access
+    print(user)
+    return {'status': 'success', 'data':{'access_token': access_token,'refresh_token':refresh_token,
+            "user":    user}
+            # 'email_verified':user.verified,
+            # 'phone_verified':user.phone_verified,
+            # 'password_expired':False,
+            # 'ekyc_verified':False,
+            # 'ekyc_status':False
+                }
+        # return {"otp":otp}#new_user
 
 
 class ResponseSchema(BaseModel):
@@ -77,21 +109,21 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Incorrect Email or Password')
-
+  
     # Check if user verified his email
-    if not user.verified:
-        otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail={"otp":otp,"error":'Please verify your email address'})
+    # if not user.verified:
+    #     otp=OTPService.create_otp(phoneOrEmail=payload.email,db=db)
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+    #                         detail={"otp":otp,"error":'Please verify your email address'})
 
     # Check if the password is valid
     if not Hasher.verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Incorrect Email or Password')
     # Set Fcm token 
-    if user.fcm_token!=payload.fcm_token:
-        user.fcm_token=payload.fcm_token
-        db.commit()
+    # if user.fcm_token!=payload.fcm_token:
+    #     user.fcm_token=payload.fcm_token
+    #     db.commit()
 
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -115,7 +147,7 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
    #                      ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    print(user.kyc)
+    # print(user.kyc)
     return {'status': 'success', 'data':{'access_token': access_token,'refresh_token':refresh_token,
         "user":    user}
         # 'email_verified':user.verified,

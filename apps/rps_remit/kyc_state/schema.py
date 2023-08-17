@@ -17,35 +17,35 @@ if TYPE_CHECKING:
 class KycStateBase(SQLModel):
     # team_id: Optional[int] = Field(default=None, foreign_key="team.id")
     user_id:Optional[int]=Field(default=1, foreign_key="remituser.id")
-    number:str
-    type:str
+    number:str=None
+    type:str=None
     front_img:str=None
     back_img:str=None
     tilted_img:str=None
     selfie_img:str=None
-    state:str
+    state:str=None
     first_name:str=None
     last_name:str=None
-    dob:date
-    nationality:str
-    intended_use_of_account:str
-    mobile_number:str
+    dob:date=None
+    nationality:str=None
+    intended_use_of_account:str=None
+    mobile_number:str=None
     phone_number:str=None
-    gender:str
+    gender:str=None
     date_of_issue:str=None
-    peroid_of_stay:str
-    expire_date:str
-    postal:str
-    prefecture:str
-    city:str
+    peroid_of_stay:str=None
+    expire_date:str=None
+    postal:str=None
+    prefecture:str=None
+    city:str=None
     street_address:str=None
     building_name:str=None
     expiry_date:str=None
     annual_income:str=None
     source_of_income:str=None
     tax_return:str=None
-    home_contact_number:str
-    emergency_contact_number:str
+    home_contact_number:str=None
+    emergency_contact_number:str=None
     
 
 class KycStateRead(KycStateBase):

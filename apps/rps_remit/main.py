@@ -40,6 +40,10 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
+from apps.rps_remit.kyc_state.main import app as kycstateapp
+app.include_router(kycstateapp,prefix='')
+
+
 @app.post('/notification',tags=["RPS REMTI NOTIFICATION"])
 async def send_notification(title:str,msg:str,to:str,data:dict=None,file:UploadFile=None):
     NotificationService.send_notification(title,msg,to)
@@ -82,6 +86,7 @@ app.include_router(usermain,prefix="")
 
 from apps.rps_remit.compliance_service import router as compliance
 app.include_router(compliance,prefix='')
+
 
 
 

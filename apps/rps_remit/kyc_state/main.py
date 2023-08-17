@@ -5,8 +5,10 @@ from apps.rps_remit.kyc_state.schema import KycState, KycStateBase, KycStateRead
 from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
-app=APIRouter(prefix='/ekyc',tags=["REMIT EKYC"] )
-
+app=APIRouter(prefix='/ekyc',tags=["REMIT EKYC STATE"] )
+@app.get("/details")
+async def details():
+    return {"cards":CardType._member_names_}
 @app.get('/',response_model=list[KycStateRead])
 async def all(db:Session=Depends(get_session)):
     return Kyc.all(session=db)

@@ -8,7 +8,7 @@ from record_service.main import RecordService
 
 class UserProfileBase(SQLModel):  
     user_id:Optional[int]=Field(default=1, foreign_key="remituser.id")  
-    title: str 
+    title: str=None
     first_name: str 
     last_name: str 
     nationality: str 
