@@ -1,5 +1,6 @@
 
 from fastapi import HTTPException
+from apps.rps_remit.compliance_schema import GetServiceCharge
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
 from xml_request.services import   client
 from zeep.helpers import serialize_object
@@ -204,7 +205,7 @@ class RequestMethods(BaseService):
     
     @staticmethod
     @BaseService.handle_exceptions
-    def get_service_charge(payment_mode:str):
+    def get_service_charge(payment_mode:GetServiceCharge):
         response = client.service.GetServiceCharge(
              { 'UserName': username,
                 'Password': password,

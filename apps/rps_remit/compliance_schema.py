@@ -198,7 +198,7 @@ class SendTransasctionRequest(BaseModel):
     ReceiverCity:str
     SendCountry:str
     PayoutCountry:str
-    PayoutMode:str
+    PaymentMode:str="Cash Payment" 
     CollectedAmount:str
     ServiceCharge:str
     SendAmount:str
@@ -222,7 +222,7 @@ class SendTransasctionRequest(BaseModel):
     class Config:
         schema_extra={
             "example":{
-                    "CustomerId": 0,
+                    "CustomerId": 20,
                     "SenderName": "string",
                     "SenderGender": "Male",
                     "SenderDoB": "2023-08-08",
@@ -236,9 +236,9 @@ class SendTransasctionRequest(BaseModel):
                     "Employer": "string",
                     "SenderIDType": "string",
                     "SenderIDNumber": 0,
-                    "SenderIDExpiryDate": "string",
+                    "SenderIDExpiryDate": "2022-05-07",
                     "SenderIDIssuedPlace": "string",
-                    "ReceiverId": 0,
+                    "ReceiverId": 48,
                     "ReceiverName": "string",
                     "ReceiverGender": "Male",
                     "ReceiverAddress": "string",
@@ -246,7 +246,7 @@ class SendTransasctionRequest(BaseModel):
                     "ReceiverCity": "string",
                     "SendCountry": "string",
                     "PayoutCountry": "string",
-                    "PayoutMode": "Cash",
+                    "PaymentMode": "Cash Payment",
                     "CollectedAmount": "string",
                     "ServiceCharge": "string",
                     "SendAmount": "string",
@@ -261,7 +261,7 @@ class SendTransasctionRequest(BaseModel):
                     "PartnerPinNo": 0,
                     "IncomeSource": "string",
                     "RemittanceReason": "string",
-                    "Relationship": "string",
+                    "Relationship": "Aunti",
                     "CSPCode": 0,
                     "OTPProcessId": 0,
                     "OTP": 0,
