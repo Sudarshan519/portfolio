@@ -40,6 +40,24 @@ async def phone_setup(phone,db:Session=Depends(get_session)):
     otp=OTPService.create_otp(phone,db)
     return {"status":"success","data":"OTP Sent to your mobile."}
 
+@app.post('/resend-otp')
+async def phone_setup(phone,db:Session=Depends(get_session)):
+    user=db.query(RemitUser).where(RemitUser.phone==phone,RemitUser.phone_verified==True).first()
+    if user:
+        return {"status":"failed","data":"Mobile Number already registered"}
+
+    otp=OTPService.create_otp(phone,db)
+    return {"status":"success","data":"OTP Sent to your mobile."}
+
+@app.post('/resend-email-otp')
+async def phone_setup(email,db:Session=Depends(get_session)):
+    user=db.query(RemitUser).where(RemitUser.email==email,RemitUser.phone_verified==True).first()
+    if user:
+        return {"status":"failed","data":"Mobile Number already registered"}
+
+    otp=OTPService.create_otp(email,db)
+    return {"status":"success","data":"OTP Sent to your mobile."}
+
 
 @app.post('/verify-phone')
 async def verify_phone(phone,code,db:Session=Depends(get_session)):

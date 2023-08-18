@@ -3,7 +3,8 @@ from typing import List, Optional,TYPE_CHECKING
 from fastapi import Depends
 
 from pydantic import BaseModel, EmailStr 
-from sqlmodel import Field, Relationship, SQLModel,Column, Session,String,Boolean,Enum,Integer,ForeignKey, select 
+from sqlmodel import Field, Relationship, SQLModel,Column, Session,String,Boolean,Enum,Integer,ForeignKey, select
+
 
 from apps.rps_remit.transaction.schema import Transaction
 from db.session_sqlmodel import get_session 
@@ -16,7 +17,7 @@ from apps.rps_remit.recipient.schema import Recipient
 if TYPE_CHECKING:
     from ..kyc.schema import Kyc
     from apps.rps_remit.user_profile.schema import UserProfile
-    
+    from apps.rps_remit.kyc_state.schema import KycState 
  
 
 class RemitUserBase(SQLModel):
@@ -88,6 +89,7 @@ class RemitUser(RemitUserBase, RecordService, table=True):
                                                 sa_relationship_kwargs={"order_by":"desc(Recipient.id)",
                                                                        
                                                                         })
+    kycstate:List["KycState"]=Relationship(back_populates="user")
     @property
     def transactions(self):
         return self.transaction[:3]

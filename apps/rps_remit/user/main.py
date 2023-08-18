@@ -121,9 +121,9 @@ async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Incorrect Email or Password')
     # Set Fcm token 
-    # if user.fcm_token!=payload.fcm_token:
-    #     user.fcm_token=payload.fcm_token
-    #     db.commit()
+    if user.fcm_token!=payload.fcm_token:
+        user.fcm_token=payload.fcm_token
+        db.commit()
 
     # Create access token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)

@@ -6,6 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 from record_service.main import RecordService
+from schemas.attendance import UserKycStatus
 
 class CardType(str,Enum):
     RESIDENT_CARD="RESIDENT CARD"
@@ -96,4 +97,7 @@ class UserBaseSchema(BaseModel):
 
 class KycReadResp(KycRead):
     user:UserBaseSchema=None 
-    
+
+
+class KycStatusUpdate(SQLModel):
+    kyc_status: UserKycStatus=UserKycStatus.UNVERIFIED

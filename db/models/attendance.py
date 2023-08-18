@@ -165,10 +165,11 @@ class AttendanceModel(Base):
         return 4##calcTime(self.login_time+timedelta(hours=4))
     @property
     def salary(self):
-        # print(self.employee)
+        print(self.employee.duty_time.minute)
+        print(self.employee.duty_time.hour)
         if not self.employee:
             return self.per_min_salary
-        return self.employee.salary/(30*8*60)
+        return  self.employee.salary/(30*(self.employee.duty_time.hour or 8)*self.employee.duty_time.minute)
     @salary.setter
     def salary(self,new):
         self.per_min_salary=new/(30*8*60)
@@ -189,6 +190,7 @@ class AttendanceModel(Base):
 
         # # Print the duration in seconds
         # print(duration)
+        return self.employee.duty_time
         return calcTime(self.employee.login_time,self.employee.logout_time)
     
     @property
