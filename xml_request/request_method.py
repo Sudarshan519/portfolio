@@ -2,7 +2,7 @@
 from fastapi import HTTPException
 from apps.rps_remit.compliance_schema import GetServiceCharge
 from schemas.users import AcPayBankListRequest, CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceChargeByCollection, Receiver, SearchCsp, SearchTransactionRequest, SendOtpRequest, SendTransasctionRequest, ValidateBankAccountRequest, ValidateTransactionRequest
-# from xml_request.services import   client
+from xml_request.services import   client
 from zeep.helpers import serialize_object
 username = "testRps"
 password = "testRps100#"
@@ -32,7 +32,8 @@ class RequestMethods(BaseService):
  
     @staticmethod
     @BaseService.handle_exceptions
-    def acpay_bank_branchlist(self,acPayBankListRequest:AcPayBankListRequest):
+    def acpay_bank_branchlist(acPayBankListRequest:AcPayBankListRequest):
+        print({k:v for k,v in  acPayBankListRequest.dict().items()})
         try:
             response = client.service.AcPayBankBranchList(
                 { 'UserName': username,

@@ -3,9 +3,8 @@ from datetime import date
 from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel
 from sqlmodel import Column, Enum, Field, Relationship, SQLModel
-from apps.rps_remit.receiving_methods.schema import PaymentMode
-
-from schemas.attendance import RecivingMethod
+from apps.rps_remit.receiving_methods.schema import PaymentMode, RecivingMethod
+ 
 
 
 from .data_enums import *
@@ -45,7 +44,7 @@ class Transaction(TransactionBase, RecordService, table=True):
     usertransaction: Optional["RemitUser"] = Relationship(back_populates="transaction")
     recipient: Optional["Recipient"] =Relationship(back_populates="transactions", sa_relationship_kwargs={"order_by":"desc(Recipient.id)"}) #back_populates="transactions",)# sa_relationship=RelationshipProperty(order_by='desc(Recipient.id)', lazy='dynamic'))
     # Relationship(back_populates="transactions", sa_relationship={"order_by":'desc(Recipient.id)', "lazy":'dynamic'})
-    # reciving_method:RecivingMethod=Relationship(back_populates="recivingmethod")
+    recivingMethod:Optional["RecivingMethod"]=Relationship(back_populates="recipient_transactions")
     @property
     def recipient_name(self):
         # print(self.recipient.first_name)
@@ -56,12 +55,18 @@ class Transaction(TransactionBase, RecordService, table=True):
     @property
     def placeholder(self):
         return (self.recipient.first_name[0]+self.recipient.last_name[0]).upper()
+    @property
+    def payment_method(self):
+        return self.recivingMethod.payment_mode
 class TransactionRead(TransactionBase):
     # recipient:Optional[Recipient]=None
     recipient_name:str=None
     country:str=None
     placeholder:str=None
     id:Optional[int] = Field(default=None, primary_key=True) 
+    recivingMethod:RecivingMethod=None
+    payment_method:str=None
+    
     # recipient:Optional[Recipient]
     # reciving_method:RecivingMethod=None
 

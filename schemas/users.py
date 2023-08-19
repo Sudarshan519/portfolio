@@ -3,8 +3,10 @@ from enum import Enum
 from typing import Any, Optional
 from pydantic import BaseModel,EmailStr
 from pyparsing import List
+from sqlmodel import SQLModel
 
 from apps.rps_remit.kyc.schema import  Kyc
+from apps.rps_remit.receiving_methods.schema import RecivingMethod
 from apps.rps_remit.recipient.schema import Recipient, RecipientResponse
 from apps.rps_remit.transaction.schema import Transaction, TransactionRead
 from apps.rps_remit.user_profile.schema import UserProfile
@@ -61,7 +63,7 @@ class UserBaseSchema(BaseModel):
     # recipients:List[Recipient]=[]
     transactions:List[TransactionRead]=[]
     quick_send: List[RecipientResponse]=None
-
+    recivingMethod:RecivingMethod=None
  
     class Config:
         orm_mode = True
@@ -410,7 +412,7 @@ class ValidateBankAccountRequest(BaseModel):
     BankCode:str
     AccountNumber:str
 
-class ValidateTransactionRequest(BaseModel):
+class ValidateTransactionRequest(SQLModel):
     PinNo:str
 
 
@@ -421,15 +423,16 @@ class AcPayBankListRequest(BaseModel):
     City:str=None
     BankName:str=None
     BranchName:str=None
+    acPayBankListRequest:str=None
  
-class CancelTransactionRequest(BaseModel):
+class CancelTransactionRequest(SQLModel):
     pinNo:str=None
     reason:str=None
     opt_process_id:str=None
     otp:str=None
 
 
-class CashPayoutLocationRequest(BaseModel):
+class CashPayoutLocationRequest(SQLModel):
      Country:str=None
      State:str=None
      District:str=None

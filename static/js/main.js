@@ -51,6 +51,8 @@
 
 
   on('click', '.nav-link', function (e) {
+    var loader = document.getElementById("loader")
+    loader.style.display = "none";
     let section = select(this.hash)
     if (section) {
       e.preventDefault()
