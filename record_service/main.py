@@ -1,6 +1,8 @@
 from fastapi import HTTPException
 from sqlmodel import SQLModel,Session
-
+from sqlalchemy import cast
+from sqlalchemy import String
+from sqlalchemy import or_
 
 class RecordService(SQLModel):
     @classmethod
@@ -18,7 +20,7 @@ class RecordService(SQLModel):
         
         q = session.query(cls)
         
-        return q.filter(*[getattr(cls, attr).like(f"%{value}%") for attr, value in dict.items()]).offset(offset).limit(limit).all()
+        return q.filter(*[cast(getattr(cls, attr), String).ilike(f"%{value}%") for attr, value in dict.items()]).offset(offset).limit(limit).all()
  
         return list
         return session.query(cls).filter(**{k for k in  dict.items()}).all()

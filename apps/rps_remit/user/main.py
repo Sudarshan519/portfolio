@@ -98,8 +98,8 @@ class ResponseSchema(BaseModel):
 async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer), db: Session = Depends(get_session),):
     # RemitUserResponse=create_data_model(RemitUser)
     # BaseResponse=create_data_model(PageResponse[RemitUserResponse ])
-    #   
-    kyc=Kyc.filter_by(db,{"id":current_user.id})
+      
+    # kyc=Kyc.filter_by(db,{"user_id":current_user.id})
     # print((kyc))
     # profile:List[UserProfile]=[]
     # # recipients:List[Recipient]=[]
