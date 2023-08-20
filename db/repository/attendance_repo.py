@@ -25,6 +25,10 @@ import json
 #  insert 
 class AttendanceRepo:
     @staticmethod
+    def get_all_leaves(compId,db):
+        leaves=db.query(LeaveRequest).all()
+        return leaves
+    @staticmethod
     def employee_daily_report(empId:str,compId:str, db,month:str=None,):
         now=datetime.now()
         # print(now)
@@ -66,6 +70,9 @@ class AttendanceRepo:
         try:
             
             leave=LeaveRequest(**leaveRequest.dict())#employeeId
+            db.add(leave)
+            db.commit()
+            db.refresh(leave)
             return leave
         except Exception as e:
             print(e)

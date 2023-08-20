@@ -12,7 +12,7 @@ from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
-from schemas.attendance import Status
+from schemas.attendance import CompanyBase, Status
 from other_apps.week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -41,6 +41,8 @@ async def import_db(db: Session = Depends(get_db)):
     
     return data
 
+
+
 @router.get('/export-db',tags=['Import/Export'])
 async def export_db(db: Session = Depends(get_db)):
     data=AttendanceRepo.export_db(db)
@@ -50,7 +52,7 @@ async def export_db(db: Session = Depends(get_db)):
     print(data)    
     
     return data
-@router.get('/companies',tags=['Companies'])
+@router.get('/companies',tags=['Companies'],response_model=list[CompanyBase])
 async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     now=datetime.now()
     print(now)
@@ -130,7 +132,12 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
     return current_user
 
 
- 
+@router.post('/all-leave')#,response_model=AllLeave)
+async def allleave(company_id:int,db: Session = Depends(get_db)):
+
+    return AttendanceRepo.get_all_leaves(company_id,db)
+    
+
 @router.get('/monthly-report',tags=[ 'Employer Report'])
 async def getMonthlyReport(companyId:int=None ,employeeId:int=None, db:Session= Depends(get_db),page:int=1,limit=100):
     return AttendanceRepo.employeeWithAttendanceMonthlyReport(db,companyId,employeeId,page,limit)
@@ -284,7 +291,7 @@ async def resend_otp(phone:int,db: Session = Depends(get_db)):
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
 @router.post('/verify-otp',tags=['Employer Register/Login'])
-def verify(otp:str=Body(...),phone:str=Body(...),db: Session = Depends(get_db),):
+def verify(otp:str=Body(default='0689'),phone:str=Body(default="9863450107"),db: Session = Depends(get_db),):
     return AttendanceRepo.verify_otp(otp,phone,db)
     otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
 

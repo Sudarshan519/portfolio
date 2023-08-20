@@ -2,7 +2,7 @@ from ast import List
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, Field
 from datetime import date, datetime, time, timedelta
-from typing import Optional
+from typing import Any, Optional
 from enum import Enum
 import inspect
 from typing import Type
@@ -17,6 +17,7 @@ class RecivingMethod(str,Enum):
 
 class UserKycStatus(str,Enum):
     UNVERIFIED="UNVERIFIED"
+    PENDING="PENDING"
     TEMPORARY="TEMPORARY"
     VERIFIED="VERIFIED"
     DOCUMENTEXPIRED="DOCUMENTEXPIRED"
@@ -87,7 +88,7 @@ class LeaveRequestIn(BaseModel):
     end_date:date=Field( description="eg.2022-02-22")
     leave_type:LeaveRequestType
     leave_day_type:LeaveDayType
-    document:UploadFile=None
+    # document:UploadFile=None
     remarks:str=None
 
 @as_form
@@ -166,3 +167,38 @@ class Employee(BaseModel):
             }
         }
         orm_mode = True
+
+class CompanyBase(BaseModel):
+    id:int
+    
+    
+    name:str=None
+    address:str=None
+    approver_count:int=None
+    employee_count:int=None
+    late:int=None
+    attendee:int=None
+    # start_time:date=None
+    # end_time:date=None
+    # established_date:date=None
+    is_active:bool=None
+    class Config:
+        orm_mode=True
+
+    # id = Column(Integer,primary_key=True,index=True)
+    # name=Column(String(256), unique=True)
+    # address=Column(String(256))
+    # start_time=Column(Time)
+    # end_time=Column(Time)
+    # established_date=Column(Date) 
+    # is_active=Column(Boolean,default=True)
+    # user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
+    # employee=relationship("EmployeeModel",back_populates="company",)
+    # total_casual_leave_in_year=Column(Integer,default=18)
+    # total_sick_leave_in_year=Column(Integer,default=6)
+    # approver_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id,EmployeeModel.is_approver==True)  # This part needs correction
+    #     .label("approver_count")
+    # )
+    # employee_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id)  # This part needs correction
+    #     .label("employee_count")
+    # )

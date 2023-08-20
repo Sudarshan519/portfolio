@@ -63,12 +63,17 @@ class UserBaseSchema(BaseModel):
     # recipients:List[Recipient]=[]
     transactions:List[TransactionRead]=[]
     quick_send: List[RecipientResponse]=None
-    recivingMethod:RecivingMethod=None
+    # recivingMethod:RecivingMethod=None
  
     class Config:
         orm_mode = True
         # allow_population_by_field_name = True
-
+class UserResponse(UserBaseSchema):
+    kyc:List[Kyc]=[]
+    profile:List[UserProfile]=[]
+    # recipients:List[Recipient]=[]
+    transactions:List[TransactionRead]=[]
+    quick_send: List[RecipientResponse]=None
 class PersonalCardDetails(BaseModel):
     title:str
 

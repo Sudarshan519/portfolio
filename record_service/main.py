@@ -13,7 +13,15 @@ class RecordService(SQLModel):
     @classmethod
     def all(cls, session):
         return session. query(cls).limit(100).all()
-
+    @classmethod
+    def filter_by(cls,session:Session,dict,offset=0,limit:int=20):
+        
+        q = session.query(cls)
+        
+        return q.filter(*[getattr(cls, attr).like(f"%{value}%") for attr, value in dict.items()]).offset(offset).limit(limit).all()
+ 
+        return list
+        return session.query(cls).filter(**{k for k in  dict.items()}).all()
     @classmethod
     def create(cls, source: dict  , SQLModel, session:Session):
         if isinstance(source, SQLModel):

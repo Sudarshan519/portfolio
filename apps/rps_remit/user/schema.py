@@ -3,7 +3,8 @@ from typing import List, Optional,TYPE_CHECKING
 from fastapi import Depends
 
 from pydantic import BaseModel, EmailStr 
-from sqlmodel import Field, Relationship, SQLModel,Column, Session,String,Boolean,Enum,Integer,ForeignKey, select
+from sqlmodel import Field, Relationship, SQLModel,Column, Session,String,Boolean,Enum,Integer,ForeignKey, func, select
+from sqlalchemy.orm import column_property
 
 
 from apps.rps_remit.transaction.schema import Transaction
@@ -85,14 +86,27 @@ class RemitUser(RemitUserBase, RecordService, table=True):
 
     })
     recipient: List["Recipient"] = Relationship(back_populates="user_recipient",
-                                                
+                                             
                                                 sa_relationship_kwargs={"order_by":"desc(Recipient.id)",
-                                                                       
+                                                                     
                                                                         })
     kycstate:List["KycState"]=Relationship(back_populates="user")
+    # approver_count = column_property(select(Transaction).where(id == Transaction.sender_id).limit(4)  # This part needs correction
+    #     .label("approver_count")
+    # )
+    # transactions=column_property(select(Transaction).where(id == Transaction.sender_id).limit(4))
     @property
     def transactions(self):
-        return self.transaction[:3]
+        return (
+            self.transaction
+            .limit(3)
+            .all()
+        )
+    # @property
+    # def transactions(self,db:Session=Depends(get_session)):
+        
+    #     # return Transaction.all(db) #self.db.query(select(Transaction).where(id == Transaction.sender_id).limit(4)).all() 
+    #     return self.transaction[:3]
     # @hybrid_property
     # def filtered_children(self):
     #     return [child for child in self.children if child.name == "Child 1"]

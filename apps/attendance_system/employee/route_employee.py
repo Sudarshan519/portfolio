@@ -140,8 +140,9 @@ async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form)
 
 
 @router.post('/apply-leave',response_model=LeaveRequestIn)
-async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
+async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form),document:UploadFile=None, db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     print(leaveRequest.dict())
+
     leave= AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
     return leaveRequest
     # 

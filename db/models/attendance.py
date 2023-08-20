@@ -1,11 +1,11 @@
  
-from datetime import datetime,timedelta
+from datetime import date, datetime,timedelta
 from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum,func, select
 from sqlalchemy.orm import relationship
 from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
-
+from sqlalchemy.orm import sessionmaker, column_property
 from schemas.attendance import LeaveDayType, LeaveRequestStatus, LeaveRequestType, Status,AttendanceStatus
 from fastapi import Depends
 from requests import Session
@@ -50,31 +50,7 @@ class AttendanceUser(Base):
     is_approver=Column(Boolean,default=False)
     dob=Column(Date,nullable=True) 
 
-class CompanyModel(Base):
-    id = Column(Integer,primary_key=True,index=True)
-    name=Column(String(256), unique=True)
-    address=Column(String(256))
-    start_time=Column(Time)
-    end_time=Column(Time)
-    established_date=Column(Date) 
-    is_active=Column(Boolean,default=True)
-    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
-    employee=relationship("EmployeeModel",back_populates="company")
-    total_casual_leave_in_year=Column(Integer,default=18)
-    total_sick_leave_in_year=Column(Integer,default=6)
-    @property
-    def employee_count(self):
-        return len(self.attendance)
 
-    # @attendance_count.expression
-    def attendance_count(cls):
-        return (
-            select([func.count()])
-            .where(EmployeeModel.id == cls.id)
-            .label("attendance_count")
-        )
-    
-    
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     phone=Column(BigInteger,unique=False)
@@ -95,6 +71,10 @@ class EmployeeModel(Base):
     company=relationship("CompanyModel",back_populates="employee")
     total_sick_leave_taken=Column(Integer,default=0)
     total_casual_leave_taken=Column(Integer,default=0)
+    
+    # approver_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id,EmployeeModel.is_approver==True)  # This part needs correction
+    #     .label("approver_count")
+    # )
     @property
     def available_sick_leave(self):
         if( self.company.total_sick_leave_in_year):
@@ -113,25 +93,7 @@ class EmployeeModel(Base):
     __table_args__ = (
         UniqueConstraint('company_id','phone', name='uq_company_employee'),
     )
-    
-class BreakModel(Base):
-    id = Column(Integer,primary_key=True,index=True)
-    break_start=Column(Time)
-    break_end=Column(Time)
-    company_id =  Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
-    attendance_id=Column(Integer,ForeignKey('attendancemodel.id',ondelete='CASCADE'), nullable=True )
-    attendance=relationship("AttendanceModel",back_populates='breaks')
-def calcTime(enter,exit):
-    format="%H:%M:%S"
-    #Parsing the time to str and taking only the hour,minute,second 
-    #(without miliseconds)
-    enterStr = str(enter).split(".")[0]
-    exitStr = str(exit).split(".")[0]
-    #Creating enter and exit time objects from str in the format (H:M:S)
-    enterTime = datetime.strptime(enterStr, format)
-    exitTime = datetime.strptime(exitStr, format)
-    td=(exitTime-enterTime).total_seconds()
-    return td
+
 class AttendanceModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     attendance_date=Column(Date)
@@ -203,6 +165,75 @@ class AttendanceModel(Base):
     # def breaks(self ,db: Session = Depends(get_db)):
     #     return db.query(BreakModel).filter(BreakModel.attendance==self.id).all()
 
+class CompanyModel(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    name=Column(String(256), unique=True)
+    address=Column(String(256))
+    start_time=Column(Time)
+    end_time=Column(Time)
+    established_date=Column(Date) 
+    is_active=Column(Boolean,default=True)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
+    employee=relationship("EmployeeModel",back_populates="company",)
+    total_casual_leave_in_year=Column(Integer,default=18)
+    total_sick_leave_in_year=Column(Integer,default=6)
+    approver_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id,EmployeeModel.is_approver==True)  # This part needs correction
+        .label("approver_count")
+    )
+    employee_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id)  # This part needs correction
+        .label("employee_count")
+    )
+    attendee=column_property(select([func.count()])
+            .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today())
+            .label("attendance_count"))
+    late=column_property(select([func.count()])
+            .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today(),AttendanceModel.status==AttendanceStatus.LATE)
+            .label("late"))
+    # @property
+    # def employee_count(self):
+    #     return len(self.employee)
+    # @property 
+    # def last_three_employee(self):
+    #     return 
+
+    # @property
+    # def approver_count(self):
+    #     # worker_count = column_property(select([func.count(worker.id)]).filter(worker.project_id==id).scalar_subquery())
+    #     data= select(([func.count(EmployeeModel.id)])
+    #                   .filter(EmployeeModel.company_id==id).scalar_subquery()
+    #                   )
+    #     print(data)
+    #     return data
+    # @attendance_count.expression
+    def attendance_count(cls):
+        return (
+            column_property(select([func.count()])
+            .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today())
+            .label("attendance_count"))
+        )
+    
+    
+
+    
+class BreakModel(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    break_start=Column(Time)
+    break_end=Column(Time)
+    company_id =  Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
+    attendance_id=Column(Integer,ForeignKey('attendancemodel.id',ondelete='CASCADE'), nullable=True )
+    attendance=relationship("AttendanceModel",back_populates='breaks')
+def calcTime(enter,exit):
+    format="%H:%M:%S"
+    #Parsing the time to str and taking only the hour,minute,second 
+    #(without miliseconds)
+    enterStr = str(enter).split(".")[0]
+    exitStr = str(exit).split(".")[0]
+    #Creating enter and exit time objects from str in the format (H:M:S)
+    enterTime = datetime.strptime(enterStr, format)
+    exitTime = datetime.strptime(exitStr, format)
+    td=(exitTime-enterTime).total_seconds()
+    return td
+
 class EmployeeCompany(Base):
     id = Column(Integer,primary_key=True,index=True)
     employee_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1)
@@ -246,3 +277,16 @@ class LeaveRequest(Base):
     # leaveDayType:LeaveDayType
     # doc:str
     # remarks:str
+
+
+class Notifications(Base):
+    id= Column(Integer,primary_key=True,index=True)
+    to=Column(String(256),nullable=True)
+    user_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1,nullable=True)
+    company_id=Column(Integer,ForeignKey('companymodel.id',ondelete='CASCADE'),default=1,nullable=True)
+    title=Column(String(256),nullable=True)
+    desc=Column(String(256),nullable=True)
+    # from:
+    subject=Column(String(256),nullable=True)
+    
+    # data:

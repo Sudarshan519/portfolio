@@ -18,7 +18,7 @@ from db.session_sqlmodel import get_session
 from schemas.base import GenericResponse, PageResponse, create_data_model
 from schemas.users import LoginResponse, UserBaseSchema, UserLoginRequest
  
-
+from apps.rps_remit.kyc.schema import Kyc
 app=APIRouter(prefix="/user",tags=[]) 
 @app.post('/register',tags=['RPS REMIT:REGISTER'],response_model=LoginResponse )#response_model=RemitUserRead)#
 async def register(payload:RemitUserCreate,db: Session = Depends(get_session)):
@@ -95,10 +95,17 @@ class ResponseSchema(BaseModel):
 
 
 @app.get('/user',tags=['Home'],response_model=UserBaseSchema)
-async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer)):
-    RemitUserResponse=create_data_model(RemitUser)
-    # BaseResponse=create_data_model(PageResponse[RemitUserResponse ]) 
-    return  current_user#GenericResponse(data=current_user)
+async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer), db: Session = Depends(get_session),):
+    # RemitUserResponse=create_data_model(RemitUser)
+    # BaseResponse=create_data_model(PageResponse[RemitUserResponse ])
+    #   
+    kyc=Kyc.filter_by(db,{"id":current_user.id})
+    # print((kyc))
+    # profile:List[UserProfile]=[]
+    # # recipients:List[Recipient]=[]
+    # transactions:List[TransactionRead]=[]
+    # quick_send: List[RecipientResponse]=None
+    return  current_user #GenericResponse(data=current_user)
 
 @app.post('/login',tags=['Login'],response_model=LoginResponse )
 async def login(payload: UserLoginRequest, db: Session = Depends(get_session),):
