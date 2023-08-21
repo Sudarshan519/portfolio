@@ -5,17 +5,18 @@ from psycopg2 import IntegrityError
 from pydantic import BaseModel, Field
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from core.config import settings
-from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
+from db.models.attendance import  AttendanceUser, EmployeeModel, Notifications,Otp,CompanyModel
 from requests import Session
 from db.session import get_db
 from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
-from schemas.attendance import CompanyBase, Status
+from schemas.attendance import CompanyBase, NotificationBase, Status
 from other_apps.week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from sqlmodel.ext.asyncio.session import AsyncSession
 # 9863450107
 # 0689
 # {
@@ -52,6 +53,18 @@ async def export_db(db: Session = Depends(get_db)):
     print(data)    
     
     return data
+
+@router.post('/add-notification',tags=['Employer Add Notification'])
+async def create_notification(notifiation:NotificationBase=None,db: Session = Depends(get_db),):
+    employee=db.get(EmployeeModel,notifiation.user_id)
+    user=db.get(AttendanceUser,employee.user_id)
+    notifiation.user_id=user.id
+    # user.fcm_token
+    return AttendanceRepo.addNotifications(notifiation,db,)
+
+@router.get('/notifications')
+async def notifications(db:Session=Depends(get_db)):
+    return AttendanceRepo.notification(db)
 @router.get('/companies',tags=['Companies'],response_model=list[CompanyBase])
 async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     now=datetime.now()
@@ -132,7 +145,7 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
     return current_user
 
 
-@router.post('/all-leave')#,response_model=AllLeave)
+@router.get('/all-leave')#,response_model=AllLeave)
 async def allleave(company_id:int,db: Session = Depends(get_db)):
 
     return AttendanceRepo.get_all_leaves(company_id,db)

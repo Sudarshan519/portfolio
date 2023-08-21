@@ -83,13 +83,13 @@ class AttendanceStatus(str,Enum):
 
 @as_form
 class LeaveRequestIn(BaseModel):
-    employee_id:int=Field(title='Employee ID')
-    start_date:date=Field( description="eg.2022-02-22")
-    end_date:date=Field( description="eg.2022-02-22")
-    leave_type:LeaveRequestType
-    leave_day_type:LeaveDayType
+    employee_id:int=Field(default=1,title='Employee ID')
+    start_date:date=Field(default='2022-02-22', description="eg.2022-02-22")
+    end_date:date=Field(default='2022-02-22', description="eg.2022-02-22")
+    leave_type:LeaveRequestType=LeaveRequestType.OTHER
+    leave_day_type:LeaveDayType=LeaveDayType.FULLDAY
     # document:UploadFile=None
-    remarks:str=None
+    remarks:str="Request For Leave"
 
 @as_form
 class LeaveRequestList(BaseModel):
@@ -202,3 +202,12 @@ class CompanyBase(BaseModel):
     # employee_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id)  # This part needs correction
     #     .label("employee_count")
     # )
+
+class NotificationBase(BaseModel):
+    # to:str
+    user_id:int=1
+    company_id:int=1
+    title:str="Test Notification"
+    desc:str="Testing Notification"
+    subject:str="Adding Notification"
+    

@@ -1,5 +1,5 @@
 import math
-from db.models.attendance import  AttendanceUser, EmployeeModel, LeaveRequest,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
+from db.models.attendance import  AttendanceUser, EmployeeModel, LeaveRequest, Notifications,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
 from requests import Session
 from db.session import get_db
 from schemas.attendance import AttendanceStatus, Company,Employee
@@ -25,8 +25,21 @@ import json
 #  insert 
 class AttendanceRepo:
     @staticmethod
-    def get_all_leaves(compId,db):
-        leaves=db.query(LeaveRequest).all()
+    def notification(db):
+        return db.query(Notifications).all()
+    @staticmethod
+    def addNotifications(notification,db):
+        print(  notification.dict())
+        notifications=Notifications(**notification.dict())
+        db.add(notifications)
+        db.commit()
+        return db.refresh(notifications)
+    @staticmethod
+    async def getCandidateNotification(compId,empId,db):
+        return db.query(Notifications).filter(LeaveRequest.company_id==compId,Notifications.user_id==empId,).all()
+    @staticmethod
+    def get_all_leaves(compId,empId,db):
+        leaves=db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,LeaveRequest.employee_id==empId,).all()
         return leaves
     @staticmethod
     def employee_daily_report(empId:str,compId:str, db,month:str=None,):

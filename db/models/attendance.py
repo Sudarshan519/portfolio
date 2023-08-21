@@ -49,7 +49,7 @@ class AttendanceUser(Base):
     is_employer=Column(Boolean,default=False)
     is_approver=Column(Boolean,default=False)
     dob=Column(Date,nullable=True) 
-
+    fcm_token=Column(String(256),nullable=True)
 
 class EmployeeModel(Base):
     id = Column(Integer,primary_key=True,index=True)
@@ -290,3 +290,4 @@ class Notifications(Base):
     subject=Column(String(256),nullable=True)
     
     # data:
+
