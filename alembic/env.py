@@ -19,8 +19,8 @@ sys.path.append(BASE_DIR)
 config = context.config
 # config.set_main_option('sqlalchemy.url',settings.SQLITE_URL)#DBURL os.environ['POSTGRES_URL'])
 # config.set_main_option('sqlalchemy.url',settings.SQLITE_URL)#DBURL os.environ['POSTGRES_URL'])
-# config.set_main_option('sqlalchemy.url',settings.POSTGRES_URL)#DBURL os.environ['POSTGRES_URL'])
-config.set_main_option('sqlalchemy.url',settings.PGDBURL)
+config.set_main_option('sqlalchemy.url',settings.POSTGRES_URL)#DBURL os.environ['POSTGRES_URL'])
+# config.set_main_option('sqlalchemy.url',settings.PGDBURL)
 section=config.config_ini_section
 # config.set_section_option(section,"DB_USER",settings.MySQL_USER)
 # config.set_section_option(section,"DB_PASS",settings.MySQL_PASSWORD)

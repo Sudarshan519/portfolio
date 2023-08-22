@@ -88,9 +88,12 @@ class LeaveRequestIn(BaseModel):
     end_date:date=Field(default='2022-02-22', description="eg.2022-02-22")
     leave_type:LeaveRequestType=LeaveRequestType.OTHER
     leave_day_type:LeaveDayType=LeaveDayType.FULLDAY
-    # document:UploadFile=None
+    
     remarks:str="Request For Leave"
 
+
+class LeaveRequestOut(LeaveRequestIn):
+    document:UploadFile=None
 @as_form
 class LeaveRequestList(BaseModel):
     data:LeaveRequestIn=[]
@@ -177,6 +180,7 @@ class CompanyBase(BaseModel):
     approver_count:int=None
     employee_count:int=None
     late:int=None
+    inactive:int=None
     attendee:int=None
     # start_time:date=None
     # end_time:date=None

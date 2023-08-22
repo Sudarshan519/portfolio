@@ -35,11 +35,15 @@ class AttendanceRepo:
         db.commit()
         return db.refresh(notifications)
     @staticmethod
-    async def getCandidateNotification(compId,empId,db):
-        return db.query(Notifications).filter(LeaveRequest.company_id==compId,Notifications.user_id==empId,).all()
+    def getCandidateNotification(empId,db):#LeaveRequest.company_id==compId,
+        # print(current_user.id)
+        return db.query(Notifications).filter(Notifications.user_id==empId).all()
     @staticmethod
-    def get_all_leaves(compId,empId,db):
-        leaves=db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,LeaveRequest.employee_id==empId,).all()
+    def get_all_leaves(compId=None,empId=None,db=None):
+        if empId:
+            leaves=db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,LeaveRequest.employee_id==empId,).all()
+        else:
+            return db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,).all()
         return leaves
     @staticmethod
     def employee_daily_report(empId:str,compId:str, db,month:str=None,):
@@ -243,6 +247,9 @@ class AttendanceRepo:
         return attetndance
     @staticmethod
     def store_attendance(compId,empId,db,loginTime,logoutTime):
+        # company=db.get(CompanyModel,compId)
+        employee=db.get(EmployeeModel,empId)
+        print(employee.login_time)
         attendance=AttendanceModel(attendance_date=datetime.today(), company_id=compId,employee_id=empId,login_time=loginTime,logout_time=logoutTime)
         db.add(attendance)
         db.commit()

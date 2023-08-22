@@ -170,7 +170,9 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
             if str(exc) == 'No response returned.' and await request.is_disconnected():
                 return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
-        
+from db.base import Base
+def create_tables():           #new
+	Base.metadata.create_all(bind=engine)  
 @app.on_event("startup")
 async def on_startup(): 
     # create_tables()

@@ -12,7 +12,7 @@ from apps.attendance_system.route_login import get_current_user_from_token,get_c
 from pydantic import BaseModel,root_validator
 from typing import Optional
 from other_apps.week_util import getWeekDate
-from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut
+from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut,LeaveRequestOut
 from datetime import date, datetime, time, timedelta
 from other_apps.upload_file import firebase_upload
 import json
@@ -130,7 +130,7 @@ class AllLeave(BaseModel):
     available_casual_leave:Optional[int]
     class Config:
         orm_mode=True
-@router.post('/all-leave',tags=["Employee"])#,response_model=AllLeave)
+@router.get('/all-leave',tags=["Employee"])#,response_model=AllLeave)
 async def allleave(company_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     print(current_user)
     employee=AttendanceRepo.get_employee(current_user.phone,db,company_id)
@@ -141,10 +141,11 @@ async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form)
     return AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
 
 @router.get('/notifications',tags=["Employee Notifications"])
-async def notifications(compId:int,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
-    employee=db.query(EmployeeModel,id)
-    notifications=AttendanceRepo.getCandidateNotification(compId,employee.id,db)
-    return notifications
+async def notifications(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db),): 
+    # employee=db.query(EmployeeModel,id)
+    # print(current_user.id)
+    return AttendanceRepo.getCandidateNotification(current_user.id,db)
+      
 @router.post('/apply-leave',response_model=LeaveRequestIn,tags=["Employee"])
 async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form),document:UploadFile=None, db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     print(leaveRequest.dict())
@@ -210,9 +211,11 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
 @router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
-def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def get_today_details(companyId:int,fcm_token:str=None, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
- 
+    current_user.fcm_token=fcm_token
+    db.commit()
+    db.refresh(current_user)
     today_details=  AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
 

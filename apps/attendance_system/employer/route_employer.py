@@ -56,15 +56,15 @@ async def export_db(db: Session = Depends(get_db)):
 
 @router.post('/add-notification',tags=['Employer Add Notification'])
 async def create_notification(notifiation:NotificationBase=None,db: Session = Depends(get_db),):
-    employee=db.get(EmployeeModel,notifiation.user_id)
-    user=db.get(AttendanceUser,employee.user_id)
-    notifiation.user_id=user.id
+    # employee=db.get(EmployeeModel,notifiation.user_id)
+    user=db.get(AttendanceUser,notifiation.user_id)
+    # notifiation.user_id=user.id
     # user.fcm_token
     return AttendanceRepo.addNotifications(notifiation,db,)
 
 @router.get('/notifications')
 async def notifications(db:Session=Depends(get_db)):
-    return AttendanceRepo.notification(db)
+    return AttendanceRepo.notification(db,)#companyId
 @router.get('/companies',tags=['Companies'],response_model=list[CompanyBase])
 async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     now=datetime.now()
@@ -148,7 +148,7 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
 @router.get('/all-leave')#,response_model=AllLeave)
 async def allleave(company_id:int,db: Session = Depends(get_db)):
 
-    return AttendanceRepo.get_all_leaves(company_id,db)
+    return AttendanceRepo.get_all_leaves(compId= company_id,empId=None, db=db)
     
 
 @router.get('/monthly-report',tags=[ 'Employer Report'])

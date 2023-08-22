@@ -105,6 +105,7 @@ class AttendanceModel(Base):
     employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
+    
     def __init__(self, *args, **kwargs):
         self.salary=0#self.employee.salary
         self.approver=False
@@ -183,8 +184,12 @@ class CompanyModel(Base):
     employee_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id)  # This part needs correction
         .label("employee_count")
     )
+    
     attendee=column_property(select([func.count()])
             .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today())
+            .label("attendance_count"))
+    inactive=column_property(select([func.count()])
+            .where(EmployeeModel.company_id==id,EmployeeModel.status!=Status.ACCEPTED)
             .label("attendance_count"))
     late=column_property(select([func.count()])
             .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today(),AttendanceModel.status==AttendanceStatus.LATE)
@@ -282,7 +287,7 @@ class LeaveRequest(Base):
 class Notifications(Base):
     id= Column(Integer,primary_key=True,index=True)
     to=Column(String(256),nullable=True)
-    user_id=Column(Integer,ForeignKey('employeemodel.id',ondelete='CASCADE'),default=1,nullable=True)
+    user_id=Column(Integer,ForeignKey('attendanceuser.id',ondelete='CASCADE'),default=1,nullable=True)
     company_id=Column(Integer,ForeignKey('companymodel.id',ondelete='CASCADE'),default=1,nullable=True)
     title=Column(String(256),nullable=True)
     desc=Column(String(256),nullable=True)
