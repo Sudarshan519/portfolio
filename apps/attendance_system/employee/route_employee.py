@@ -100,6 +100,7 @@ class CreateAttendance(BaseModel):
     salary:Optional[float]
     name:Optional[str]
     duty_time:Optional[time]
+    total_worked_hours_in_month:float=None
     class Config:
         orm_mode=True
 
@@ -213,6 +214,7 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
 @router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
 def get_today_details(companyId:int,fcm_token:str=None, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+    print(employee.total_worked_hours_in_month)
     current_user.fcm_token=fcm_token
     db.commit()
     db.refresh(current_user)

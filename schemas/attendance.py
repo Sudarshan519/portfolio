@@ -133,22 +133,44 @@ class Company(BaseModel):
     start_time:Optional[time]
     end_time:Optional[time]
     established_date:Optional[date] 
-    user_id:int
+    user_id:int=None
+    created_at:Optional[datetime]
+    updated_at:Optional[datetime]
+    total_casual_leave_in_year:int=10
+    total_sick_leave_in_year:int=6
     
     class Config():  #to convert non dict obj to json
-        schema_extra = {
-            "example": { 
-                    "name": "string",
-                    "address": "string",
-                    "start_time": "10:10",
-                    "end_time": "10:30",
-                    "established_date": "2023-06-30"
-            }
-        }
+        # schema_extra = {
+        #     "example": { 
+        #             "name": "string",
+        #             "address": "string",
+        #             "start_time": "10:10",
+        #             "end_time": "10:30",
+        #             "established_date": "2023-06-30"
+        #     }
+        # }
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
 
+class CompanyUpdate(BaseModel):
+    name:str=None
+    address:str=None
+    start_time:Optional[time]
+    end_time:Optional[time]
+    established_date:Optional[date] 
+    created_at:Optional[datetime]
+    updated_at:Optional[datetime]
+    total_casual_leave_in_year:int=10
+    total_sick_leave_in_year:int=6
+#     {
+#   "name": "string",
+#   "address": "string",
+#   "established_date": "2023-08-22",
+#   "created_at": "2023-08-22T15:43:52.888Z",
+#   "updated_at": "2023-08-22T15:43:52.888Z",
+#   "is_active": true
+# }
        
 class Employee(BaseModel):
     name:str
@@ -182,9 +204,12 @@ class CompanyBase(BaseModel):
     late:int=None
     inactive:int=None
     attendee:int=None
+
     # start_time:date=None
     # end_time:date=None
-    # established_date:date=None
+    established_date:Optional[date]
+    created_at:Optional[date]
+    updated_at:Optional[date]
     is_active:bool=None
     class Config:
         orm_mode=True

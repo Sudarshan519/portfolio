@@ -1,7 +1,7 @@
  
 from datetime import date, datetime,timedelta
 from sqlalchemy import Column,Integer, String,Boolean, ForeignKey,Date,Time,Float,BigInteger,DateTime,UniqueConstraint,Table,Enum,func, select
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship,aliased
 from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -51,49 +51,6 @@ class AttendanceUser(Base):
     dob=Column(Date,nullable=True) 
     fcm_token=Column(String(256),nullable=True)
 
-class EmployeeModel(Base):
-    id = Column(Integer,primary_key=True,index=True)
-    phone=Column(BigInteger,unique=False)
-    name=Column(String(256),nullable=False)
-    login_time=Column(Time)
-    logout_time=Column(Time)
-    salary=Column(Float)
-    duty_time=Column(Time)
-    is_active=Column(Boolean,default=False)
-    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),default=1)
-    company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
-    attendance = relationship("AttendanceModel", back_populates="employee")
-    is_approver=Column(Boolean,default=False)
-
-    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
-    # status=Column(Enum(Status),default=False)
-    status=Column(Enum(Status),default=Status.INIT,nullable=True)
-    company=relationship("CompanyModel",back_populates="employee")
-    total_sick_leave_taken=Column(Integer,default=0)
-    total_casual_leave_taken=Column(Integer,default=0)
-    
-    # approver_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id,EmployeeModel.is_approver==True)  # This part needs correction
-    #     .label("approver_count")
-    # )
-    @property
-    def available_sick_leave(self):
-        if( self.company.total_sick_leave_in_year):
-            return  self.company.total_sick_leave_in_year or 0-self.total_sick_leave_taken or 0
-        else:
-            return 0
-    @property
-    def available_casual_leave(self):
-        return 0 #or self.company.total_casual_leave_in_year or 0-self.total_casual_leave_taken or 0
-    @property
-    def company_name(self):
-        return self.company.name
-    # def as_dict(self):
-    #    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    __table_args__ = (
-        UniqueConstraint('company_id','phone', name='uq_company_employee'),
-    )
-
 class AttendanceModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     attendance_date=Column(Date)
@@ -105,10 +62,45 @@ class AttendanceModel(Base):
     employee_id=Column(Integer,ForeignKey("employeemodel.id",ondelete='CASCADE'),default=1)
     breaks=relationship("BreakModel",back_populates='attendance')
     employee = relationship("EmployeeModel", back_populates="attendance")
-    
+    total_worked_seconds = column_property(
+        func.coalesce(
+            func.extract('epoch', logout_time) - func.extract('epoch', login_time),
+            0
+        )
+    )
+    @property
+    def total_worked_hours_in_month(self):
+        if not self.employee:
+            return self.hours_worked_till_date
+
+            
+        else:
+            return self.employee.total_worked_hours_in_month
+    @total_worked_hours_in_month.setter
+    def total_worked_hours_in_month(self,new):
+        self.hours_worked_till_date=new
+    @property
+    def total_working_hours(self):
+        if self.login_time is not None:
+            if self.logout_time is not None:
+                return (
+                    (
+                    self.logout_time.hour * 3600 +
+                    self.logout_time.minute * 60 +
+                    self.logout_time.second
+                ) -
+                (
+                    self.login_time.hour * 3600 +
+                    self.login_time.minute * 60 +
+                    self.login_time.second
+                ))
+        return 0
+        # (func.timestampdiff(func.SECOND, login_time, logout_time) / 3600).label('total_working_hours')
+
     def __init__(self, *args, **kwargs):
         self.salary=0#self.employee.salary
         self.approver=False
+        self.hours_worked_till_date=0
         super().__init__(*args, **kwargs)
     @property
     def is_approver(self):
@@ -128,8 +120,8 @@ class AttendanceModel(Base):
         return 4##calcTime(self.login_time+timedelta(hours=4))
     @property
     def salary(self):
-        print(self.employee.duty_time.minute)
-        print(self.employee.duty_time.hour)
+        # print(self.employee.duty_time.minute)
+        # print(self.employee.duty_time.hour)
         if not self.employee:
             return self.per_min_salary
         return  self.employee.salary/(30*(self.employee.duty_time.hour or 8)*self.employee.duty_time.minute)
@@ -166,13 +158,70 @@ class AttendanceModel(Base):
     # def breaks(self ,db: Session = Depends(get_db)):
     #     return db.query(BreakModel).filter(BreakModel.attendance==self.id).all()
 
+class EmployeeModel(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    phone=Column(BigInteger,unique=False)
+    name=Column(String(256),nullable=False)
+    login_time=Column(Time)
+    logout_time=Column(Time)
+    salary=Column(Float)
+    duty_time=Column(Time)
+    is_active=Column(Boolean,default=False)
+    user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),default=1)
+    company_id =  Column(Integer,ForeignKey("companymodel.id",ondelete='CASCADE'),default=1)
+    attendance = relationship("AttendanceModel", back_populates="employee")
+    is_approver=Column(Boolean,default=False)
+
+    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU2MTM1fQ.PeAR8N5yJ1Nn5wucM6hh9Pzmjc3ATwtScT_LBvc7mkw
+    # status=Column(Enum(Status),default=False)
+    status=Column(Enum(Status),default=Status.INIT,nullable=True)
+    company=relationship("CompanyModel",back_populates="employee")
+    total_sick_leave_taken=Column(Integer,default=0)
+    total_casual_leave_taken=Column(Integer,default=0)
+    
+    # approver_count = column_property(select([func.count()]).where(id == EmployeeModel.company_id,EmployeeModel.is_approver==True)  # This part needs correction
+    #     .label("approver_count")
+    # )
+    total_worked_hours_in_month = column_property((select([func.coalesce(func.sum(AttendanceModel.total_worked_seconds), 0)])
+        .where(
+                func.EXTRACT('year', AttendanceModel.attendance_date) == func.EXTRACT('year', func.current_date()),
+                func.EXTRACT('month', AttendanceModel.attendance_date) == func.EXTRACT('month', func.current_date()),
+                AttendanceModel.employee_id == id
+            )
+            .correlate_except(AttendanceModel)
+            .as_scalar()
+        ) / 3600
+    )
+
+    @property
+    def available_sick_leave(self):
+        if( self.company.total_sick_leave_in_year):
+            return  self.company.total_sick_leave_in_year or 0-self.total_sick_leave_taken or 0
+        else:
+            return 0
+    @property
+    def available_casual_leave(self):
+        return 0 #or self.company.total_casual_leave_in_year or 0-self.total_casual_leave_taken or 0
+    @property
+    def company_name(self):
+        return self.company.name
+    # def as_dict(self):
+    #    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    __table_args__ = (
+        UniqueConstraint('company_id','phone', name='uq_company_employee'),
+    )
+
+
 class CompanyModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     name=Column(String(256), unique=True)
     address=Column(String(256))
     start_time=Column(Time)
     end_time=Column(Time)
-    established_date=Column(Date) 
+    established_date=Column(Date,default=datetime.now) 
+    created_at=Column(DateTime,default=datetime.now())
+    updated_at=Column(DateTime,onupdate=datetime.now)
     is_active=Column(Boolean,default=True)
     user_id =  Column(Integer,ForeignKey("attendanceuser.id",ondelete='CASCADE'),nullable=True)
     employee=relationship("EmployeeModel",back_populates="company",)

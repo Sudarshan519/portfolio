@@ -25,6 +25,20 @@ import json
 #  insert 
 class AttendanceRepo:
     @staticmethod
+    def update_company(id,current_user,db,company):
+        companytoUpdate= db.get(CompanyModel,id)
+        for key, value in company.dict().items():
+                # print(key)
+                # print(value)
+                # if key=='dob':
+                #     setattr(company,key,datetime.strptime(value,'%Y-%m-%d'))
+                # else:
+                setattr(companytoUpdate, key, value)
+        db.add(companytoUpdate)
+        db.commit()
+        db.refresh(companytoUpdate)
+        return companytoUpdate
+    @staticmethod
     def notification(db):
         return db.query(Notifications).all()
     @staticmethod
@@ -279,7 +293,7 @@ class AttendanceRepo:
                 print(employee.salary)
                 print("NOT TODAY")
                 approver=(employee.is_approver)
-                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=approver)
+                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=approver,total_worked_hours_in_month=employee.total_worked_hours_in_month)
                 # attendance.salary=employee.salary 
                 return attendance
             else:
@@ -438,8 +452,8 @@ class AttendanceRepo:
         now=datetime.now()
         today = date.today()
         # print(db.query(EmployeeModel).count())
-        query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
-        allemployees=query.order_by(EmployeeModel.id).offset(offset*total).limit(total).all()
+        query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel)#.outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
+        allemployees=query.order_by(AttendanceModel.attendance_date).limit(100)#query.order_by(EmployeeModel.id).offset(1*total).limit(total).all()
         print(datetime.now())
         print(query.count())
         
@@ -477,7 +491,7 @@ class AttendanceRepo:
                 if attendance.attendance_date==today
                 )
             
-       
+        
         for k,v in attendance_data.items():
             result.append(v)       
         return  result

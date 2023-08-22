@@ -12,7 +12,7 @@ from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
-from schemas.attendance import CompanyBase, NotificationBase, Status
+from schemas.attendance import Company, CompanyBase, NotificationBase, Status
 from other_apps.week_util import getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -74,7 +74,9 @@ async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUse
     # data={'companines':list(filter(lambda x:x.is_active==True  ,companies_list)),'inactive':list(filter(lambda x:x.is_active==False ,companies_list))}
     # print( datetime.now())
     return companies_list
-
+@router.get('/company',tags=['Companies'])
+async def get_company_by_id(companyId:int,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    return db.get(CompanyModel,companyId)
 class BaseAttendanceUser(BaseModel):
     phone:str
     otp:str
@@ -98,25 +100,25 @@ class AttendanceReport(BaseModel):
     logout_time=time
 
 
-class Company(BaseModel):
-    name:str
-    address:Optional[str]
-    start_time:Optional[time]
-    end_time:Optional[time]
-    established_date:Optional[date] 
-    class Config():  #to convert non dict obj to json
-        schema_extra = {
-            "example": { 
-                    "name": "string",
-                    "address": "string",
-                    "start_time": "10:10",
-                    "end_time": "10:30",
-                    "established_date": "2023-06-30"
-            }
-        }
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+# class Company(BaseModel):
+#     name:str
+#     address:Optional[str]
+#     start_time:Optional[time]
+#     end_time:Optional[time]
+#     established_date:Optional[date] 
+#     class Config():  #to convert non dict obj to json
+#         schema_extra = {
+#             "example": { 
+#                     "name": "string",
+#                     "address": "string",
+#                     "start_time": "10:10",
+#                     "end_time": "10:30",
+#                     "established_date": "2023-06-30"
+#             }
+#         }
+#         orm_mode = True
+#         allow_population_by_field_name = True
+#         arbitrary_types_allowed = True
         
         
 class Employee(BaseModel):
@@ -219,7 +221,7 @@ def update_user(id:int,db,):
         pass
     except:
         pass
-def create_company(user:AttendanceUser,db:Session,company:Company):
+def create_company(user:AttendanceUser,db:Session,company:CompanyBase):
     try:
         # name=company.name,address=company.address,start_time=company.start_time,end_time=company.end_time,established_date=company.established_date
         new_company=CompanyModel(**company.dict(), user_id=user.id,is_active=True)
@@ -331,7 +333,7 @@ def add_company(company:Company,db: Session = Depends(get_db),current_user:Atten
     return company
 @router.post('/update-company',tags=['Companies'])#response_model=Company
 def update_company(id:int,company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
-    company=update_company(id,current_user,db,company)
+    company=AttendanceRepo.update_company(id,current_user,db,company)
     return company
 
 
