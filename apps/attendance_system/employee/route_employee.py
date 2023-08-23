@@ -171,8 +171,11 @@ async def login(phone:int, db: Session = Depends(get_db)):
  
 
 @router.post('/verify-otp',tags=['Employee Login/Verify'])
-async def verifyOtp(phone=Body(default=9800000000),otp:str=Body(default='1117'),db: Session = Depends(get_db)):
-    
+async def verifyOtp(phone=Body(default=9800000000),otp:str=Body(default='1117'),fcm_token:str=None,db: Session = Depends(get_db)):
+   user=AttendanceRepo.get_user(phone,db)
+   user.fcm_token=fcm_token
+   db.commit()
+   db.refresh(user)
    return AttendanceRepo.verify_otp(otp,phone,db)
 
 class CompanyOut(BaseModel):
@@ -212,10 +215,10 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
 @router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
-def get_today_details(companyId:int,fcm_token:str=None, current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def get_today_details(companyId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
     print(employee.total_worked_hours_in_month)
-    current_user.fcm_token=fcm_token
+    # current_user.fcm_token=fcm_token
     db.commit()
     db.refresh(current_user)
     today_details=  AttendanceRepo.get_today_details( employee, db, companyId)

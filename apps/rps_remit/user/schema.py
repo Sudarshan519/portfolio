@@ -76,8 +76,9 @@ class RemitUser(RemitUserBase, RecordService, table=True):
                                             #     'order_by':'UserProfile.index.desc()'
                                             # }
                                                 )
-    transaction: List["Transaction"] = Relationship(back_populates="usertransaction",sa_relationship_kwargs={
-         "back_populates":"usertransaction",
+    transaction: List["Transaction"] = Relationship(back_populates="usertransaction",
+            sa_relationship_kwargs={
+        #  "back_populates":"usertransaction",
         # "primaryjoin":"and_(Transaction.sender_id == RemitUser.id)",
         "order_by":"Transaction.id.desc()",
         # "lazy":"select",
@@ -99,8 +100,8 @@ class RemitUser(RemitUserBase, RecordService, table=True):
     def transactions(self):
         return (
             self.transaction
-            .limit(3)
-            .all()
+            # .limit(3)
+            # .all()
         )
     # @property
     # def transactions(self,db:Session=Depends(get_session)):

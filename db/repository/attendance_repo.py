@@ -470,6 +470,7 @@ class AttendanceRepo:
         for employee in allemployees:
             # print(f"{employee.phone} {date.today()} {employee.is_active}")
             employee_id = employee.id
+
             if employee_id not in attendance_data:
                 
                 attendance_data[employee_id] = {
@@ -481,6 +482,7 @@ class AttendanceRepo:
                     "status":employee.status,
                     "is_active":employee.is_active,
                     "company_id":employee.company_id,
+                    # "hours_worked":employee.total_worked_hours_in_month,
                     "attendance": []
                 } 
             if employee.attendance:
@@ -491,12 +493,13 @@ class AttendanceRepo:
                 if attendance.attendance_date==today
                 )
             
+            
         
         for k,v in attendance_data.items():
             result.append(v)       
         return  result
     @staticmethod
-    def employeewithAttendanceWeeklyReport(companyId,db,employeeId:int=None,phone:str=None):
+    def employeewithAttendanceWeeklyReport(db,employeeId:int=None,phone:str=None):
         dates= getWeekDate()
         now=datetime.now()
         # dates= getMonthRange(2023,6)

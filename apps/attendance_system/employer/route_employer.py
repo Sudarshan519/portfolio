@@ -159,9 +159,9 @@ async def getMonthlyReport(companyId:int=None ,employeeId:int=None, db:Session= 
 
 
 @router.get("/weekly-report",tags=[ 'Employer Report'])
-async def weeklyreport(companyId:int,employeeId:int=None, db: Session = Depends(get_db)):
+async def weeklyreport( employeeId:int=None, db: Session = Depends(get_db)):
     dates= getWeekDate()
-    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db,employeeId)
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(db,employeeId)
     # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
  
     return weekdata
