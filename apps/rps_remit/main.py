@@ -40,6 +40,18 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
+from apps.rps_remit.remit_deposit_locations.main import app as depositlocations
+app.include_router(depositlocations,prefix='')
+
+
+from apps.rps_remit.remit_deposit_banks.main import app as bankdeposit
+app.include_router(bankdeposit,prefix='')
+
+
+from apps.rps_remit.remit_pickup_locations.main import app as pickuplocations
+app.include_router(pickuplocations,prefix='')
+
+
 from apps.rps_remit.kyc_state.main import app as kycstateapp
 app.include_router(kycstateapp,prefix='')
 
