@@ -6,7 +6,7 @@ from db.base import Base
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import sessionmaker, column_property
-from schemas.attendance import LeaveDayType, LeaveRequestStatus, LeaveRequestType, Status,AttendanceStatus
+from schemas.attendance import  BusinessLeaveDayType, LeaveDayType, LeaveRequestStatus, LeaveRequestType, Status,AttendanceStatus
 from fastapi import Depends
 from requests import Session
 from db.session import get_db
@@ -243,6 +243,9 @@ class CompanyModel(Base):
     late=column_property(select([func.count()])
             .where(AttendanceModel.company_id==id,AttendanceModel.attendance_date==date.today(),AttendanceModel.status==AttendanceStatus.LATE)
             .label("late"))
+    businessleaveDays=relationship("BusinessLeaveDays",back_populates='company')
+    governmentleaveDates=relationship("GovernmentLeaveDates")
+    officialholiday=relationship("OfficialHoliday")
     # @property
     # def employee_count(self):
     #     return len(self.employee)
@@ -266,9 +269,21 @@ class CompanyModel(Base):
             .label("attendance_count"))
         )
     
-    
-
-    
+class BusinessLeaveDays(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    companyid=Column(Integer,ForeignKey('companymodel.id',))
+    days=Column(Enum(BusinessLeaveDayType),default=BusinessLeaveDayType.SATURDAY)
+    company=relationship("CompanyModel",back_populates='businessleaveDays')
+class GovernmentLeaveDates(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    companyid=Column(Integer,ForeignKey('companymodel.id'))
+    date=Column(Date,default=date.today())
+    company=relationship("CompanyModel",back_populates='governmentleaveDates')
+class OfficialHoliday(Base):
+    id = Column(Integer,primary_key=True,index=True)
+    companyid=Column(Integer,ForeignKey('companymodel.id'))
+    date=Column(Date,default=date.today())
+    company=relationship("CompanyModel",back_populates='officialholiday')
 class BreakModel(Base):
     id = Column(Integer,primary_key=True,index=True)
     break_start=Column(Time)

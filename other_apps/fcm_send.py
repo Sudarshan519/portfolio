@@ -16,7 +16,13 @@ headersList1={
  "Authorization": "Bearer AAAAYxii3ME:APA91bHaL6f9iVj00fF8agpP8TN7R5WsWLgHUJ8DgEBRzGExxmyNpwR8bCQhW8Wxzm3bodhHshfie_8QsoKtd2HUbtxUSW5NtPftWbcuenyj6ZY7ZdgJCvX_KiZKzBPESTKqPDpVbpm7",
  "Content-Type": "application/json" 
 }
-
+token="AAAAVWtqYtY:APA91bGY_1xbTjOAWzjJgWYrFKTT5tGil6PSd43uvenm1_D39lYrJQ5Nvw66INpcW0nJ-duebfRKZQe7I-3CZ3DkPlWiY-0ISG-XGkBQT5doN5QfKnUrLg45O6CaP5mJFE-BnQ7v9yHh"
+headers={
+     "Accept": "*/*",
+ "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+ "Authorization": f"Bearer {token}",
+ "Content-Type": "application/json" 
+}
 # payload = json.dumps( {
 #       "to": "",
 #       "notification": {
@@ -45,7 +51,8 @@ class NotificationService:
     def send_notification(title:str,message:str,to:str=None,id:int=None,status:str=None):
         reqUrl = "https://fcm.googleapis.com/fcm/send"
 
- 
+# hajir client token 
+    #JLSIE   SDLFJIEW  hajir_client="fc7Qv0RITM-sh1YTeFGuV-:APA91bE48uJf7I_eFAcKCuVyL3r12fUZx5hqBA8c6THs9XU5afu9_wSie1a17_HR8N8SEo5Y-XVQVI-X_6GeUk5vKsTSp7YiLUErND8GK-TZcpChJwsHzXMCkSItHp6LvXan1ncq3L8X&&& UPDATE"LIJE
         payload = json.dumps( {
               # "to": "",
                "to":to,#"dUzGdt5-QXqwda56ASjOJg:APA91bEwBfwRJoIEXPffZ0JBytbvTc6UGdcLSuNE04rrsaOFpqqaPofYlHAswxqJn2pDLPUT4Y5F-fm35GnMl5Ph7cCF-g6_Fhj_Qc-CfMW4F1k_nYC6hgVy3o_tCPe0XbPpYXK2u6UL",
@@ -58,5 +65,5 @@ class NotificationService:
                 
               }
             })
-        response = requests.request("POST", reqUrl, data=payload,  headers=headersList1)
+        response = requests.request("POST", reqUrl, data=payload,  headers=headers)
         print(response.content)

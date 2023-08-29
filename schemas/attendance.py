@@ -14,7 +14,14 @@ class RecivingMethod(str,Enum):
     BANK="Bank"
     CASH="CASH"
     WALLET="WALLET"
-
+class BusinessLeaveDayType(str,Enum):
+    SUNDAY='sun'
+    MONDAY='mon'
+    TUESDAY='tue'
+    WEDNESDAY='wed'
+    THURSDAY='thu'
+    FRIDAY='fri'
+    SATURDAY='sat'
 class UserKycStatus(str,Enum):
     UNVERIFIED="UNVERIFIED"
     PENDING="PENDING"
@@ -133,7 +140,7 @@ class Company(BaseModel):
     start_time:Optional[time]
     end_time:Optional[time]
     established_date:Optional[date] 
-    user_id:int=None
+    # user_id:int=None
     created_at:Optional[datetime]
     updated_at:Optional[datetime]
     total_casual_leave_in_year:int=10
@@ -152,6 +159,8 @@ class Company(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+class BusinessLeaveDays(BaseModel):
+    day:str
 
 class CompanyUpdate(BaseModel):
     name:str=None
@@ -232,6 +241,12 @@ class CompanyBase(BaseModel):
     #     .label("employee_count")
     # )
 
+class CompanyCreate(CompanyBase):
+    businessleaveDays:list[str]=[]
+    governmentleaveDates:list[date]=[]
+    officialholiday:list[date]=[]
+    class Config:
+        orm_mode=True
 class NotificationBase(BaseModel):
     # to:str
     user_id:int=1
