@@ -453,7 +453,7 @@ class AttendanceRepo:
         today = date.today()
         # print(db.query(EmployeeModel).count())
         query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel)#.outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
-        allemployees=query.order_by(AttendanceModel.attendance_date).limit(100)#query.order_by(EmployeeModel.id).offset(1*total).limit(total).all()
+        allemployees=query.order_by(AttendanceModel.attendance_date).order_by(EmployeeModel.id).limit(100)#query.order_by(EmployeeModel.id).offset(1*total).limit(total).all()
         print(datetime.now())
         print(query.count())
         
