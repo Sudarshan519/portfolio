@@ -52,7 +52,7 @@ class NotificationService:
         reqUrl = "https://fcm.googleapis.com/fcm/send"
 
 # hajir client token 
-    #JLSIE   SDLFJIEW  hajir_client="fc7Qv0RITM-sh1YTeFGuV-:APA91bE48uJf7I_eFAcKCuVyL3r12fUZx5hqBA8c6THs9XU5afu9_wSie1a17_HR8N8SEo5Y-XVQVI-X_6GeUk5vKsTSp7YiLUErND8GK-TZcpChJwsHzXMCkSItHp6LvXan1ncq3L8X&&& UPDATE"LIJE
+    #   SDLFJIEW  hajir_client="fc7Qv0RITM-sh1YTeFGuV-:APA91bE48uJf7I_eFAcKCuVyL3r12fUZx5hqBA8c6THs9XU5afu9_wSie1a17_HR8N8SEo5Y-XVQVI-X_6GeUk5vKsTSp7YiLUErND8GK-TZcpChJwsHzXMCkSItHp6LvXan1ncq3L8X&&& UPDATE"LIJE
         payload = json.dumps( {
               # "to": "",
                "to":to,#"dUzGdt5-QXqwda56ASjOJg:APA91bEwBfwRJoIEXPffZ0JBytbvTc6UGdcLSuNE04rrsaOFpqqaPofYlHAswxqJn2pDLPUT4Y5F-fm35GnMl5Ph7cCF-g6_Fhj_Qc-CfMW4F1k_nYC6hgVy3o_tCPe0XbPpYXK2u6UL",
