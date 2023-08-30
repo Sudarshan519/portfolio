@@ -57,9 +57,14 @@ app.include_router(kycstateapp,prefix='')
 
 
 @app.post('/notification',tags=["RPS REMTI NOTIFICATION"])
-async def send_notification(title:str,msg:str,to:str,data:dict=None,file:UploadFile=None):
-    NotificationService.send_notification(title,msg,to)
-    return {"status":"sucess"}
+async def send_notification(title:str,msg:str,to:str,file:UploadFile=None):
+    try:
+        NotificationService.send_notification(title,msg,to)
+        # data:dict=None,
+        return {"status":"sucess"}
+    except Exception as e:
+        return e
+        
 
 @app.post("/send-email",tags=["RPS REMIT EMAIL SEND"])
 async def send_email(title:str,msg:str,background_tasks: BackgroundTasks):
