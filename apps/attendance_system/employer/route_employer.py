@@ -3,9 +3,10 @@ from datetime import date, datetime, time, timedelta
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile,status
 from psycopg2 import IntegrityError
 from pydantic import BaseModel, Field
+from sqlalchemy import func, select
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from core.config import settings
-from db.models.attendance import  AttendanceUser, EmployeeModel, Notifications,Otp,CompanyModel
+from db.models.attendance import  AttendanceModel, AttendanceUser, EmployeeModel, Notifications,Otp,CompanyModel
 from requests import Session
 from db.session import get_db
 from fastapi import Depends, HTTPException, Request
@@ -13,7 +14,7 @@ from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
 from schemas.attendance import BusinessLeaveDayType, Company, CompanyBase, CompanyCreate, NotificationBase, Status
-from other_apps.week_util import getWeekDate
+from other_apps.week_util import getMonthRange, getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -65,6 +66,31 @@ async def create_notification(notifiation:NotificationBase=None,db: Session = De
 @router.get('/notifications')
 async def notifications(db:Session=Depends(get_db)):
     return AttendanceRepo.notification(db,)#companyId
+
+@router.get('/overall-daily-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    dates= getWeekDate( )
+    attendee_weekly= db.query(AttendanceModel).where(AttendanceModel.company_id==companyId,AttendanceModel.attendance_date.between(dates[0],dates[1])).count()
+    all=db.query(AttendanceModel).count()   
+    print(all)  
+    print(attendee_weekly)
+    datetoday=datetime.now()
+    dates= getMonthRange( datetoday.year,datetoday.month)
+    attendee_monthly=db.query(AttendanceModel).where(AttendanceModel.company_id==companyId,AttendanceModel.attendance_date.between(dates[0],dates[1])).count()
+    print(attendee_monthly)
+    return db.query(AttendanceModel).all()
+    pass
+
+@router.get('/overall-weekly-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
+@router.get('/overall-monthly-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
+
+@router.get('/overall-annual-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
 @router.get('/companies',tags=['Companies'],response_model=list[CompanyCreate])
 async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     now=datetime.now()
