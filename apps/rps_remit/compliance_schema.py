@@ -10,8 +10,11 @@ class StaticDataList(str,Enum):
     INCOMESOURCE="IncomeSource"
     RELATIONSHIP="Relationship"
     PAYMENTMODE="PaymentMode"
-    REMITANCEREASON= "RemittanceReason"
+    REMITANCEREASON= "RemittancePurpose"
     RESIDENCETYPE="Residence Type"
+    RESIDENCESTATUS="Resident Status(Japanese)"
+    CARDTYPEFOREIGNER="Card type(Foreigner)"
+    CARDTYPEJAPANESE="Card type(Japanese)"
 
 class CreateCSPRequest(BaseModel):
     csp_code:str
@@ -187,7 +190,7 @@ class SendTransasctionRequest(BaseModel):
     SenderNationality:str 
     Employer:str 
     SenderIDType:str 
-    SenderIDNumber:int
+    SenderIDNumber:str
     SenderIDExpiryDate:str=None
     SenderIDIssuedPlace:str=None
     ReceiverId:int
@@ -215,53 +218,55 @@ class SendTransasctionRequest(BaseModel):
     RemittanceReason:str
 
     Relationship:str
-    CSPCode:int
-    OTPProcessId:int
-    OTP:int
+    CSPCode:int=None
+    OTPProcessId:int=None
+    OTP:int=None
     # PaymentMode:str="Cash Payment"
     class Config:
         schema_extra={
             "example":{
-                    "CustomerId": 20,
-                    "SenderName": "string",
-                    "SenderGender": "Male",
-                    "SenderDoB": "2023-08-08",
-                    "SenderAddress": "string",
-                    "SenderPhone": "9876543212",
-                    "SenderMobile": "0809876543211",
-                    "SenderCity": "string",
-                    "SenderDistrict": "string",
-                    "SenderState": "string",
-                    "SenderNationality": "string",
-                    "Employer": "string",
-                    "SenderIDType": "string",
-                    "SenderIDNumber": 0,
-                    "SenderIDExpiryDate": "2022-05-07",
-                    "SenderIDIssuedPlace": "string",
-                    "ReceiverId": 48,
-                    "ReceiverName": "string",
-                    "ReceiverGender": "Male",
-                    "ReceiverAddress": "string",
-                    "ReceiverMobile": "9823579775",
-                    "ReceiverCity": "string",
-                    "SendCountry": "string",
-                    "PayoutCountry": "string",
-                    "PaymentMode": "Cash Payment",
-                    "CollectedAmount": "string",
-                    "ServiceCharge": "string",
-                    "SendAmount": "string",
-                    "SendCurrency": "string",
-                    "PayAmount": "string",
-                    "PayCurrency": "string",
-                    "ExchangeRate": "string",
-                    "BankBranchId": "string",
-                    "AccountNumber": "string",
-                    "AccountType": "string",
-                    "NewAccountRequest": "string",
-                    "PartnerPinNo": 0,
-                    "IncomeSource": "string",
-                    "RemittanceReason": "string",
-                    "Relationship": "Aunti",
+     
+  "CustomerId": 6,
+  "SenderName": "Koko",
+  "SenderGender": "Male",
+  "SenderDoB": "1983-01-01",
+  "SenderAddress": "string",
+  "SenderPhone": "9876543212",
+  "SenderMobile": "08098436556",
+  "SenderCity": "string",
+  "SenderDistrict": "string",
+  "SenderState": "string",
+  "SenderNationality": "Japanese",
+  "Employer": "string",
+  "SenderIDType": "Driving License",
+  "SenderIDNumber": "ER1112383838",
+  "SenderIDExpiryDate": "2022-05-07",
+  "SenderIDIssuedPlace": "string",
+  "ReceiverId": 19,
+  "ReceiverName": "Anish Shree Kandel",
+  "ReceiverGender": "Male",
+  "ReceiverAddress": "string",
+  "ReceiverMobile": "9809551746",
+  "ReceiverCity": "string",
+  "SendCountry": "string",
+  "PayoutCountry": "Nepal",
+  "PaymentMode": "Cash Payment",
+  "CollectedAmount": "200",
+  "ServiceCharge": "200",
+  "SendAmount": "1000",
+  "SendCurrency": "Npr",
+  "PayAmount": "950",
+  "PayCurrency": "Yen",
+  "ExchangeRate": "0.95",
+  "BankBranchId": "129",
+  "AccountNumber": "3810017507971",
+  "AccountType": "string",
+  "NewAccountRequest": "",
+  "PartnerPinNo": "0",
+  "IncomeSource": "Business",
+  "RemittanceReason": "Commission",
+  "Relationship": "Friend"   
+ ,
                     "CSPCode": 0,
                     "OTPProcessId": 0,
                     "OTP": 0,

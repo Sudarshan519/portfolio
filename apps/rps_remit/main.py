@@ -27,7 +27,7 @@
 
 # remit_app = FastAPI()
 
-from fastapi import APIRouter, BackgroundTasks, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, UploadFile
 
 from other_apps.fcm_send import NotificationService
 from utils.send_mail import EmailService
@@ -67,8 +67,8 @@ async def send_notification(title:str,msg:str,to:str,file:UploadFile=None):
         
 
 @app.post("/send-email",tags=["RPS REMIT EMAIL SEND"])
-async def send_email(title:str,msg:str,background_tasks: BackgroundTasks):
-    EmailService.send_mail_from_background( background_tasks,email=['sudarshan@mailinator.com',],subject=title, body=msg)#["sudarshan@mailinator.com"],title,msg)
+async def send_email(title:str,msg:str, background_tasks: BackgroundTasks,emails:list[str]=Form(default="example@email.com"),):
+    EmailService.send_mail_from_background( background_tasks,email=emails,subject=title, body=msg)#['sudarshan@mailinator.com',]["sudarshan@mailinator.com"],title,msg)
     return "sucess"
 
 from apps.rps_remit.transaction.main import app as transactionapp

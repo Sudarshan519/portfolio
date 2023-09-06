@@ -358,9 +358,9 @@ class SendTransasctionRequest(BaseModel):
     RemittanceReason:str
 
     Relationship:str
-    CSPCode:int
-    OTPProcessId:int
-    OTP:int
+    CSPCode:int=None
+    OTPProcessId:int=None
+    OTP:int=None
     # PaymentMode:str="Cash Payment"
     class Config:
         schema_extra={
@@ -407,7 +407,7 @@ class SendTransasctionRequest(BaseModel):
                     "Relationship": "string",
                     "CSPCode": 0,
                     "OTPProcessId": 0,
-                    "OTP": 0,
+                    "OTP": 0
                    
 }
         }

@@ -65,5 +65,5 @@ class NotificationService:
                 
               }
             })
-        response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+        response = requests.request("POST", reqUrl, data=payload,  headers=headersList1)
         print(response.content)
