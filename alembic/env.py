@@ -33,16 +33,17 @@ section=config.config_ini_section
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-from db import base
-from db.models import attendance
-# from apps.rps_remit.user.schema import RemitUser
+# from db import base
+# from db.models import attendance
+from apps.rps_remit.user.schema import RemitUser
+from apps.rps_remit.transaction.schema import Transaction
 # import models
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = base.Base.metadata
-# target_metadata=SQLModel.metadata
+# target_metadata = base.Base.metadata
+target_metadata=SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

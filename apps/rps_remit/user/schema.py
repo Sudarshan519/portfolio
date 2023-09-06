@@ -99,10 +99,14 @@ class RemitUser(RemitUserBase, RecordService, table=True):
     @property
     def transactions(self):
         return (
-            self.transaction
+            # self.transaction
+            self.transaction[:3]
             # .limit(3)
             # .all()
         )
+    # @transactions.setter
+    # def transactions(self,trans):
+    #     self.transactions=trans
     # @property
     # def transactions(self,db:Session=Depends(get_session)):
         
