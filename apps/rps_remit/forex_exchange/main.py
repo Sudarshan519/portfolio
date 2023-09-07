@@ -6,10 +6,13 @@ from .schema import *
 
 
 app=APIRouter(include_in_schema=True,prefix="/forex",tags=['FOREX'])
-@app.get('/',response_model=list[ForexExchangeRead])
+@app.get('/charge-history',response_model=list[ForexExchangeRead])
 async def all(db:Session=Depends(get_session)):
     return ForeignExchangeCharge.all(session=db)
-
+@app.get('/',response_model=ForexExchangeRead)
+async def service_charge(db:Session=Depends(get_session)):
+    return ForeignExchangeCharge.latest(session=db)
+    # return ForeignExchangeCharge.by_id(id=1, session=db)
 
 @app.post('/')
 async def create(hero:ForexExchangeCreate=Depends(),db:Session=Depends(get_session)):

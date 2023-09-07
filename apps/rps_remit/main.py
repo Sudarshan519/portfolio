@@ -40,6 +40,9 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
+from apps.rps_remit.coupon.main import app as coupon
+app.include_router(coupon,prefix='')
+
 from apps.rps_remit.remit_deposit_locations.main import app as depositlocations
 app.include_router(depositlocations,prefix='')
 

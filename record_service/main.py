@@ -11,7 +11,9 @@ class RecordService(SQLModel):
         if obj is None:
             raise HTTPException(status_code=404, detail=f"{cls.__name__} with id {id} not found")
         return obj
-
+    @classmethod
+    def latest(cls,session):
+        return session. query(cls).first()
     @classmethod
     def all(cls, session):
         return session. query(cls).limit(100).all()
