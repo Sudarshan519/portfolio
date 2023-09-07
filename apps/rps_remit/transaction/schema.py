@@ -1,8 +1,8 @@
-from datetime import date
+from datetime import date,datetime
 
 from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel
-from sqlmodel import Column, Enum, Field, Relationship, SQLModel
+from sqlmodel import Column, DateTime, Enum, Field, Relationship, SQLModel, func
 from apps.rps_remit.receiving_methods.schema import PaymentMode, RecivingMethod
  
 
@@ -23,13 +23,14 @@ class TransactionBase(SQLModel):
     closed_exchange_rate:float="1.01"
     amount_deposited:float="10000"
     source_of_fund:str="Business"
-    service_charge:float="150"
+    service_charge:float="200"
     purpose:str="Travel"
     deposit_method:int=0#=Field(foreign_key="deposit_method")
     remarks:str="Payment for expenses."
-    date_of_transfer:str
+    date_of_transfer:str=date.today()
     status: TransactionStatus=TransactionStatus.INITIATED#str=Field(sa_column=Column(Enum(TransactionStatus)))
-    
+    created_at:Optional[datetime]=Field(sa_column=Column(DateTime,default=func.now()),default=datetime.now())
+    updated_at:Optional[datetime]=Field(sa_column=Column(DateTime,default=func.now(),onupdate=func.now()),default=datetime.now())
 
 class TransactionCreate(TransactionBase):
     pass
@@ -58,6 +59,7 @@ class Transaction(TransactionBase, RecordService, table=True):
     @property
     def payment_method(self):
         return self.recivingMethod.payment_mode
+
 class TransactionRead(TransactionBase):
     # recipient:Optional[Recipient]=None
     recipient_name:str=None

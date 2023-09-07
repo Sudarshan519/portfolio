@@ -105,6 +105,14 @@ async def get_user(current_user:RemitUser=Depends(get_remit_user_from_bearer), d
     # # recipients:List[Recipient]=[]
     # transactions:List[TransactionRead]=[]
     # quick_send: List[RecipientResponse]=None
+    # prev=(datetime.datetime.now())
+    # (current_user.transactions)
+    # transactions=db.query(Transaction).limit(3).all()
+    
+    # print(transactions)
+    # current_user.transaction=transactions
+    curr=(datetime.datetime.now())
+    print(curr)
     return  current_user #GenericResponse(data=current_user)
 
 @app.post('/login',tags=['Login'],response_model=LoginResponse )
