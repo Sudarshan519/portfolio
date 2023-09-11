@@ -44,6 +44,9 @@ def create_customer(customer:CreateCustomer):
 @router.post('/create-receiver')
 def create_receiver(customer:Receiver):
     return RequestMethods.create_receivier(customer)
+@router.get('/get-customer-by-id')
+def get_customer_by_id(id:int=8):
+    return RequestMethods.get_customer_by_customer_id(id)
 
 @router.get('/get-customer-by-mobile')
 def get_customer_by_mobile(mobile:int=9823579775):
@@ -51,9 +54,9 @@ def get_customer_by_mobile(mobile:int=9823579775):
 
 
 @router.get('/get-customer-by-idno')
-def get_customer_by_mobile(id:int):
+def get_customer_by_idno(id:int):
     try:
-      return RequestMethods.get_customer_by_id(id)
+      return RequestMethods.get_customer_by_id_no(id)
     except Exception as e:
         return e
 

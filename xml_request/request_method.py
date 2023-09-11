@@ -172,9 +172,31 @@ class RequestMethods(BaseService):
              )
         # Process the response 
         return serialize_object(response) 
+    # class GetCustomerById:
     @staticmethod
     @BaseService.handle_exceptions
-    def get_customer_by_id(id:int):
+    def get_customer_by_customer_id(id:str):
+        response = client.service.GetCustomerByCustomerId(
+               { 'UserName': username,
+                'Password': password,
+                'CustomerId': id}
+             )
+        # Process the response 
+        return serialize_object(response)
+   
+    # @staticmethod
+    # @BaseService.handle_exceptions
+    # def get_customer_by_id(id:int):
+    #     response = client.service.GetCustomerByCustomerId(
+    #            { 'UserName': username,
+    #             'Password': password,
+    #             'CustomerIdNo': id}
+    #          )
+    #     # Process the response 
+    #     return serialize_object(response) 
+    @staticmethod
+    @BaseService.handle_exceptions
+    def get_customer_by_id_no(id:int):
         response = client.service.GetCustomerByIdNumber(
                { 'UserName': username,
                 'Password': password,
