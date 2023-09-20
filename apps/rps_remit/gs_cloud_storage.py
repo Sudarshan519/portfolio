@@ -52,13 +52,13 @@ def generate_signed_url( blob_name):
     return signed_url
 
 
-# def get_public_url(bucket_name, blob_name):
-#     storage_client = storage.Client()
-#     # Assuming you have already authenticated using storage.Client()
-#     blob = storage_client.bucket(bucket_name).blob(blob_name)
-#     public_url = blob.public_url
+def get_public_url(bucket_name, blob_name):
+    storage_client = storage.Client()
+    # Assuming you have already authenticated using storage.Client()
+    blob = storage_client.bucket(bucket_name).blob(blob_name)
+    public_url = blob.public_url
 
-#     return public_url
+    return public_url
 
 # public_download_url = get_public_url(bucket_name, blob_name)
 # print(f"Public Download URL: {public_download_url}"
