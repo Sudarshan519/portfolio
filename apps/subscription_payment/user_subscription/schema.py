@@ -1,15 +1,16 @@
 from datetime import datetime
 from enum import Enum
 from sqlmodel import SQLModel
-from apps.subscription_payment.admin.schema import SubscriptionType
 
+from apps.subscription_payment.subscription.schema import SubscriptionBase
+ 
 class SubscriptionStatus(Enum):
     ACTIVE="ACTIVE"
     INACTIVE="INACTIVE"
 class UserSubscriptionBase(SQLModel):
     user_id:int
     name:str
-    type:SubscriptionType
+    subscription:SubscriptionBase
     fee:float
     time:int
     created_date:datetime
