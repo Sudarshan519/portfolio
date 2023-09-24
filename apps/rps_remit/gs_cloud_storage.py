@@ -16,7 +16,9 @@ def upload_to_gcs(blob_name, file_content,content_type):
     # content_type = file_content.content_type  # Change this based on your image type
 
     blob.upload_from_string(file_content,content_type)
-
+    return blob_name
+    # return generate_signed_url(blob_name)
+    # return get_public_url(BUCKET_NAME,blob_name)
 # @app.post("/upload/")
 async def upload_file(file):
     file_content = await file.read()
@@ -42,7 +44,7 @@ def generate_signed_url( blob_name):
     bucket = storage_client.bucket(BUCKET_NAME)
     blob = bucket.blob(blob_name)
 
-    expiration = 3600  # URL expiration time in seconds (1 hour)
+    expiration = 3600 *24*7#*12 # URL expiration time in seconds (1 hour)
     signed_url = blob.generate_signed_url(
         version='v4',
         expiration=expiration,

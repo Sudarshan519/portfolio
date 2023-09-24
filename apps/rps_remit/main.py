@@ -39,6 +39,12 @@ app=APIRouter(include_in_schema=True,prefix="") #remit_app
 # app=remitapp
 # ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+
+from apps.streamingapp.main import app as streamingapp
+app.include_router(streamingapp,prefix='')
+
+
+
 from apps.rps_remit.remit_banks.main import app as JapanBank
 app.include_router(JapanBank,prefix='')
 from apps.rps_remit.remit_banks.nepal_main import app as NepalBank
