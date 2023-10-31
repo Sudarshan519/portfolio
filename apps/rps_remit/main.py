@@ -3,7 +3,7 @@ from datetime import date, timedelta
 import datetime
 from typing import Annotated
 from fastapi import APIRouter, FastAPI, HTTPException, Header, Request, Response
-from fastapi_sqlalchemy import db
+ 
 import iso3166
 from jose import JWTError
 from pydantic import BaseModel
@@ -41,6 +41,8 @@ remit_app=app
 # app=remitapp
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+from apps.rps_remit.otp.main import app as otpmain
+app.include_router(otpmain,prefix="")
 app.include_router(userapp,prefix="")
 app.include_router(transactionstate,prefix='')
 app.include_router(banners,prefix='')
