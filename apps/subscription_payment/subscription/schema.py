@@ -13,4 +13,4 @@ class SubscriptionBase(SQLModel):
     type:SubscriptionType
     fee:float
     time:int
-
+    

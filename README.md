@@ -44,3 +44,7 @@ source venv/bin/activate
   product_list = Product.objects.annotate(
     total_price=Sum(F('order__quantity') * F('price'), distinct=True)
 )
+
+
+# Run Docker
+docker-compose up -d --build
