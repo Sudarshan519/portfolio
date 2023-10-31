@@ -1,24 +1,17 @@
-from ast import List
-import enum
-from typing import Any, Type
-from fastapi import APIRouter, Body,Depends, File, Form, Query, UploadFile
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-from apps.rps_remit.fireabse_bucket import upload_file
-from apps.rps_remit.gs_cloud_storage import upload_to_gcs
-
-from db.models.user import Banners, Users, all_permissons
-from db.session import get_db
-from other_apps.upload_file import firebase_upload
-from schemas.users import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, ForeignExchangeCharge, GetServiceCharge, KycTypeBase, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
-from xml_request.rps_creation_requests.request_method import RequestMethods
+ 
+from fastapi import APIRouter,  Depends    
+from apps.rps_remit.compliance_schema import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceCharge, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
+from schemas.users import UploadPaymentSlipRequest
+from xml_request.request_method import RequestMethods
 
 
-router=APIRouter(tags=['Complaince'])
-
+router=APIRouter(tags=['Compliance'])
 @router.get('/static_data')
+
 def static_datalist(type:StaticDataList):
-   return RequestMethods.get_static_data(type.value)
+    
+    return RequestMethods.get_static_data(type.value)
+ 
 
 
 
@@ -28,6 +21,11 @@ def acPayBankList(acPayBankList:AcPayBankListRequest= Depends(),):
 @router.post('/cancel-transasction')
 def cancelTransaction(cancelRequest:CancelTransactionRequest):
     return RequestMethods.cancel_transaction(cancelRequest)   
+
+
+@router.post('/upload-transasction-slip')
+def upload_payment_slip(uploadPaymentSlipRequest:UploadPaymentSlipRequest):
+    return RequestMethods.upload_payment_slip(uploadPaymentSlipRequest)   
 
 @router.get('/cash-payout-location-list',)
 def cashPayoutLocationList(cashPayoutLocationRequest:CashPayoutLocationRequest= Depends(),):
@@ -52,6 +50,9 @@ def create_customer(customer:CreateCustomer):
 @router.post('/create-receiver')
 def create_receiver(customer:Receiver):
     return RequestMethods.create_receivier(customer)
+@router.get('/get-customer-by-id')
+def get_customer_by_id(id:int=8):
+    return RequestMethods.get_customer_by_customer_id(id)
 
 @router.get('/get-customer-by-mobile')
 def get_customer_by_mobile(mobile:int=9823579775):
@@ -59,9 +60,9 @@ def get_customer_by_mobile(mobile:int=9823579775):
 
 
 @router.get('/get-customer-by-idno')
-def get_customer_by_mobile(id:int):
+def get_customer_by_idno(id:int):
     try:
-      return RequestMethods.get_customer_by_id(id)
+      return RequestMethods.get_customer_by_id_no(id)
     except Exception as e:
         return e
 
@@ -71,24 +72,25 @@ def service_charge(serviceCharge:GetServiceCharge= Depends()):
     return RequestMethods.get_service_charge(serviceCharge)
 
 @router.post('/search-csp')
-async def searchCSP(cspsearchrequest:SearchCsp):
+def searchCSP(cspsearchrequest:SearchCsp):
     return RequestMethods.search_csp(cspsearchrequest)
 
 
 @router.post('/search-transactions')
-async def searchCSP(searchTransactions:SearchTransactionRequest):
+def searchCSP(searchTransactions:SearchTransactionRequest):
     return RequestMethods.search_transaction(searchTransactions)
 @router.post('/send-transactions')
-async def sendTransaction(sendTransaction:SendTransasctionRequest):
+def sendTransaction(sendTransaction:SendTransasctionRequest):
    return RequestMethods.send_transaction(sendTransaction)
 
 @router.get('/unverified-customer')
-async def unverified_customers():
+def unverified_customers():
     return RequestMethods.unverified_customer()
-# @router.post('/uploadcspDocument')
-# async def uploadCSPDocument(document:Any):
-#       return RequestMethods.uploadCSPDocument(document)
+
+@router.post('/uploadcspDocument')
+def uploadCSPDocument(document):
+      return RequestMethods.uploadCSPDocument(document)
 
 # @router.post('/upload-customer-document')
-# async def upload_customer_document():
+# def upload_customer_document():
 #     return RequestMethods.search_transaction(searchTransactions)

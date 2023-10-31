@@ -1,1 +1,10 @@
 https://firebasestorage.googleapis.com/v0/b/rasanadmin.appspot.com/o/stash%2F1687767160471.png?alt=media&token=c6f5f9bd-783b-4e55-9ea4-340caeeedb93https://firebasestorage.googleapis.com/v0/b/rasanadmin.appspot.com/o/stash%2F1687768022629.png?alt=media&token=ba0a88f3-c9ef-42fa-a35b-7f3627d42a29
+
+
+invoice payment pending
+1000    100     1000-100=900
+2000    2000    900
+3000    3000    900
+
+
+monthly-bill pending payments

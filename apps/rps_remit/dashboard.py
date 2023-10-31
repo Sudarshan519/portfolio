@@ -11,7 +11,7 @@ from db.models.user import Banners, Users, all_permissons
 from db.session import get_db
 from other_apps.upload_file import firebase_upload
 from schemas.users import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, ForeignExchangeCharge, KycTypeBase, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
-from xml_request.rps_creation_requests.request_method import RequestMethods
+from xml_request.request_method import RequestMethods
 
 
 router=APIRouter(tags=['Dashboard'])
@@ -39,7 +39,7 @@ async def setup_rate(forex:ForeignExchangeCharge):
     pass
 
 @router.get("/")
-def index():
+async def index():
    return {"message": "Hello World from remit dashboard app"}
 class UserSchema(BaseModel):
    id:int

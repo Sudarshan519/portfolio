@@ -31,3 +31,23 @@ This example starts up a [FastAPI](https://fastapi.tiangolo.com/) server.
 
 source venv/bin/activate
  locust -f api_test_user
+ uvicorn main:app --reload --host=192.168.0. --reload-dir apps/rps_remit
+
+
+    query = db.query(Product.id, Product.name, func.sum(Product.price * Order.quantity).label("total_price")) \
+        .outerjoin(Order) \
+        .group_by(Product.id, Product.name) \
+        .all()
+
+
+  from django.db.models import Sum, F
+  product_list = Product.objects.annotate(
+    total_price=Sum(F('order__quantity') * F('price'), distinct=True)
+)
+
+
+# Run Docker
+docker-compose up -d --build
+
+whitelisted ip
+111.119.49.75 

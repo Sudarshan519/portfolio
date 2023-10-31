@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from apps.rps_remit.hero.schema import *
 from db.session_sqlmodel import get_session, init_db
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from ..currency.currency_router import app as currencyapp
+# from ..currency_router import app as currencyapp
 
 app=APIRouter(prefix='/hero',tags=["REMIT HERO"] )
 

@@ -1,6 +1,8 @@
 from fastapi import HTTPException
 from sqlmodel import SQLModel,Session
-
+from sqlalchemy import cast
+from sqlalchemy import String
+from sqlalchemy import or_
 
 class RecordService(SQLModel):
     @classmethod
@@ -9,11 +11,21 @@ class RecordService(SQLModel):
         if obj is None:
             raise HTTPException(status_code=404, detail=f"{cls.__name__} with id {id} not found")
         return obj
-
+    @classmethod
+    def latest(cls,session):
+        return session. query(cls).first()
     @classmethod
     def all(cls, session):
         return session. query(cls).limit(100).all()
-
+    @classmethod
+    def filter_by(cls,session:Session,dict,offset=0,limit:int=20):
+        
+        q = session.query(cls)
+        
+        return q.filter(*[cast(getattr(cls, attr), String).ilike(f"%{value}%") for attr, value in dict.items()]).offset(offset).limit(limit).all()
+ 
+        return list
+        return session.query(cls).filter(**{k for k in  dict.items()}).all()
     @classmethod
     def create(cls, source: dict  , SQLModel, session:Session):
         if isinstance(source, SQLModel):
@@ -31,7 +43,7 @@ class RecordService(SQLModel):
         session.commit()
         session.refresh(self)
 
-    def update(self, source: dict| SQLModel, session:Session):
+    def update(self, source: dict or SQLModel, session:Session):
  
         if isinstance(source, SQLModel):
             source = source.dict(exclude_unset=True)

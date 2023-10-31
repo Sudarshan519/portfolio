@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import random
 from typing import Optional
 from sqlmodel import Field, SQLModel
@@ -12,9 +12,9 @@ class OTPSetupBase(SQLModel):
     otp_code:str 
     phoneOrEmail:str 
     created_at:str 
-    updated_at:str
+    updated_at:str=None
     def setrand(self):
-        self.code="{:04d}".format (random.randint(0, 9999))
+        self.otp_code="{:04d}".format (random.randint(0, 9999))
         self.created_at=datetime.now()
     def isvalid(self):
         now:datetime=datetime.now()
@@ -27,17 +27,15 @@ class OTPRead(OTPSetupBase):
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 
-class OTP(OTPSetupBase, RecordService, table=True):
+class REMITOTP(OTPSetupBase, RecordService, table=True):
+    __tablename__="remitotp"
     id:Optional[int] = Field(default=None, primary_key=True) 
 
 
  
 class OTPCreate(OTPSetupBase):
     pass
-
-class HeroRead(OTPSetupBase):
-    id:Optional[int] = Field(default=None, primary_key=True) 
-
+ 
 class OTPUpdate(OTPSetupBase):
     pass
 

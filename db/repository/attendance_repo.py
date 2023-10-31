@@ -1,5 +1,5 @@
 import math
-from db.models.attendance import  AttendanceUser, EmployeeModel, LeaveRequest,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
+from db.models.attendance import  AttendanceUser, EmployeeModel, LeaveRequest, Notifications,Otp,CompanyModel,EmployeeCompany,AttendanceModel,BreakModel
 from requests import Session
 from db.session import get_db
 from schemas.attendance import AttendanceStatus, Company,Employee
@@ -22,9 +22,70 @@ import json
 
 # ['unique ids']
 # filter id by unidqe id 
-#  insert
-import time
+#  insert 
 class AttendanceRepo:
+    @staticmethod
+    def update_company(id,current_user,db,company):
+        companytoUpdate= db.get(CompanyModel,id)
+        for key, value in company.dict().items():
+                # print(key)
+                # print(value)
+                # if key=='dob':
+                #     setattr(company,key,datetime.strptime(value,'%Y-%m-%d'))
+                # else:
+                setattr(companytoUpdate, key, value)
+        db.add(companytoUpdate)
+        db.commit()
+        db.refresh(companytoUpdate)
+        return companytoUpdate
+    @staticmethod
+    def notification(db):
+        return db.query(Notifications).all()
+    @staticmethod
+    def addNotifications(notification,db):
+        print(  notification.dict())
+        notifications=Notifications(**notification.dict())
+        db.add(notifications)
+        db.commit()
+        return db.refresh(notifications)
+    @staticmethod
+    def getCandidateNotification(empId,db):#LeaveRequest.company_id==compId,
+        # print(current_user.id)
+        return db.query(Notifications).filter(Notifications.user_id==empId).all()
+    @staticmethod
+    def get_all_leaves(compId=None,empId=None,db=None):
+        if empId:
+            leaves=db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,LeaveRequest.employee_id==empId,).all()
+        else:
+            return db.query(LeaveRequest).filter(LeaveRequest.company_id==compId,).all()
+        return leaves
+    @staticmethod
+    def employee_daily_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        # dates= getMonthRange(now.year,now.month)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date==date.today()).all()
+        return attendacnes
+    
+    @staticmethod
+    def employee_weekly_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        dates= getWeekDate( )
+        print(dates)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
+        return attendacnes
+    @staticmethod
+    def employee_monthly_report(empId:str,compId:str, db,month:str=None,):
+        now=datetime.now()
+        # print(now)
+        dates= getMonthRange(now.year,now.month)
+        print(dates)
+        # attendacnes=db.get(AttendanceModel).filter(AttendanceModel.employee_id==empId)#,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(monthRange[0],monthRange[1])).all()
+        attendacnes=db.query(AttendanceModel).filter(AttendanceModel.employee_id==empId,AttendanceModel.company_id==compId,AttendanceModel.attendance_date.between(dates[0],dates[1])).all()
+        return attendacnes
     @staticmethod
     def allLeave(id,db):
         employee=db.get(EmployeeModel,id)
@@ -40,6 +101,9 @@ class AttendanceRepo:
         try:
             
             leave=LeaveRequest(**leaveRequest.dict())#employeeId
+            db.add(leave)
+            db.commit()
+            db.refresh(leave)
             return leave
         except Exception as e:
             print(e)
@@ -197,6 +261,9 @@ class AttendanceRepo:
         return attetndance
     @staticmethod
     def store_attendance(compId,empId,db,loginTime,logoutTime):
+        # company=db.get(CompanyModel,compId)
+        employee=db.get(EmployeeModel,empId)
+        print(employee.login_time)
         attendance=AttendanceModel(attendance_date=datetime.today(), company_id=compId,employee_id=empId,login_time=loginTime,logout_time=logoutTime)
         db.add(attendance)
         db.commit()
@@ -226,7 +293,7 @@ class AttendanceRepo:
                 print(employee.salary)
                 print("NOT TODAY")
                 approver=(employee.is_approver)
-                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=approver)
+                attendance= AttendanceModel(id=-1, attendance_date=datetime.now(),company_id=companyId,employee_id=employee.id,login_time=None,logout_time=None,salary=employee.salary,status= AttendanceStatus.ABSENT,is_approver=approver,total_worked_hours_in_month=employee.total_worked_hours_in_month)
                 # attendance.salary=employee.salary 
                 return attendance
             else:
@@ -385,8 +452,8 @@ class AttendanceRepo:
         now=datetime.now()
         today = date.today()
         # print(db.query(EmployeeModel).count())
-        query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
-        allemployees=query.order_by(EmployeeModel.id).offset(offset*total).limit(total).all()
+        query=db.query(EmployeeModel).options(joinedload(EmployeeModel.attendance)).filter(EmployeeModel.company_id == companyId).outerjoin(AttendanceModel)#.outerjoin(AttendanceModel, or_(AttendanceModel.attendance_date == today, AttendanceModel.attendance_date.is_(None))) 
+        allemployees=query.order_by(AttendanceModel.attendance_date).order_by(EmployeeModel.id).limit(100)#query.order_by(EmployeeModel.id).offset(1*total).limit(total).all()
         print(datetime.now())
         print(query.count())
         
@@ -403,6 +470,7 @@ class AttendanceRepo:
         for employee in allemployees:
             # print(f"{employee.phone} {date.today()} {employee.is_active}")
             employee_id = employee.id
+
             if employee_id not in attendance_data:
                 
                 attendance_data[employee_id] = {
@@ -414,6 +482,7 @@ class AttendanceRepo:
                     "status":employee.status,
                     "is_active":employee.is_active,
                     "company_id":employee.company_id,
+                    # "hours_worked":employee.total_worked_hours_in_month,
                     "attendance": []
                 } 
             if employee.attendance:
@@ -424,12 +493,13 @@ class AttendanceRepo:
                 if attendance.attendance_date==today
                 )
             
-       
+            
+        
         for k,v in attendance_data.items():
             result.append(v)       
         return  result
     @staticmethod
-    def employeewithAttendanceWeeklyReport(companyId,db,employeeId:int=None):
+    def employeewithAttendanceWeeklyReport(db,employeeId:int=None,phone:str=None):
         dates= getWeekDate()
         now=datetime.now()
         # dates= getMonthRange(2023,6)

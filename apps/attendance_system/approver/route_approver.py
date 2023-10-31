@@ -33,7 +33,7 @@ class Employee(BaseModel):
 
 @router.get('/employees',response_model=list[Employee])
 async def employees_list(companyId:int, db: Session = Depends(get_db)):#,current_user:AttendanceUser=Depends(get_current_user_from_bearer),):
-    employees=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId).all()
+    employees=db.query(EmployeeModel).filter(EmployeeModel.company_id==companyId,EmployeeModel.is_active==True).all()
     return employees
 
 

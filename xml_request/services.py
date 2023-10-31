@@ -1,9 +1,11 @@
+from faker import Generator
 from zeep import Client
 from zeep.transports import Transport
 url = "https://rps.digital-remittance.com/api/Send.svc?wsdl"
 # Replace "your_soap_service_url" with the actual URL of the SOAP service
 soap_service_url =url
-wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
+wsdl_url=url
+# wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
 # Replace placeholders with actual values for username, password, and type_data
 # username = "testRps"
 # password = "testRps"
@@ -29,11 +31,55 @@ wsdl_url = 'https://rps.digital-remittance.com/api/Send.svc?singleWsdl'
 # transport.load_custom_xml(custom_envelope_xml)
 
 # Create the Zeep client using the custom transport
-client=None
+# Set the timeout value in seconds
+timeout_seconds = 3
+# Create a custom transport with the specified timeout
+transport = Transport(timeout=timeout_seconds)
+
 try:
-    client = Client(wsdl_url)
-except:
+    client=Client(wsdl_url, transport=transport)
+except Exception as e:
+    print(e)
+    client=None
     pass
+a=None
+
+
+
+
+# def retry_transport():
+#     try: 
+#         client = Client(wsdl_url, transport=transport)
+#         print(a)
+#         a=5
+#         return (client)
+        
+#     except:
+#         a=99
+#         print(a)
+        
+#         client=None
+#         return (client)
+
+
+# async def initClient():
+#     try:
+#         return await Client(wsdl_url)
+
+#     except:
+#         pass
+
+def get_client() -> Generator:   #new
+    try:
+        db = Client(wsdl_url)
+        yield db
+    except:
+        pass
+    else:
+        pass
+    finally:
+        pass
+# initClient()
 # input_params = {
 #     'username': username,
 #     'password': password,

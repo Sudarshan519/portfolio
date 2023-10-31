@@ -22,12 +22,18 @@ class BannersBase(SQLModel):
 
 class BannersCreate(BaseModel):
     url:str
-    image:str
+    image:str=None
+    class Config:
+        orm_mode=True
     
-
-class BannersRead(BannersBase):
+class BannersRead(BaseModel):
     id:Optional[int] = Field(default=None, primary_key=True) 
-
+    get_image:str
+    class Config:
+        orm_mode=True
+# class BannersRead(BannersBase):
+#     id:Optional[int] = Field(default=None, primary_key=True) 
+#     get_image:str
 class BannersUpdate(BannersBase):
     pass
 

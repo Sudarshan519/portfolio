@@ -2,6 +2,14 @@ from datetime import date
 from enum import Enum
 from typing import Any, Optional
 from pydantic import BaseModel,EmailStr
+from pyparsing import List
+from sqlmodel import SQLModel
+
+from apps.rps_remit.kyc.schema import  Kyc
+from apps.rps_remit.receiving_methods.schema import RecivingMethod
+from apps.rps_remit.recipient.schema import Recipient, RecipientResponse
+from apps.rps_remit.transaction.schema import Transaction, TransactionRead
+from apps.rps_remit.user_profile.schema import UserProfile
 
 class ForeignExchangeCharge(BaseModel):
     id:int
@@ -34,18 +42,38 @@ class KycTypeBase(BaseModel):
 
 class UserBaseSchema(BaseModel):
     # name: str
-    email: EmailStr
+    id:int=None
+    username:str=None
+    email: EmailStr=None
     photo: str=None
     phone: str=None
     email_verified : bool=False
     phone_verified: bool=False
     kyc_status: str=None
     user_type:str=None
-
+    profile_setup:Optional[bool]
+    per_day_limit:int=0
+    per_day_amount:float=0
+    per_month_limit:int#=0
+    per_month_amount:float=0
+    per_year_limit:int=0
+    per_year_amount:float=0
+    kyc:List[Kyc]=[]
+    profile:List[UserProfile]=[]
+    # recipients:List[Recipient]=[]
+    transactions:List[TransactionRead]=[]
+    quick_send: List[RecipientResponse]=None
+    # recivingMethod:RecivingMethod=None
+ 
     class Config:
         orm_mode = True
-
-
+        # allow_population_by_field_name = True
+class UserResponse(UserBaseSchema):
+    kyc:List[Kyc]=[]
+    profile:List[UserProfile]=[]
+    # recipients:List[Recipient]=[]
+    transactions:List[TransactionRead]=[]
+    quick_send: List[RecipientResponse]=None
 class PersonalCardDetails(BaseModel):
     title:str
 
@@ -93,6 +121,7 @@ class UserLoginRequest(BaseModel):
     password:str
     deviceId:str=None
     gps:str=None
+    fcm_token:str=None
     ip:str=None
 
 class ShowUser(BaseModel):   #new
@@ -329,9 +358,9 @@ class SendTransasctionRequest(BaseModel):
     RemittanceReason:str
 
     Relationship:str
-    CSPCode:int
-    OTPProcessId:int
-    OTP:int
+    CSPCode:int=None
+    OTPProcessId:int=None
+    OTP:int=None
     # PaymentMode:str="Cash Payment"
     class Config:
         schema_extra={
@@ -378,7 +407,7 @@ class SendTransasctionRequest(BaseModel):
                     "Relationship": "string",
                     "CSPCode": 0,
                     "OTPProcessId": 0,
-                    "OTP": 0,
+                    "OTP": 0
                    
 }
         }
@@ -388,10 +417,16 @@ class ValidateBankAccountRequest(BaseModel):
     BankCode:str
     AccountNumber:str
 
-class ValidateTransactionRequest(BaseModel):
+class ValidateTransactionRequest(SQLModel):
     PinNo:str
 
-
+class UploadPaymentSlipRequest(BaseModel):
+    ReferenceNo:int=1239
+    FileName:str="test.jpg"
+    FileBase64:str="iVBORw0KGgoAAAANSUhEUgAAB4AAAAQ4CAYAAADo08FDAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAAvdEVYdENyZWF0aW9uIFRpbWUAU3VuIDEzIEF1ZyAyMDIzIDA3OjI0OjQ2IFBNICswNTQ1X1BhRQAAIABJREFUeJzsvXmcFcXV//+pvnd2hmEZBpRFZTHEUUBFRBEkCiguGBdQcUniY9Qn6hMlP7c"
+    Currency:str="Yen"
+    Amount:int=1000
+    Remarks:str="test"
 class AcPayBankListRequest(BaseModel):
     Country:str=None
     State:str=None
@@ -399,15 +434,16 @@ class AcPayBankListRequest(BaseModel):
     City:str=None
     BankName:str=None
     BranchName:str=None
+    acPayBankListRequest:str=None
  
-class CancelTransactionRequest(BaseModel):
+class CancelTransactionRequest(SQLModel):
     pinNo:str=None
     reason:str=None
     opt_process_id:str=None
     otp:str=None
 
 
-class CashPayoutLocationRequest(BaseModel):
+class CashPayoutLocationRequest(SQLModel):
      Country:str=None
      State:str=None
      District:str=None

@@ -37,67 +37,65 @@
 
 
 # from typing import Annotated, Optional
+import asyncio
 from requests import Session
 import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
 # from fastapi_sqlalchemy import DBSessionMiddleware, db
-from core.hashing import Hasher
-from db.base import Base
-from db.models.user import Users as User
+# from core.hashing import Hasher
+# from db.base import Base
+# from db.models.user import Users as User
 from db.session_sqlmodel import init_db
-from other_apps.get_rates import get_rates
-
-from schemas.schema import Book as SchemaBook
-from schemas.schema import Author as SchemaAuthor
-
-from schemas.schema import Book
-from schemas.schema import Author
-from db.models.attendance import *
-# from models import Book as ModelBook, FileModel
+ 
+ 
+# from db.models.attendance import *
+# # from models import Book as ModelBook, FileModel
 # from models import Author as ModelAuthor
 from db.session import engine   #new
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 # import motor.motor_asyncio
  
 from core.config import settings
 from other_apps.upload_file import firebase_upload
-from webapps.base import webapp_router
-from apps.attendance_system.route_attendance import attendance_router
-from websocket_manager.websocket_api  import notificationRoute
+
 from fastapi import FastAPI, Form
 # import api  as mongorouter
 from fastapi.staticfiles import StaticFiles
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from xml_request.rps_creation_requests.request_method import RequestMethods
+# from xml_request.services import retry_transport
 
 
 # from db.mongo_db import db_mongo as mongo_db
-def get_user(username:str,db: Session)->User:
-    user = db.query(User).filter(User.email == username).first()
+# async def get_user(username:str,db: Session)->User:
+#     user = db.query(User).filter(User.email == username).first()
  
-    return user
+#     return user
 
-def create_tables():           #new
-	Base.metadata.create_all(bind=engine)
-def populateAdmin(db:Session=Depends(get_db)):
-    try:
-        user=db.query(User).filter(User.email=='admin').first()
-        if user:
-            pass
-        else:
-            db.add(User(email='admin',hashed_password=Hasher.get_password_hash(password='admin')))
-    finally:
-        pass
-app = FastAPI() 
-from apps.rps_remit.main import remit_app
-# from apps.rps_remit.main import remitapp
-app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
+# async def create_tables():           #new
+# 	Base.metadata.create_all(bind=engine)
+# async def populateAdmin(db:Session=Depends(get_db)):
+#     try:
+#         user=db.query(User).filter(User.email=='admin').first()
+#         if user:
+#             pass
+#         else:
+#             db.add(User(email='admin',hashed_password=Hasher.get_password_hash(password='admin')))
+#     finally:
+#         pass
+
+
+
+app = FastAPI(title="REMIT AND >>>",description="FASTAPI WITH SQLITE") 
+
+
+
+
+
+origins = [ 
+
     "http://localhost",
     "http://127.0.0.1:8001",
 ]
@@ -108,16 +106,51 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from apps.subscription_payment.main import app as subscription
+# # from apps.rps_remit.main import remitapp
+# app.mount('/remitapp',remit_app,name="REMIT APP")
+
+app.mount('/subscription',subscription,)#,tags=['REMIT APP'])
+
+# remit_app route
+from apps.rps_remit.main import app as remit_app
+# # from apps.rps_remit.main import remitapp
+# app.mount('/remitapp',remit_app,name="REMIT APP")
+
+app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
+
+
+
+# webapp route
+
+from webapps.base import webapp_router
+from websocket_example.websocket_api  import notificationRoute
+
+
+
 app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
+
+# mongo db route
 # app.include_router(mongorouter.app,tags=['mongo contact'])
-app.include_router(attendance_router,tags=[ ])
-app.include_router(notificationRoute,tags=[ ])
+
+from apps.attendance_system.route_attendance import attendance_router
+# attendance route
+# app.include_router(
+#      attendance_router,tags=[ ])
+app.mount('/hajir/',attendance_router,name="HAJIR APP" )
+# app.include_router(notificationRoute,tags=[ ])
+
+
+
+#  static routes
 app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # from apps.rps_remit.hero.main import app as heroapp
 # app.include_router(heroapp,prefix='',tags=['Hero'])
 
-# app.mount('/remitapp',remitapp,name="REMIT APP")
+
+
 # from starlette_validation_uploadfile import ValidateUploadFileMiddleware
 # #add this after FastAPI app is declared 
 # app.add_middleware(
@@ -127,7 +160,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 #         file_type=["text/plain"]
 # )
 from starlette.middleware.base import BaseHTTPMiddleware
-create_tables()
+
 class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
@@ -137,10 +170,26 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
             if str(exc) == 'No response returned.' and await request.is_disconnected():
                 return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
-        
+from db.base import Base
+def create_tables():           #new
+	Base.metadata.create_all(bind=engine)  
 @app.on_event("startup")
-def on_startup(): 
+async def on_startup(): 
+    # create_tables()
+    print("start up complete")
     init_db()
+    # retry_transport()
+
+async def main():
+    config = uvicorn.Config("main:app" , port=6000, log_level="info")
+    server = uvicorn.Server(config)
+    await server.serve()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=5000,reload=True)
 # to avoid csrftokenError
 # app.add_middleware(SuppressNoResponseReturnedMiddleware)
 # app.add_middleware(DBSessionMiddleware, db_url=settings.SQLITE_URL)#settings.POSTGRES_URL)#os.environ['POSTGRES_URL'])

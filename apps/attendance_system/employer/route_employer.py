@@ -3,19 +3,21 @@ from datetime import date, datetime, time, timedelta
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile,status
 from psycopg2 import IntegrityError
 from pydantic import BaseModel, Field
+from sqlalchemy import func, select
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from core.config import settings
-from db.models.attendance import  AttendanceUser, EmployeeModel,Otp,CompanyModel
+from db.models.attendance import  AttendanceModel, AttendanceUser, EmployeeModel, Notifications,Otp,CompanyModel
 from requests import Session
 from db.session import get_db
 from fastapi import Depends, HTTPException, Request
 from core.security import create_access_token
 from typing import Optional
 from db.repository.attendance_repo import AttendanceRepo
-from schemas.attendance import Status
-from other_apps.week_util import getWeekDate
+from schemas.attendance import BusinessLeaveDayType, Company, CompanyBase, CompanyCreate, NotificationBase, Status
+from other_apps.week_util import getMonthRange, getWeekDate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from sqlmodel.ext.asyncio.session import AsyncSession
 # 9863450107
 # 0689
 # {
@@ -41,6 +43,8 @@ async def import_db(db: Session = Depends(get_db)):
     
     return data
 
+
+
 @router.get('/export-db',tags=['Import/Export'])
 async def export_db(db: Session = Depends(get_db)):
     data=AttendanceRepo.export_db(db)
@@ -50,7 +54,44 @@ async def export_db(db: Session = Depends(get_db)):
     print(data)    
     
     return data
-@router.get('/companies',tags=['Companies'])
+
+@router.post('/add-notification',tags=['Employer Add Notification'])
+async def create_notification(notifiation:NotificationBase=None,db: Session = Depends(get_db),):
+    # employee=db.get(EmployeeModel,notifiation.user_id)
+    user=db.get(AttendanceUser,notifiation.user_id)
+    # notifiation.user_id=user.id
+    # user.fcm_token
+    return AttendanceRepo.addNotifications(notifiation,db,)
+
+@router.get('/notifications')
+async def notifications(db:Session=Depends(get_db)):
+    return AttendanceRepo.notification(db,)#companyId
+
+@router.get('/overall-daily-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    dates= getWeekDate( )
+    attendee_weekly= db.query(AttendanceModel).where(AttendanceModel.company_id==companyId,AttendanceModel.attendance_date.between(dates[0],dates[1])).count()
+    all=db.query(AttendanceModel).count()   
+    print(all)  
+    print(attendee_weekly)
+    datetoday=datetime.now()
+    dates= getMonthRange( datetoday.year,datetoday.month)
+    attendee_monthly=db.query(AttendanceModel).where(AttendanceModel.company_id==companyId,AttendanceModel.attendance_date.between(dates[0],dates[1])).count()
+    print(attendee_monthly)
+    return db.query(AttendanceModel).all()
+    pass
+
+@router.get('/overall-weekly-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
+@router.get('/overall-monthly-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
+
+@router.get('/overall-annual-report',tags=['Overall'])
+async def overallDailyReport(companyId:int,db:Session=Depends(get_db)):
+    pass
+@router.get('/companies',tags=['Companies'],response_model=list[CompanyCreate])
 async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     now=datetime.now()
     print(now)
@@ -59,7 +100,9 @@ async def get_companies(db: Session = Depends(get_db),current_user:AttendanceUse
     # data={'companines':list(filter(lambda x:x.is_active==True  ,companies_list)),'inactive':list(filter(lambda x:x.is_active==False ,companies_list))}
     # print( datetime.now())
     return companies_list
-
+@router.get('/company',tags=['Companies'],response_model=CompanyCreate)
+async def get_company_by_id(companyId:int,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    return db.get(CompanyModel,companyId)
 class BaseAttendanceUser(BaseModel):
     phone:str
     otp:str
@@ -83,25 +126,25 @@ class AttendanceReport(BaseModel):
     logout_time=time
 
 
-class Company(BaseModel):
-    name:str
-    address:Optional[str]
-    start_time:Optional[time]
-    end_time:Optional[time]
-    established_date:Optional[date] 
-    class Config():  #to convert non dict obj to json
-        schema_extra = {
-            "example": { 
-                    "name": "string",
-                    "address": "string",
-                    "start_time": "10:10",
-                    "end_time": "10:30",
-                    "established_date": "2023-06-30"
-            }
-        }
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+# class Company(BaseModel):
+#     name:str
+#     address:Optional[str]
+#     start_time:Optional[time]
+#     end_time:Optional[time]
+#     established_date:Optional[date] 
+#     class Config():  #to convert non dict obj to json
+#         schema_extra = {
+#             "example": { 
+#                     "name": "string",
+#                     "address": "string",
+#                     "start_time": "10:10",
+#                     "end_time": "10:30",
+#                     "established_date": "2023-06-30"
+#             }
+#         }
+#         orm_mode = True
+#         allow_population_by_field_name = True
+#         arbitrary_types_allowed = True
         
         
 class Employee(BaseModel):
@@ -130,16 +173,21 @@ async def getProfile(current_user:AttendanceUser=Depends(get_current_user_from_b
     return current_user
 
 
- 
+@router.get('/all-leave')#,response_model=AllLeave)
+async def allleave(company_id:int,db: Session = Depends(get_db)):
+
+    return AttendanceRepo.get_all_leaves(compId= company_id,empId=None, db=db)
+    
+
 @router.get('/monthly-report',tags=[ 'Employer Report'])
 async def getMonthlyReport(companyId:int=None ,employeeId:int=None, db:Session= Depends(get_db),page:int=1,limit=100):
     return AttendanceRepo.employeeWithAttendanceMonthlyReport(db,companyId,employeeId,page,limit)
 
 
 @router.get("/weekly-report",tags=[ 'Employer Report'])
-async def weeklyreport(companyId:int,employeeId:int=None, db: Session = Depends(get_db)):
+async def weeklyreport( employeeId:int=None, db: Session = Depends(get_db)):
     dates= getWeekDate()
-    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(companyId,db,employeeId)
+    weekdata=AttendanceRepo.employeewithAttendanceWeeklyReport(db,employeeId)
     # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
  
     return weekdata
@@ -199,7 +247,7 @@ def update_user(id:int,db,):
         pass
     except:
         pass
-def create_company(user:AttendanceUser,db:Session,company:Company):
+def create_company(user:AttendanceUser,db:Session,company:CompanyBase):
     try:
         # name=company.name,address=company.address,start_time=company.start_time,end_time=company.end_time,established_date=company.established_date
         new_company=CompanyModel(**company.dict(), user_id=user.id,is_active=True)
@@ -284,7 +332,7 @@ async def resend_otp(phone:int,db: Session = Depends(get_db)):
     return BaseAttendanceUser(phone=phone,otp=otp.code)
 
 @router.post('/verify-otp',tags=['Employer Register/Login'])
-def verify(otp:str=Body(...),phone:str=Body(...),db: Session = Depends(get_db),):
+def verify(otp:str=Body(default='0689'),phone:str=Body(default="9863450107"),db: Session = Depends(get_db),):
     return AttendanceRepo.verify_otp(otp,phone,db)
     otp=db.query(Otp).filter(Otp.phone==phone).order_by(Otp.id.desc()).first()
 
@@ -305,18 +353,25 @@ def verify(otp:str=Body(...),phone:str=Body(...),db: Session = Depends(get_db),)
         return HTTPException(status_code=404,detail=f"Otp not found for user {phone}")
 
  
-@router.post('/add-company',tags=['Companies'])#response_model=Company
-def add_company(company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+@router.post('/add-company',tags=['Companies'],response_model=CompanyCreate)#response_model=Company
+def add_company(company:Company,businessleaveDays:list[str]=[],governmentleaveDates:list[date]=[],officialholiday:list[date]=[],db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
     company=create_company(current_user,db,company)
+    # business_leave_day=
     return company
 @router.post('/update-company',tags=['Companies'])#response_model=Company
-def update_company(id:int,company:Company,db: Session = Depends(get_db),current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
-    company=update_company(id,current_user,db,company)
+def update_company(id:int,company:Company,db: Session = Depends(get_db),businessleaveDays:list[BusinessLeaveDayType]=[],governmentleaveDates:list[date]=[],officialholiday:list[date]=[],current_user:AttendanceUser=Depends(get_current_user_from_bearer)): 
+    company=AttendanceRepo.update_company(id,current_user,db,company)
+    for businessleaveDay in businessleaveDays:
+        print(businessleaveDay)
+    for governmentLeaveDay in governmentleaveDates:
+        print(governmentLeaveDay)
+    for officeHolidays in officialholiday:
+        print(officeHolidays)
     return company
 
 
 
-@router.post('/get-companies',tags=['Companies'])
+@router.post('/get-companies',tags=['Companies'],response_model=list[CompanyCreate])
 def all_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     # print(current_user)
     company_list=AttendanceRepo.companies_list(user=current_user,db=db)

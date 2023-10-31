@@ -11,7 +11,8 @@ from db.repository.attendance_repo import AttendanceRepo
 from apps.attendance_system.route_login import get_current_user_from_token,get_current_user_from_bearer
 from pydantic import BaseModel,root_validator
 from typing import Optional
-from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut
+from other_apps.week_util import getWeekDate
+from schemas.attendance import AttendanceStatus, LeaveRequestIn, Status, StatusOut,LeaveRequestOut
 from datetime import date, datetime, time, timedelta
 from other_apps.upload_file import firebase_upload
 import json
@@ -99,6 +100,7 @@ class CreateAttendance(BaseModel):
     salary:Optional[float]
     name:Optional[str]
     duty_time:Optional[time]
+    total_worked_hours_in_month:float=None
     class Config:
         orm_mode=True
 
@@ -129,18 +131,26 @@ class AllLeave(BaseModel):
     available_casual_leave:Optional[int]
     class Config:
         orm_mode=True
-@router.post('/all-leave')#,response_model=AllLeave)
+@router.get('/all-leave',tags=["Employee"])#,response_model=AllLeave)
 async def allleave(company_id:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     print(current_user)
-    return AttendanceRepo.get_employee(current_user.phone,db,company_id)
-    
+    employee=AttendanceRepo.get_employee(current_user.phone,db,company_id)
+    return AttendanceRepo.get_all_leaves(company_id,employee.id,db)
+
+
 async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     return AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
 
-
-@router.post('/apply-leave',response_model=LeaveRequestIn)
-async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form), db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
+@router.get('/notifications',tags=["Employee Notifications"])
+async def notifications(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db),): 
+    # employee=db.query(EmployeeModel,id)
+    # print(current_user.id)
+    return AttendanceRepo.getCandidateNotification(current_user.id,db)
+      
+@router.post('/apply-leave',response_model=LeaveRequestIn,tags=["Employee"])
+async def applyleave(leaveRequest:LeaveRequestIn=Depends(LeaveRequestIn.as_form),document:UploadFile=None, db: Session = Depends(get_db),):#employeeId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),
     print(leaveRequest.dict())
+
     leave= AttendanceRepo.applyLeave(leaveRequest,db)#employeeId
     return leaveRequest
     # 
@@ -152,19 +162,24 @@ async def login(phone:int, db: Session = Depends(get_db)):
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Employee does not exist.")
     else:
         user=AttendanceRepo.get_user(phone,db)
+        print(user)
         if not user:
             AttendanceRepo.create_user(phone,db)
         otp=AttendanceRepo.create_otp(phone,db)
+        print(otp.code)
         return {"otp":otp.code}
  
 
 @router.post('/verify-otp',tags=['Employee Login/Verify'])
-async def verifyOtp(phone=Body(...),otp:str=Body(...),db: Session = Depends(get_db)):
-    
+async def verifyOtp(phone=Body(default=9800000000),otp:str=Body(default='1117'),fcm_token:str=None,db: Session = Depends(get_db)):
+   user=AttendanceRepo.get_user(phone,db)
+   user.fcm_token=fcm_token
+   db.commit()
+   db.refresh(user)
    return AttendanceRepo.verify_otp(otp,phone,db)
 
 class CompanyOut(BaseModel):
-    id:int
+    id:Optional[int]=None
     company_name:Optional[str]=None
     company_id:Optional[str]=None
     login_time:Optional[time]
@@ -178,9 +193,10 @@ class CompanyOut(BaseModel):
 
 @router.get('/companies',response_model=list[CompanyOut]  ,tags=['Employee Invitations'])#response_model=list[Invitations],
 async def get_companies(current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
-    
-    if current_user.is_employer:
-        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
+    print(current_user)
+    if current_user:
+        if current_user.is_employer:
+            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not Authorized.")
     # employee=AttendanceRepo.employee_companies( (current_user.phone) ,db)
     # allInvitations=AttendanceRepo.getInvitationByCompany(employee.id,db)
     return db.query(EmployeeModel).filter(EmployeeModel.phone==current_user.phone,).all()#EmployeeModel.status!=Status.INIT
@@ -199,9 +215,12 @@ async def get_invitations(current_user:AttendanceUser=Depends(get_current_user_f
     #     orm_mode=True
         # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODAwMDAwMDAwIiwiZXhwIjoxNjg4NDU4Njg0fQ.f4-TCAwXEZaTNFhnQkBSeBDTARDL8NKEijSGErFGBrI
 @router.get('/get-today-details',response_model=CreateAttendance,tags=['Employee Details'])#,response_model=AttendanceTodayDetailModel)
-def get_today_details(companyId:int,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
+def get_today_details(companyId:int ,current_user:AttendanceUser=Depends(get_current_user_from_bearer),db: Session = Depends(get_db)):
     employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
- 
+    print(employee.total_worked_hours_in_month)
+    # current_user.fcm_token=fcm_token
+    db.commit()
+    db.refresh(current_user)
     today_details=  AttendanceRepo.get_today_details( employee, db, companyId)
     return today_details  
 
@@ -279,3 +298,29 @@ async def accept_invitations(id:int,status:Status, current_user:AttendanceUser=D
      
  
 
+@router.get('/monthly-report',tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def getMonthlyReport(companyId:int=None , current_user:AttendanceUser=Depends(get_current_user_from_bearer), db:Session= Depends(get_db),page:int=1,limit=100):
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+    return AttendanceRepo.employee_monthly_report(employee.id, companyId,db,)
+
+
+@router.get("/weekly-report",tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def weeklyreport(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer), db: Session = Depends(get_db)):
+    # dates= getWeekDate()#employeeId:int=None,
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+    weekdata=AttendanceRepo.employee_weekly_report( employee.id, companyId, db)
+    # weekdata=AttendanceRepo.getWeeklyAttendance(companyId,dates[0].date(),dates[1].date(), db)
+ 
+    return weekdata
+@router.get("/today-report",tags=[ 'Employee Report'],response_model=list[CreateAttendance])
+async def attendance(companyId:int, current_user:AttendanceUser=Depends(get_current_user_from_bearer), db: Session = Depends(get_db),page:int=1,limit:int=10):
+    employee=AttendanceRepo.get_employee(current_user.phone,db,companyId)
+        # print(employee.id)
+    return AttendanceRepo.employee_daily_report(employee.id, companyId,db,0)
+    # return AttendanceRepo.employee_monthly_report( employee.id, companyId, db)
+        # return AttendanceRepo.employeeWithDailyReport(companyId,db,page-1,limit)
+        # return AttendanceRepo.reportToday(companyId,db)
+
+        # allAttendances=AttendanceRepo.todayReport(companyId,db)
+        # return allAttendances
+ 

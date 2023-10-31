@@ -1,0 +1,61 @@
+status
+
+untracked
+new files that git doesnt tracked
+
+modified 
+changes
+
+stages
+file is ready to be committed
+
+unmodified 
+unchanged
+
+Add And committe
+Add new or changed files in working directory to git staging area
+git add . or git add filename
+
+commit  
+record of change
+git commit -m "some message"
+
+
+push upload local changes to remote repository
+git push origin main
+
+
+git init
+used to create new repo
+
+#Merge
+way 1
+git diff branchname to compare commit branches,files and more
+git merge branchname to merge to brancher
+
+way2 
+Create PR
+
+Pull Request
+Lets you tell others about changes you 've pushed to branch in repository in github
+
+
+Pull command
+git pull origin main
+used to fetch and download content from a remote repo and immediately update local repo to match than content
+
+Resolving Merge Conflicts
+An event that takes place when git is unable to automatically resolve differences in code in two commits
+
+Undoing Changes 
+case1:staged changes
+git reset filename
+git reste
+
+case 2 :commited changes(for one commit)
+
+git reset HEAD±1
+
+case 2 commited changed(for many commits)
+git reset <commit hash>
+git reset hard <commit hash>

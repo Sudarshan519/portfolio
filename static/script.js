@@ -34,13 +34,13 @@ var url = "jobsserach.vercel.app";
 //   }
 // Get the button that opens the modal
 var btn = document.getElementById("myBtn");
-
+var loader = document.getElementById("loaderlast")
 // Get the <span> element that closes the modal
 //        <!-- var span = document.getElementsByClassName("close")[0]; -->
 span = document.getElementById("closeId")
 // When the user clicks on <span> (x), close the modal
 span.onclick = function () {
-    modal.style.display = "none";
+    modal.style.display = "none"; loader.style.display = "none"
 }
 let slideIndex = 1;
 let running = false;
@@ -137,6 +137,7 @@ btn.onclick = function () {
 window.onclick = function (event) {
     if (event.target == modal) {
         modal.style.display = "none";
+
     }
 }
 
