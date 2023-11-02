@@ -15,6 +15,7 @@ class StaticDataList(str,Enum):
     RESIDENCESTATUS="Resident Status(Japanese)"
     CARDTYPEFOREIGNER="Card type(Foreigner)"
     CARDTYPEJAPANESE="Card type(Japanese)"
+    UNKNOWN="UNKNOWN"
 
 class CreateCSPRequest(BaseModel):
     csp_code:str

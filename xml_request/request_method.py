@@ -240,6 +240,8 @@ class RequestMethods(BaseService):
                     'Password': password,
                     'Type': type}
                 )
+            if serialize_object(response)['DataList'] is None:
+                return {"status":False,"error":serialize_object(response)['Message'],}
             # Process the response 
             return   json.loads(json.dumps(serialize_object(response) ['DataList']['Data']).lower())
     
