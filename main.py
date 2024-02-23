@@ -38,20 +38,20 @@
 
 # from typing import Annotated, Optional
 import asyncio
-from requests import Session
+# from requests import Session
 import uvicorn
-from fastapi import Depends, FastAPI, File, HTTPException, Response, UploadFile,status
+from fastapi import FastAPI, Response, status# Depends, File, HTTPException,UploadFile,
 # from fastapi_sqlalchemy import DBSessionMiddleware, db
 # from core.hashing import Hasher
 # from db.base import Base
 # from db.models.user import Users as User
-from db.session_sqlmodel import init_db
+# from db.session_sqlmodel import init_db
  
  
 # from db.models.attendance import *
 # # from models import Book as ModelBook, FileModel
 # from models import Author as ModelAuthor
-from db.session import engine   #new
+# from db.session import engine   #new
 # import os
 # from dotenv import load_dotenv
 # import motor.motor_asyncio
@@ -171,13 +171,13 @@ class SuppressNoResponseReturnedMiddleware(BaseHTTPMiddleware):
                 return Response(status_code=status.HTTP_204_NO_CONTENT)
             raise
 from db.base import Base
-def create_tables():           #new
-	Base.metadata.create_all(bind=engine)  
+# def create_tables():           #new
+# 	Base.metadata.create_all(bind=engine)  
 @app.on_event("startup")
 async def on_startup(): 
     # create_tables()
     print("start up complete")
-    init_db()
+    # init_db()
     # retry_transport()
 
 async def main():
