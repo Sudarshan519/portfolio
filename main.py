@@ -125,7 +125,7 @@ app.add_middleware(
 # webapp route
 
 from webapps.base import webapp_router
-from websocket_example.websocket_api  import notificationRoute
+# from websocket_example.websocket_api  import notificationRoute
 
 
 
@@ -134,7 +134,7 @@ app.include_router(webapp_router,prefix="", tags=["job-webapp"])  #new
 # mongo db route
 # app.include_router(mongorouter.app,tags=['mongo contact'])
 
-from apps.attendance_system.route_attendance import attendance_router
+# from apps.attendance_system.route_attendance import attendance_router
 # attendance route
 # app.include_router(
 #      attendance_router,tags=[ ])
