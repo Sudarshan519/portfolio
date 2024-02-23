@@ -1,7 +1,7 @@
  
 from fastapi import APIRouter,  Depends    
 from apps.rps_remit.compliance_schema import AcPayBankListRequest,  CancelTransactionRequest, CashPayoutLocationRequest, CreateCSPRequest, CreateCustomer, GetServiceCharge, Receiver, SearchCsp, SearchTransactionRequest, SendTransasctionRequest, StaticDataList
-from schemas.users import UploadPaymentSlipRequest
+from schemas.users import UploadPaymentSlipRequest, ValidateTransactionRequest
 from xml_request.request_method import RequestMethods
 
 
@@ -18,6 +18,7 @@ def static_datalist(type:StaticDataList):
 @router.get('/acpayBankList')
 def acPayBankList(acPayBankList:AcPayBankListRequest= Depends(),):
    return RequestMethods.acpay_bank_branchlist(acPayBankList)   
+
 @router.post('/cancel-transasction')
 def cancelTransaction(cancelRequest:CancelTransactionRequest):
     return RequestMethods.cancel_transaction(cancelRequest)   
@@ -82,6 +83,10 @@ def searchCSP(searchTransactions:SearchTransactionRequest):
 @router.post('/send-transactions')
 def sendTransaction(sendTransaction:SendTransasctionRequest):
    return RequestMethods.send_transaction(sendTransaction)
+
+@router.post('/verify-transaction')
+def verify_transaction(verifyTransaction:ValidateTransactionRequest):
+    return RequestMethods.verifyTransactions( verifyTransaction)
 
 @router.get('/unverified-customer')
 def unverified_customers():

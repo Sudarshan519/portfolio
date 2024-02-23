@@ -107,18 +107,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from apps.subscription_payment.main import app as subscription
-# # from apps.rps_remit.main import remitapp
-# app.mount('/remitapp',remit_app,name="REMIT APP")
+# from apps.subscription_payment.main import app as subscription
+# # # from apps.rps_remit.main import remitapp
+# # app.mount('/remitapp',remit_app,name="REMIT APP")
 
-app.mount('/subscription',subscription,)#,tags=['REMIT APP'])
+# app.mount('/subscription',subscription,)#,tags=['REMIT APP'])
 
-# remit_app route
-from apps.rps_remit.main import app as remit_app
-# # from apps.rps_remit.main import remitapp
-# app.mount('/remitapp',remit_app,name="REMIT APP")
+# # remit_app route
+# from apps.rps_remit.main import app as remit_app
+# # # from apps.rps_remit.main import remitapp
+# # app.mount('/remitapp',remit_app,name="REMIT APP")
 
-app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
+# app.include_router(remit_app,prefix='/remit_app')#,tags=['REMIT APP'])
 
 
 
@@ -138,7 +138,7 @@ from apps.attendance_system.route_attendance import attendance_router
 # attendance route
 # app.include_router(
 #      attendance_router,tags=[ ])
-app.mount('/hajir/',attendance_router,name="HAJIR APP" )
+# app.mount('/hajir/',attendance_router,name="HAJIR APP" )
 # app.include_router(notificationRoute,tags=[ ])
 
 

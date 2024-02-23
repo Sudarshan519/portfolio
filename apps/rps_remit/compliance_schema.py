@@ -2,6 +2,21 @@
 from enum import Enum
 from pydantic import BaseModel
 from datetime import date
+class ResponseModel(BaseModel):
+     status:bool=False
+     data:dict
+
+class UpdateReceiver(BaseModel):
+     ReceiverID:str=''
+     BankCode:str=None
+     AccountNumber:str=None
+     PaymentMode:str
+     Address:str
+     Relationship:str
+     Mobile:str
+     Gender:str
+     Name:str
+     CustomerId:str
 
 class StaticDataList(str,Enum):
     Gender= 'Gender'
